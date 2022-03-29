@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SIGN.Query.DataAnnotations
-{
+{ 
     public class PrimaryKeyNameAttribute : Attribute
     {
         public string PrimaryKeyName { get; set; }

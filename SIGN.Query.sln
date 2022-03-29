@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbQuery11", "DbQuery11\DbQuery11.csproj", "{48D30F6E-4698-43DB-96C7-4F2A08C4523B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIGN.Testes", "SIGN.Testes\SIGN.Testes.csproj", "{02C8B06E-1807-4992-B435-7CE204F73EAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIGN.Query", "SIGN.Query\SIGN.Query.csproj", "{76AD11D9-C04A-44A9-8D4A-C9C5EEDD0E14}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{48D30F6E-4698-43DB-96C7-4F2A08C4523B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48D30F6E-4698-43DB-96C7-4F2A08C4523B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48D30F6E-4698-43DB-96C7-4F2A08C4523B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48D30F6E-4698-43DB-96C7-4F2A08C4523B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02C8B06E-1807-4992-B435-7CE204F73EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{02C8B06E-1807-4992-B435-7CE204F73EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02C8B06E-1807-4992-B435-7CE204F73EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
