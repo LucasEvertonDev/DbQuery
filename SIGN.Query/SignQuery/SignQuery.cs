@@ -432,8 +432,12 @@ namespace SIGN.Query.SignQuery
                     }
                     if (a.Body.NodeType == ExpressionType.Call)
                     {
-
-
+                        dynamic exp = a;
+                        if (exp.Body.Method.Name == "Count")
+                        {
+                            var d = exp.Body.Arguments[0];
+                            properties.Add(String.Format("Count({0})", GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member)));
+                        }
                     }
                 });
             }

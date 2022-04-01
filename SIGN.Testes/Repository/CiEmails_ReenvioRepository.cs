@@ -30,14 +30,18 @@ namespace SIGN.Testes.Repository
         {
             var dominio = new Dominio() { Descricao = "TESTE_LIKE", Nome = "Teste Nome" };
             var query = _ciEmails_ReenvioRepository.SelectCustom().UseAlias("ci")
-                .GetCollumns(ci => ci.To, ci => ci.EmailFrom, ci => ci.Subject)
+                .GetCollumns(ci => Count(ci.To), ci => ci.EmailFrom, ci => ci.Subject)
                 .GetCollumns<CiEmails_Anexos>(ciRe => ciRe.CHAVE, ciRe => ciRe.Tipo)
                 .Join<CiEmails_Reenvio, CiEmails_Anexos>((ci, ciRe) => ci.ID == ciRe.CiEmails_Reenvio_Id)
                 .Where<CiEmails_Reenvio, CiEmails_Anexos>((ci, ciRe) => (dominio.Descricao != null || ci.ID == dominio.Descricao) && (dominio.Codigo > 0 || ci.Status >= dominio.Codigo ))
-                //.Where<CiEmails_Reenvio, CiEmails_Anexos>((ci, ciRe) => ci.ID == "Teste")
                 .OrderBy(ci => ci.Subject)
                 .GetQuery();
 
+        }
+
+        public dynamic Count(dynamic prop)
+        {
+            return null;
         }
     }
 }
