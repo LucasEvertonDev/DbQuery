@@ -128,6 +128,7 @@ namespace SIGN.Query.Test
             Assert.AreEqual(query, "SELECT DISTINCT TOP(1) * FROM SignCi..CiDominio AS d1 INNER JOIN SignCi..CiItemDominio AS i1 ON d1.Codigo = i1.Codigo_Dominio WHERE ((d1.Codigo > 1 AND i1.Descricao LIKE '%TESTE_LIKE%') AND (d1.Nome = 'Teste Nome' AND d1.Descricao IS NOT NULL)) ORDER BY d1.Codigo ASC, i1.Nome ASC");
         }
 
+        
 
         public int TesteFunction()
         {

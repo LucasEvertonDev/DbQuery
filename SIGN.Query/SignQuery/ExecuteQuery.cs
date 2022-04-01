@@ -21,6 +21,11 @@ namespace SIGN.Query.SignQuery
             var result = new ResultQuery<T>() { };
             try
             {
+                if (Origin == typeof(SelectCustomQuery<T>))
+                {
+                    _query = _query.Replace(", SELECT_CONCAT", "");
+                }
+
                 var ret = ExecuteSql();
                 if (this.Origin == typeof(SelectQuery<T>) || this.Origin == typeof(JoinQuery<T>) || this.Origin == typeof(SelectCountQuery<T>))
                 {
@@ -32,7 +37,7 @@ namespace SIGN.Query.SignQuery
                     result.Output = ret;
                 }
 
-                if (Origin == typeof(SelectCountQuery<T>) && result.Retorno != null)
+                if (Origin == typeof(SelectCountQuery<T>) && result.Retorno != null || Origin == typeof(SelectCustomQuery<T>))
                 {
                     result.Output = result.Retorno?.First()?[0];
                 }

@@ -66,11 +66,34 @@ namespace SIGN.Query.Extensions
                     if (columnNames.Contains(pro.Name))
                     {
                         PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
-                        pro.SetValue(objT, row[pro.Name] == DBNull.Value ? null : Convert.ChangeType(row[pro.Name], pI.PropertyType));
+                        pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));
                     }
                 }
                 return objT;
             }).ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="conversion"></param>
+        /// <returns></returns>
+        public static object ChangeType(object value, Type conversion)
+        {
+            var t = conversion;
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            return Convert.ChangeType(value, t);
         }
 
         /// <summary>
@@ -166,7 +189,7 @@ namespace SIGN.Query.Extensions
             StringWriter writer = new StringWriter();
             CSharpCodeProvider codeProvider = new CSharpCodeProvider();
 
-            codeProvider.GenerateCodeFromNamespace(codeNamespace, writer, new System.CodeDom.Compiler.CodeGeneratorOptions() { BracingStyle = "C", BlankLinesBetweenMembers = false});
+            codeProvider.GenerateCodeFromNamespace(codeNamespace, writer, new System.CodeDom.Compiler.CodeGeneratorOptions() { BracingStyle = "C", BlankLinesBetweenMembers = false });
 
             // Return filename
             return writer.ToString().Replace("};", "}");
@@ -178,7 +201,7 @@ namespace SIGN.Query.Extensions
         /// <param name="name"></param>
         /// <returns></returns>
         static CodeTypeDeclaration CreateClass(string name)
-        {  
+        {
             /// https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-create-a-class-using-codedom
             CodeTypeDeclaration result = new CodeTypeDeclaration(name);
             result.Attributes = MemberAttributes.Public;

@@ -58,6 +58,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public string GetQuery()
         {
+            _query = _query.Replace(", SELECT_CONCAT", "");
             return _query.Replace("  ", " ");
         }
 
@@ -554,18 +555,28 @@ namespace SIGN.Query.SignQuery
 
             if (left is MemberExpression)
             {
-                var leftMem = left as MemberExpression;
-                var propertyInfo = (PropertyInfo)leftMem.Member;
-                var name = GetCollumnName(propertyInfo);
-
-                if (propertyInfo.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
+                var isValue = IsValue(left);
+                if (isValue)
                 {
+                    var val = TratarValor(GetValue(left), true);
                     oldExpression = expression.ToString();
-                    value = string.Format("{0} {1} {2}", GetTableName(propertyInfo.DeclaringType, left) + "." + name, "{0}", "{1}");
+                    value = string.Format("{0} {1} {2}", val, "{0}", "{1}");
                 }
                 else
                 {
-                    ignore = true;
+                    var leftMem = left as MemberExpression;
+                    var propertyInfo = (PropertyInfo)leftMem.Member;
+                    var name = GetCollumnName(propertyInfo);
+
+                    if (propertyInfo.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
+                    {
+                        oldExpression = expression.ToString();
+                        value = string.Format("{0} {1} {2}", GetTableName(propertyInfo.DeclaringType, left) + "." + name, "{0}", "{1}");
+                    }
+                    else
+                    {
+                        ignore = true;
+                    }
                 }
             }
             else if (left == null)
@@ -587,31 +598,9 @@ namespace SIGN.Query.SignQuery
                 {
                     var rightMen1 = right as MemberExpression;
                     dynamic r = right;
-                    dynamic exp = CurrentExpression;
                     bool isValue = true;
 
-                    if (CurrentExpression != null && VerificaPropriedade(exp, "Parameters") && exp.Parameters != null)
-                    {
-                        foreach (var e in exp.Parameters)
-                        {
-                            if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Member"))
-                            {
-                                if (r.Expression.Member != null && e.Name == r.Expression.Member.Name)
-                                {
-                                    isValue = false;
-                                    break;
-                                }
-                            }
-                            else if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Name"))
-                            {
-                                if (e.Name == r.Expression.Name)
-                                {
-                                    isValue = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    isValue = IsValue(r);
 
                     if (!isValue)
                     {
@@ -640,6 +629,45 @@ namespace SIGN.Query.SignQuery
             }
             return value;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public bool IsValue(dynamic expression)
+        {
+            var right = expression;
+            dynamic r = right;
+            dynamic exp = CurrentExpression;
+            bool isValue = true;
+
+            if (CurrentExpression != null && VerificaPropriedade(exp, "Parameters") && exp.Parameters != null)
+            {
+                foreach (var e in exp.Parameters)
+                {
+                    if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Member"))
+                    {
+                        if (r.Expression.Member != null && e.Name == r.Expression.Member.Name)
+                        {
+                            isValue = false;
+                            break;
+                        }
+                    }
+                    else if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Name"))
+                    {
+                        if (e.Name == r.Expression.Name)
+                        {
+                            isValue = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return isValue;
+        }
+
 
         /// <summary>
         /// 

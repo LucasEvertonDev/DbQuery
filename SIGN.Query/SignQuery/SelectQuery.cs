@@ -111,7 +111,7 @@ namespace SIGN.Query.SignQuery
         /// indenpente da ação realizada
         /// O parametro alias é usado para setar o alias a classe do rpository(select)
         /// </summary>
-        public SelectQuery<T> UseAlias(string alias)
+        public virtual SelectQuery<T> UseAlias(string alias)
         {
             _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
             this._useAlias = true;
