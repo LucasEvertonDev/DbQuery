@@ -31,7 +31,7 @@ namespace SIGN.Query.SignQuery
         protected override void SetDefaultFields(T domain, Type origin)
         {
             base.SetDefaultFields(domain, origin);
-            _query = String.Format(DELETE, string.IsNullOrEmpty(this.DataBase) ? GetTableName(typeof(T)) : this.DataBase + ".." + GetTableName(typeof(T)), "");
+            _query = String.Format(DELETE, string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + ".." + GetTableName(typeof(T)), "");
         }
     }
 }

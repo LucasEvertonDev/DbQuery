@@ -79,7 +79,10 @@ namespace SIGN.Query.Services
             return 0;
         }
 
-     
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="database"></param>
         public void ChangeDatabase(string database)
         {
             _sqlConnection.ChangeDatabase(database);

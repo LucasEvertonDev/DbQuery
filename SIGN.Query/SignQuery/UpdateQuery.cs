@@ -34,7 +34,7 @@ namespace SIGN.Query.SignQuery
             base.SetDefaultFields(domain, origin);
             var list = GetObjectClausules();
             _query = String.Format(UPDATE,
-                                 string.IsNullOrEmpty(this.DataBase) ? GetTableName(typeof(T)) : this.DataBase + ".." + GetTableName(typeof(T)),
+                                 string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + ".." + GetTableName(typeof(T)),
                                  string.Join(", ", list),
                                  "");
         }

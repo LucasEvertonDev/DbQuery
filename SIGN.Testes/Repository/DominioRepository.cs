@@ -9,7 +9,6 @@ namespace SIGN.Query.Test
     [TestClass]
     public class DominioRepository
     {
-        public Func<object> Coun => () => null;
         private Repository<Dominio> _dominioRepository { get; set; } = new Repository<Dominio>();
         private Repository<ItemDominio> _itemDominioRepository { get; set; } = new Repository<ItemDominio>();
         private Dominio dominio { get; set; } = new Dominio();
@@ -55,9 +54,7 @@ namespace SIGN.Query.Test
                     a => a.Codigo > 1 && a.Descricao.LIKE("TESTE_LIKE")
                 )
                 .OrderBy(
-                    a => Collumns(
-                        a.Descricao
-                    )
+                    a => a.Descricao
                 )
                 .GetQuery();
             Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') ORDER BY CiDominio.Descricao ASC");
@@ -128,7 +125,7 @@ namespace SIGN.Query.Test
         public void CountMethod()
         {
             var query = _dominioRepository
-                            .Select(Count)
+                            .Select(ci => Count())
                             .Where(
                                 (Dominio) => Dominio.Codigo > 1 
                                 && Dominio.Descricao.LIKE("TESTE_LIKE") && Dominio.Nome != null
@@ -148,9 +145,7 @@ namespace SIGN.Query.Test
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
                             .OrderBy(
-                                (Dominio) => Collumns(
-                                    Dominio.Codigo
-                                )
+                                (Dominio) => Dominio.Codigo
                             )
                             .GetQuery();
 
@@ -168,9 +163,7 @@ namespace SIGN.Query.Test
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
                             .OrderBy(
-                                (Dominio) => Collumns(
-                                    Dominio.Codigo
-                                )
+                                (Dominio) => Dominio.Codigo
                             )
                             .GetQuery();
 
@@ -211,12 +204,15 @@ namespace SIGN.Query.Test
             return array;
         }
 
-        public object Count()
+        public object Count(object prop)
         {
             return null;
         }
 
-        /// <summary>
+        public object Count()
+        {
+            return null;
+        }// <summary>
         /// 
         /// </summary>
         /// <param name="i"></param>

@@ -21,17 +21,6 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public virtual SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
-        {
-            IncludeTop();
-            return IncludeWhereConditions(expression);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
         protected override void SetDefaultFields(T domain, Type origin)
@@ -39,8 +28,44 @@ namespace SIGN.Query.SignQuery
             base.SetDefaultFields(domain, origin);
             _query = string.Format(SELECT,
                                   "*",
-                                  string.IsNullOrEmpty(this.DataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
+                                  string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
                                   "");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void IncludeTop()
+        {
+            if (_top.HasValue)
+            {
+                _query = _query.Replace("SELECT DISTINCT", $"SELECT TOP({_top.Value})");
+            }
+        }
+
+        /// <summary>
+        /// Determina que a função irá usar a nomenclatura do parametro da expression como alias 
+        /// Só será funcional se for utilisado para a mesma tabela o mesmo codenome 
+        /// indenpente da ação realizada
+        /// O parametro alias é usado para setar o alias a classe do rpository(select)
+        /// </summary>
+        public virtual SelectQuery<T> UseAlias(string alias)
+        {
+            IncludeTop();
+            _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
+            this._useAlias = true;
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
+        {
+            IncludeTop();
+            return IncludeWhereConditions(expression);
         }
 
         /// <summary>
@@ -92,26 +117,56 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        public void IncludeTop()
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic>> expression)
         {
-            if (_top.HasValue)
-            {
-                _query = _query.Replace("SELECT DISTINCT", $"SELECT TOP({_top.Value})");
-            }
+            IncludeTop();
+            return AddOrderBy("ASC", expression);
         }
 
         /// <summary>
-        /// Determina que a função irá usar a nomenclatura do parametro da expression como alias 
-        /// Só será funcional se for utilisado para a mesma tabela o mesmo codenome 
-        /// indenpente da ação realizada
-        /// O parametro alias é usado para setar o alias a classe do rpository(select)
+        /// 
         /// </summary>
-        public virtual SelectQuery<T> UseAlias(string alias)
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic>> expression)
         {
             IncludeTop();
-            _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
-            this._useAlias = true;
-            return this;
+            return AddOrderBy("DESC", expression);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderBy<P>(Expression<Func<P, dynamic>> expression)
+        {
+            IncludeTop();
+            return AddOrderBy("ASC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderByDesc<P>(Expression<Func<P, dynamic>> expression)
+        {
+            IncludeTop();
+            return AddOrderBy("DESC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override ResultQuery<T> Execute()
+        {
+            IncludeTop();
+            return base.Execute();
         }
     }
 }

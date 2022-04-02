@@ -21,28 +21,31 @@ namespace SIGN.Query.SignQuery
             var result = new ResultQuery<T>() { };
             try
             {
-                if (Origin == typeof(SelectCustomQuery<T>))
-                {
-                    _query = _query.Replace(", SELECT_CONCAT", "");
-                }
-
                 var ret = ExecuteSql();
-                if (this.Origin == typeof(SelectQuery<T>) || this.Origin == typeof(JoinQuery<T>) || this.Origin == typeof(SelectCountQuery<T>))
+                if (this._origin == typeof(SelectQuery<T>) || this._origin == typeof(JoinQuery<T>) 
+                    || this._origin == typeof(SelectCountQuery<T>) || this._origin == typeof(SelectCustomQuery<T>))
                 {
-                    result.Retorno = ret;
+                    if (ret.GetType() == typeof(DataTable))
+                        result.Retorno = ret;
+                    else
+                    {
+                        result.Retorno = new DataTable();
+                        result.Retorno.AddColluns("ret");
+                        result.Retorno.Rows.Add(ret);
+                    }
                 }
 
-                if (this.Origin == typeof(InsertQuery<T>) || this.Origin == typeof(UpdateQuery<T>))
+                if (this._origin == typeof(InsertQuery<T>) || this._origin == typeof(UpdateQuery<T>))
                 {
                     result.Output = ret;
                 }
 
-                if (Origin == typeof(SelectCountQuery<T>) && result.Retorno != null || Origin == typeof(SelectCustomQuery<T>))
+                if (_origin == typeof(SelectCountQuery<T>) || (_origin == typeof(SelectCustomQuery<T>) && ret.GetType() != typeof(DataTable)))
                 {
-                    result.Output = result.Retorno?.First()?[0];
+                    result.Output = ret;
                 }
 
-                if (this.Origin == typeof(SelectQuery<T>))
+                if (this._origin == typeof(SelectQuery<T>))
                 {
                     if (ret == null || ret.Rows.Count == 0)
                     {
@@ -74,7 +77,7 @@ namespace SIGN.Query.SignQuery
             }
 
             SqlCommand Sql_Comando = new SqlCommand(_query, _signTransaction.GetConnection(), _signTransaction.GetTransaction()) { CommandType = CommandType.Text };
-            if (this.Origin == typeof(JoinQuery<T>) || this.Origin == typeof(SelectQuery<T>) || this.Origin == typeof(SelectCountQuery<T>))
+            if (this._origin == typeof(JoinQuery<T>) || this._origin == typeof(SelectQuery<T>) || this._origin == typeof(SelectCountQuery<T>))
             {
                 return Sql_Comando.ExecuteSql();
             }

@@ -10,8 +10,7 @@ namespace SIGN.Query.SignQuery
 {
     public class SelectCustomQuery<T> : SelectQuery<T> where T : SignQueryBase
     {
-        public Expression CustomExpression { get; set; }
-
+        public Expression _customExpression { get; set; }
 
         /// <summary>
         /// 
@@ -29,8 +28,18 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public virtual void AddCollumns()
         {
-            var props = GetPropertiesExpression(this.CustomExpression);
+            var props = GetPropertiesExpression(this._customExpression);
             _query = _query.Replace("*", string.Join(", ", props));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override ResultQuery<T> Execute()
+        {
+            AddCollumns();
+            return base.Execute();
         }
     }
 }

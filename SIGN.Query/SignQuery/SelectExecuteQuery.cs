@@ -10,6 +10,48 @@ namespace SIGN.Query.SignQuery
 {
     public class SelectExecuteQuery<T> : ExecuteQuery<T> where T : SignQueryBase
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic>> expression)
+        {
+            return AddOrderBy("ASC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic>> expression)
+        {
+            return AddOrderBy("DESC", expression);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderBy<P>(Expression<Func<P, dynamic>> expression)
+        {
+            return AddOrderBy("ASC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderByDesc<P>(Expression<Func<P, dynamic>> expression)
+        {
+            return AddOrderBy("DESC", expression);
+        }
+
         /// <summary>
         /// 
         /// </summary>

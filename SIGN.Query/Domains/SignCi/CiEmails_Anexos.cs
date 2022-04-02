@@ -12,7 +12,7 @@ namespace SIGN.Query.Domains.SignCi
     {
         [Identity]
         public int ID { get; set; }
-        public string CiEmails_Reenvio_Id { get; set; }
+        public int CiEmails_Reenvio_Id { get; set; }
         public string CHAVE { get; set; }
         public string VALOR { get; set; }
         public string PATH { get; set; }

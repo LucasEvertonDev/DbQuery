@@ -1,4 +1,5 @@
 ﻿using Microsoft.CSharp;
+using SIGN.Query.Domains;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -54,24 +55,33 @@ namespace SIGN.Query.Extensions
         /// <returns></returns>
         public static List<T> ConvertToList<T>(this DataTable dt)
         {
-            var columnNames = dt.Columns.Cast<DataColumn>()
-                    .Select(c => c.ColumnName)
-                    .ToList();
-            var properties = typeof(T).GetProperties();
-            return dt.AsEnumerable().Select(row =>
+            if (dt.Columns.Count == 1)
             {
-                var objT = Activator.CreateInstance<T>();
-                foreach (var pro in properties)
+                return dt.Rows.OfType<DataRow>()
+                    .Select(dr => ChangeType(dr[0], typeof(T))).OfType<T>().ToList();
+            }
+            else
+            {
+                var columnNames = dt.Columns.Cast<DataColumn>()
+                       .Select(c => c.ColumnName)
+                       .ToList();
+                var properties = typeof(T).GetProperties();
+                return dt.AsEnumerable().Select(row =>
                 {
-                    if (columnNames.Contains(pro.Name))
+                    var objT = Activator.CreateInstance<T>();
+                    foreach (var pro in properties)
                     {
-                        PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
-                        pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));
+                        if (columnNames.Contains(pro.Name))
+                        {
+                            PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
+                            pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));
+                        }
                     }
-                }
-                return objT;
-            }).ToList();
+                    return objT;
+                }).ToList();
+            }
         }
+
 
         /// <summary>
         /// 
@@ -85,7 +95,7 @@ namespace SIGN.Query.Extensions
 
             if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value?.ToString()))
                 {
                     return null;
                 }
@@ -292,9 +302,9 @@ namespace SIGN.Query.Extensions
         /// </summary>
         /// <param name="dt"></param>
         /// <param name="list"></param>
-        public static DataTable AddColluns(this DataTable dt, List<string> list)
+        public static DataTable AddColluns(this DataTable dt, params string[] list)
         {
-            list.ForEach(a =>
+            list.ToList().ForEach(a =>
             {
                 dt.Columns.Add(a);
             });

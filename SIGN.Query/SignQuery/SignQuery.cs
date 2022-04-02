@@ -17,23 +17,23 @@ namespace SIGN.Query.SignQuery
 {
     public class SignQuery<T> : ISignQuery<T> where T : SignQueryBase
     {
-        public Dictionary<string, string> expressions { get; set; }
-        protected Expression CurrentExpression { get; set; }
-        public Type Origin { get; set; }
+        private Dictionary<string, string> _expressions { get; set; }
+        private Expression _currentExpression { get; set; }
+        protected Type _origin { get; set; }
         protected SignTransaction _signTransaction { get; set; }
-        protected List<Type> TypesSemAspas { get; set; }
-        public T Domain { get; set; }
+        protected List<Type> _typesSemAspas { get; set; }
+        protected T _domain { get; set; }
         protected string _query { get; set; }
-        protected string DataBase { get; set; } = "";
+        protected string _dataBase { get; set; } = "";
         protected bool _useAlias { get; set; }
         public SignQuery()
         {
-            Domain = null;
+            _domain = null;
             _query = string.Empty;
-            Origin = null;
-            DataBase = GetDatabaseName(typeof(T));
-            expressions = new Dictionary<string, string>();
-            TypesSemAspas = new List<Type>()
+            _origin = null;
+            _dataBase = GetDatabaseName(typeof(T));
+            _expressions = new Dictionary<string, string>();
+            _typesSemAspas = new List<Type>()
             {
                 typeof(decimal),
                 typeof(decimal?),
@@ -133,7 +133,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected List<string> GetProperties()
         {
-            bool insert = typeof(InsertQuery<T>) == Origin;
+            bool insert = typeof(InsertQuery<T>) == _origin;
 
             List<PropertyInfo> infs = typeof(T).GetProperties().ToList();
             var list = new List<string>();
@@ -357,7 +357,7 @@ namespace SIGN.Query.SignQuery
         protected P CreateDbQuery<P>() where P : SignQuery<T>
         {
             P obj = Activator.CreateInstance<P>();
-            obj.SetDefaultFields(this.Domain, this.Origin);
+            obj.SetDefaultFields(this._domain, this._origin);
             if (!string.IsNullOrEmpty(this._query))
             {
                 obj._query = this._query;
@@ -384,8 +384,8 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         protected virtual void SetDefaultFields(T domain, Type origin)
         {
-            this.Domain = domain;
-            this.Origin = origin;
+            this._domain = domain;
+            this._origin = origin;
         }
 
         /// <summary>
@@ -395,11 +395,11 @@ namespace SIGN.Query.SignQuery
         protected List<string> GetObjectClausules()
         {
             var list = new List<string>();
-            Domain.GetType().GetProperties().ToList().ForEach(prop =>
+            _domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
                 if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0 && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0)
                 {
-                    var val = TratarValor((dynamic)prop.GetValue(Domain), true);
+                    var val = TratarValor((dynamic)prop.GetValue(_domain), true);
                     list.Add(prop.Name + " = " + val?.ToString());
                 }
             });
@@ -416,35 +416,56 @@ namespace SIGN.Query.SignQuery
         {
             var properties = new List<string>();
             dynamic exp = expression;
-            foreach (var a in exp.Body.Arguments[0].Expressions)
+            if (expression.Type == typeof(Func<T, dynamic>))
             {
-                if (a.NodeType == ExpressionType.MemberAccess)
+                properties.Add(GetPropertyOfSingleExpression(expression, false));
+            }
+            else
+            {
+                foreach (var a in exp.Body.Arguments[0].Expressions)
                 {
-                    dynamic d = a;
-                    properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                    properties.Add(GetPropertyOfSingleExpression(a, false));
                 }
-                if (a.NodeType == ExpressionType.Convert)
+            }
+           
+            return properties;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="hasParamter"></param>
+        /// <returns></returns>
+        public string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter)
+        {
+            if (expression != null)
+            {
+                var exp = VerificaPropriedade(expression, "Body") ? expression?.Body : expression;
+                if (exp.NodeType == ExpressionType.MemberAccess)
                 {
-                    dynamic body = a;
-                    dynamic d = body.Operand;
-                    properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                    return (GetTableName(exp.Expression.Type, exp) + "." + GetCollumnName(exp.Member));
                 }
-                if (a.NodeType == ExpressionType.Call)
+                if (exp.NodeType == ExpressionType.Convert)
                 {
-                    dynamic ex = a;
-                    if (ex.Method.Name == "Count")
+                    dynamic d = exp.Operand;
+                    return (GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                }
+                if (exp.NodeType == ExpressionType.Call)
+                {
+                    if (exp.Method.Name == "Count" && !hasParamter)
                     {
-                        properties.Add("COUNT(*)");
+                        return ("COUNT(*)");
                     }
-                    else 
+                    else if(exp.Method.Name == "Count" && hasParamter)
                     {
-                        //var d = exp.Body.Arguments[0];
-                        //var aux = d.Expressions[0].Arguments[0].Operand;
-                        //properties.Add(String.Format("Count({0})", GetTableName(aux.Expression.Type, aux.Expression) + "." + GetCollumnName(aux.Member)));
+                        var d = exp.Body.Arguments[0];
+                        var aux = d.Expressions[0].Arguments[0].Operand;
+                        return (String.Format("Count({0})", GetTableName(aux.Expression.Type, aux.Expression) + "." + GetCollumnName(aux.Member)));
                     }
                 }
             }
-            return properties;
+            return "";
         }
 
 
@@ -474,59 +495,112 @@ namespace SIGN.Query.SignQuery
             if (method is MethodCallExpression)
             {
                 var mtd = (MethodCallExpression)method;
-                if ("LIKE".Equals(mtd.Method.Name))
-                {
-                    comparador = "LIKE";
-                }
-                else if (mtd.Method.Name.Equals("IN"))
-                {
-                    comparador = "IN";
-                }
-                else if (mtd.Method.Name.Equals("NOT_IN"))
-                {
-                    comparador = "NOT IN";
-                }
+                comparador = TratarComparadorPorMetodo(mtd.Method.Name);
 
                 if (mtd.Arguments.Count > 0)
                 {
-                    dynamic arg = mtd.Arguments[1];
-                    if (arg != null && VerificaPropriedade(arg, "Member") && VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.MemberAccess)
+                    List<dynamic> values = new List<dynamic>();
+                    for (var i = 0; i < mtd.Arguments.Count; i++)
                     {
-                        if ("LIKE".Equals(mtd.Method.Name))
+                        bool isValue = true;
+                        string value = "";
+                        if (IsValue(mtd.Arguments[i]))
                         {
-                            valueB = $"'%{GetValue(arg)}%'";
-                        }
-                        else if ("IN".Equals(mtd.Method.Name) || "NOT_IN".Equals(mtd.Method.Name))
-                        {
-                            valueB = $"{GetValue(arg)}";
+                            dynamic arg = mtd.Arguments[i];
+                            if (arg != null && VerificaPropriedade(arg, "Member") && VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.MemberAccess)
+                            {
+                                value = GetValue(arg);
+                            }
+                            else if (arg.GetType().Name.Equals("PropertyExpression"))
+                            {
+                                value = GetTableName(arg.Member.DeclaringType, mtd) + "." + GetCollumnName(arg.Member);
+                            }
+                            else if (arg.GetType().Name.Equals("ConstantExpression"))
+                            {
+                                value = arg.Value;
+                            }
+                            else if (VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.Call)
+                            {
+                                value = GetValue(arg);
+                            }
                         }
                         else
                         {
-                            valueB = $"'{GetValue(arg)}'";
+                            isValue = false;
+                            dynamic arg = mtd.Arguments[i];
+                            if (VerificaPropriedade(arg, "Expression") && VerificaPropriedade(arg, "Type"))
+                            {
+                                value = GetTableName(arg.Expression.Type, mtd) + "." + GetCollumnName(arg.Member);
+                            }
                         }
-                    }
-                    else if (arg.GetType().Name.Equals("PropertyExpression"))
-                    {
-                        valueB = GetTableName(arg.Member.DeclaringType, mtd) + "." + GetCollumnName(arg.Member);
-                    }
-                    else if (arg.GetType().Name.Equals("ConstantExpression"))
-                    {
-                        valueB = "LIKE".Equals(mtd.Method.Name) ? $"'%{arg.Value}%'" : $"'{arg.Value}'";
-                    }
-                    else if (VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.Call)
-                    {
-                        valueB = ("IN".Equals(comparador) || "NOT IN".Equals(comparador)) ? $"{GetValue(arg)}" : $"'%{GetValue(arg)}%'";
+
+                        values.Add(new { value = value, isValue = isValue });
                     }
 
-                    arg = mtd.Arguments[0];
-                    if (VerificaPropriedade(arg, "Expression") && VerificaPropriedade(arg, "Type"))
+                    if (values.Any())
                     {
-                        valueA = GetTableName(arg.Expression.Type, mtd) + "." + GetCollumnName(arg.Member);
+                        valueA = values[0].isValue ? TratarValor(values[0].value, true) : values[0].value;
+                        valueB = ValidateValueByMethod(values[1], mtd.Method.Name);
                     }
                 }
             }
 
             return string.Format("{0} {1} {2}", valueA, comparador, valueB);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public string ValidateValueByMethod(dynamic obj, string methodName)
+        {
+            string valorTratado = TratarValor(obj.value, true).ToString();
+            if ("LIKE".Equals(methodName))
+            {
+                if (valorTratado.Contains("'") && obj.isValue)
+                {
+                    return $"{valorTratado}".Replace("'", "%");
+                }
+                else if (!obj.isValue)
+                {
+                    return $"CONCAT('%', {obj.value} ,'%')";
+                }
+                return $"'%{valorTratado}%'";
+            }
+            else if (methodName.Equals("IN") || methodName.Equals("NOT_IN"))
+            {
+                return obj.value.ToString();
+            }
+            else 
+            {
+                return valorTratado;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        public string TratarComparadorPorMetodo(string methodName)
+        {
+            if ("LIKE".Equals(methodName))
+            {
+                return "LIKE";
+            }
+            else if ("IN".Equals(methodName))
+            {
+                return "IN";
+            }
+            else if ("NOT_IN".Equals(methodName))
+            {
+                return "NOT IN";
+            }
+            else
+            {
+                return "==";
+            }
         }
 
         /// <summary>
@@ -621,17 +695,17 @@ namespace SIGN.Query.SignQuery
                     }
                     else
                     {
-                        value = ValidateValue(right, equalty, value);
+                        value = TratarExpression(right, equalty, value);
                     }
                 }
                 else
                 {
-                    value = ValidateValue(right, equalty, value);
+                    value = TratarExpression(right, equalty, value);
                 }
 
-                if (!string.IsNullOrEmpty(oldExpression) && !string.IsNullOrEmpty(value) && !expressions.ContainsKey(oldExpression))
+                if (!string.IsNullOrEmpty(oldExpression) && !string.IsNullOrEmpty(value) && !_expressions.ContainsKey(oldExpression))
                 {
-                    expressions.Add(oldExpression, value);
+                    _expressions.Add(oldExpression, value);
                 }
             }
             return value;
@@ -646,10 +720,10 @@ namespace SIGN.Query.SignQuery
         {
             var right = expression;
             dynamic r = right;
-            dynamic exp = CurrentExpression;
+            dynamic exp = _currentExpression;
             bool isValue = true;
 
-            if (CurrentExpression != null && VerificaPropriedade(exp, "Parameters") && exp.Parameters != null)
+            if (_currentExpression != null && VerificaPropriedade(exp, "Parameters") && exp.Parameters != null)
             {
                 foreach (var e in exp.Parameters)
                 {
@@ -683,7 +757,7 @@ namespace SIGN.Query.SignQuery
         /// <param name="equality"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected string ValidateValue(Expression right, string equality, string value)
+        protected string TratarExpression(Expression right, string equality, string value)
         {
             var val = TratarValor(GetValue(right), true);
             if ("NULL".Equals(val))
@@ -746,7 +820,7 @@ namespace SIGN.Query.SignQuery
         protected SelectExecuteQuery<T> IncludeWhereConditions(Expression expression)
         {
             string condition = "";
-            this.CurrentExpression = expression;
+            this._currentExpression = expression;
             if (expression != null)
             {
                 var x = new List<string> { "=>" };
@@ -754,11 +828,11 @@ namespace SIGN.Query.SignQuery
                 string exp = aux.Split(x.ToArray(), StringSplitOptions.RemoveEmptyEntries)[0];
                 condition = GetConditionsJoin(((dynamic)expression).Body);
 
-                if (expressions.Keys.ToList().Exists(a => exp.Contains(a)))
+                if (_expressions.Keys.ToList().Exists(a => exp.Contains(a)))
                 {
-                    expressions.Keys.ToList().ForEach(key =>
+                    _expressions.Keys.ToList().ForEach(key =>
                     {
-                        exp = exp.Replace(key, expressions[key]);
+                        exp = exp.Replace(key, _expressions[key]);
                     });
 
                     exp = exp.Replace("AndAlso", "AND").Replace("OrElse", "OR");
@@ -784,8 +858,8 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public JoinQuery<T> IncludeJoinOnQuery<J, P>(Expression expression, string strJoin)
         {
-            this.Origin = typeof(JoinQuery<T>);
-            this.CurrentExpression = expression;
+            this._origin = typeof(JoinQuery<T>);
+            this._currentExpression = expression;
             var aux = _useAlias ? GetFullName(typeof(P)) + " AS " + ((dynamic)expression).Parameters[1].Name : GetFullName(typeof(P));
             _query += string.Format(strJoin, aux, this.GetConditionsJoin(expression));
             return CreateDbQuery<JoinQuery<T>>();

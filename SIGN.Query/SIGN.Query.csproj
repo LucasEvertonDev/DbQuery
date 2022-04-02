@@ -59,13 +59,15 @@
     <Compile Include="Extensions\DataTableExtensions.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\SqlExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\DbQueryExtensions.cs" />
+    <Compile Include="Functions\Count.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Services\SignTransaction.cs" />
     <Compile Include="Services\SignQueryService.cs" />
     <Compile Include="SignQuery\DeleteQuery.cs" />
     <Compile Include="SignQuery\ExecuteQuery.cs" />
+    <Compile Include="SignQuery\InsertNotExistsQuery.cs" />
     <Compile Include="SignQuery\InsertQuery.cs" />
     <Compile Include="SignQuery\ISignQuery.cs" />
     <Compile Include="SignQuery\JoinQuery.cs" />

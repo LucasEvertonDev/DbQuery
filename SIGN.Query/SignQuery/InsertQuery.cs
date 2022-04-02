@@ -12,7 +12,6 @@ namespace SIGN.Query.SignQuery
     public class InsertQuery<T> : SignQuery<T> where T : SignQueryBase
     {
         protected const string INSERT = "INSERT INTO {0} ({1}) {2} VALUES ({3})";
-        protected const string INSERT_NOT_EXISTS = "IF NOT EXISTS(SELECT * FROM {0} {1}) BEGIN {2} END ";
 
         /// <summary>
         /// 
@@ -32,7 +31,7 @@ namespace SIGN.Query.SignQuery
         {
             base.SetDefaultFields(domain, origin);
             _query = String.Format(INSERT,
-                                     string.IsNullOrEmpty(this.DataBase) ? GetTableName(typeof(T)) : this.DataBase + ".." + GetTableName(typeof(T)),
+                                     string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
                                      string.Join(", ", GetProperties()),
                                      GetPrimaryKeyName(typeof(T)),
                                      string.Join(", ", GetValues()));
@@ -41,27 +40,19 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        public void InsertIfNotExists()
-        {
-            _query = string.Format(INSERT_NOT_EXISTS, GetFullName(typeof(T)), "WHERE " + string.Join(" AND ", GetObjectClausules()), _query);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <returns></returns>
         protected List<string> GetValues()
         {
-            bool insert = typeof(InsertQuery<T>) == Origin;
+            bool insert = typeof(InsertQuery<T>) == _origin;
 
             var values = new List<string>();
-            Domain.GetType().GetProperties().ToList().ForEach(prop =>
+            _domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
                 if ((insert && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0) || !insert)
                 {
                     if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
                     {
-                        var val = TratarValor((dynamic)prop.GetValue(Domain), true);
+                        var val = TratarValor((dynamic)prop.GetValue(_domain), true);
                         values.Add(val?.ToString());
                     }
                 }

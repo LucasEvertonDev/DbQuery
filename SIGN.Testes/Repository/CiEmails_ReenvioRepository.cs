@@ -17,9 +17,9 @@ namespace SIGN.Testes.Repository
             var query = _ciEmails_ReenvioRepository
                             .Select()
                             .Where(a => a.EmailTo != null
-                                && a.ID.IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN()))
+                                && a.ID.IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN ('1', '2'))");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN (1, 2))");
         }
 
         [TestMethod]
@@ -28,9 +28,9 @@ namespace SIGN.Testes.Repository
             var query = _ciEmails_ReenvioRepository
                             .Select()
                             .Where(a => a.EmailTo != null
-                                && a.ID.NOT_IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN()))
+                                && a.ID.NOT_IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID NOT IN ('1', '2'))");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID NOT IN (1, 2))");
         }
 
         [TestMethod]

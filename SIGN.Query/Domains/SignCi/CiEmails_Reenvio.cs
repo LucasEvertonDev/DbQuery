@@ -11,7 +11,8 @@ namespace SIGN.Query.Domains.SignCi
     [Table("CiEmails_Reenvio")]
     public class CiEmails_Reenvio : SignCi
     {
-        public string ID { get; set; }
+        [Identity]
+        public int ID { get; set; }
 
         public string EmailFrom { get; set; }
 
@@ -25,10 +26,11 @@ namespace SIGN.Query.Domains.SignCi
 
         public string Source { get; set; }
 
-        public int Status { get; set; }
+        public Nullable<int> Status { get; set; }
     
-        public DateTime Update_At { get; set; }
-        public DateTime Created_At { get; set; }
+        public Nullable<DateTime> Update_At { get; set; }
+
+        public Nullable<DateTime> Created_At { get; set; }
 
         [Ignore]
         public List<string> Bcc

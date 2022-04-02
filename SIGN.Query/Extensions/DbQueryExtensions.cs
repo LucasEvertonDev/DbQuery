@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SIGN.Query.Extensions
 {
-    public static class StringExtensions
+    public static class DbQueryExtensions
     {
         /// <summary>
         /// 
@@ -52,6 +52,43 @@ namespace SIGN.Query.Extensions
             foreach (var item in list)
             {
                 aux.Add("'" + item.ToString() + "'");
+            }
+            return "(" + string.Join(", ", aux) + ")";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="srt"></param>
+        /// <returns></returns>
+        public static bool IN(this int s, string srt)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="srt"></param>
+        /// <returns></returns>
+        public static bool NOT_IN(this int s, string srt)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static string GenerateScriptIN(this List<int> list)
+        {
+            var aux = new List<string>();
+            foreach (var item in list)
+            {
+                aux.Add(item.ToString());
             }
             return "(" + string.Join(", ", aux) + ")";
         }
