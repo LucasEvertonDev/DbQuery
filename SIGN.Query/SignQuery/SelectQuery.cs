@@ -10,27 +10,37 @@ using System.Threading.Tasks;
 
 namespace SIGN.Query.SignQuery
 {
-    public class SelectQuery<T> : SelectQueryBase<T> where T : SignQueryBase
+    public class SelectQuery<T> : SignQuery<T> where T : SignQueryBase
     {
+
+        protected const string SELECT = "SELECT DISTINCT {0} FROM {1} {2}";
+        protected const string INNER_JOIN = "INNER JOIN {0} ON {1}";
+        protected const string LEFT_JOIN = "LEFT JOIN {0} ON {1}";
+        public int? _top { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="P"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public SelectQuery<T> GetCollumns<P>(params Expression<Func<P, dynamic>>[] expression)
+        public virtual SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
         {
-            var aux = GetPropertiesExpression<P>(expression);
-            aux.Add("SELECT_CONCAT");
-            if (_query.Contains("*"))
-            {
-                _query = _query.Replace("*", String.Join(", ", aux));
-            }
-            else if (_query.Contains("SELECT_CONCAT"))
-            {
-                _query = _query.Replace("SELECT_CONCAT", String.Join(", ", aux));
-            }
-            return this;
+            IncludeTop();
+            return IncludeWhereConditions(expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="origin"></param>
+        protected override void SetDefaultFields(T domain, Type origin)
+        {
+            base.SetDefaultFields(domain, origin);
+            _query = string.Format(SELECT,
+                                  "*",
+                                  string.IsNullOrEmpty(this.DataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
+                                  "");
         }
 
         /// <summary>
@@ -39,19 +49,55 @@ namespace SIGN.Query.SignQuery
         /// <typeparam name="P"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public SelectQuery<T> GetCollumns(params Expression<Func<T, dynamic>>[] expression)
+        public virtual JoinQuery<T> Join<J, P>(Expression<Func<J, P, bool>> expression)
         {
-            var aux = GetPropertiesExpression<T>(expression);
-            aux.Add("SELECT_CONCAT");
-            if (_query.Contains("*"))
+            IncludeTop();
+            return IncludeJoinOnQuery<J, P>(expression, INNER_JOIN);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual JoinQuery<T> LeftJoin<J, P>(Expression<Func<J, P, bool>> expression)
+        {
+            IncludeTop();
+            return IncludeJoinOnQuery<J, P>(expression, LEFT_JOIN);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic[]>> expression)
+        {
+            IncludeTop();
+            return AddOrderBy("ASC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic[]>> expression)
+        {
+            IncludeTop();
+            return AddOrderBy("DESC", expression);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void IncludeTop()
+        {
+            if (_top.HasValue)
             {
-                _query = _query.Replace("*", String.Join(", ", aux));
+                _query = _query.Replace("SELECT DISTINCT", $"SELECT TOP({_top.Value})");
             }
-            else if (_query.Contains("SELECT_CONCAT"))
-            {
-                _query = _query.Replace("SELECT_CONCAT", String.Join(", ", aux));
-            }
-            return this;
         }
 
         /// <summary>
@@ -62,6 +108,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public virtual SelectQuery<T> UseAlias(string alias)
         {
+            IncludeTop();
             _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
             this._useAlias = true;
             return this;

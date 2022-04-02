@@ -14,34 +14,75 @@ namespace SIGN.Testes.Repository
         [TestMethod]
         public void SelectIn()
         {
-             var query = _ciEmails_ReenvioRepository.Select().Where(a => a.EmailTo != null && a.ID.IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN())).GetQuery();
-             Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN ('1', '2'))");
+            var query = _ciEmails_ReenvioRepository
+                            .Select()
+                            .Where(a => a.EmailTo != null
+                                && a.ID.IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN()))
+                            .GetQuery();
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN ('1', '2'))");
         }
 
         [TestMethod]
         public void SelectNotIn()
         {
-            var query = _ciEmails_ReenvioRepository.Select().Where(a => a.EmailTo != null && a.ID.NOT_IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN())).GetQuery();
+            var query = _ciEmails_ReenvioRepository
+                            .Select()
+                            .Where(a => a.EmailTo != null
+                                && a.ID.NOT_IN(new System.Collections.Generic.List<string> { "1", "2" }.GenerateScriptIN()))
+                            .GetQuery();
             Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID NOT IN ('1', '2'))");
         }
 
         [TestMethod]
         public void SelectCustom()
         {
-            var dominio = new Dominio() { Descricao = "TESTE_LIKE", Nome = "Teste Nome" };
-            var query = _ciEmails_ReenvioRepository.SelectCustom().UseAlias("ci")
-                .GetCollumns(ci => Count(ci.To), ci => ci.EmailFrom, ci => ci.Subject)
-                .GetCollumns<CiEmails_Anexos>(ciRe => ciRe.CHAVE, ciRe => ciRe.Tipo)
-                .Join<CiEmails_Reenvio, CiEmails_Anexos>((ci, ciRe) => ci.ID == ciRe.CiEmails_Reenvio_Id)
-                .Where<CiEmails_Reenvio, CiEmails_Anexos>((ci, ciRe) => (dominio.Descricao != null || ci.ID == dominio.Descricao) && (dominio.Codigo > 0 || ci.Status >= dominio.Codigo ))
-                .OrderBy(ci => ci.Subject)
-                .GetQuery();
+            var query = _ciEmails_ReenvioRepository
+                            .Select<CiEmails_Reenvio, CiEmails_Anexos>(Top(1),
+                                (ci, ciA) => Collumns(
+                                    ci.EmailFrom,
+                                    ci.EmailTo,
+                                    ci.Cc,
+                                    ci.Bcc,
+                                    ci.Subject,
+                                    ciA.CHAVE,
+                                    ciA.ID
+                                )
+                             )
+                            .UseAlias("ci")
+                            .Join<CiEmails_Reenvio, CiEmails_Anexos>(
+                                (ci, ciA) => (ci.ID == ciA.CiEmails_Reenvio_Id)
+                            )
+                            .Where<CiEmails_Reenvio, CiEmails_Anexos>(
+                                (ci, ciA) => ci.EmailFrom != null && ciA.CHAVE != null
+                            )
+                            .OrderBy(
+                                (ci) => Collumns(
+                                    ci.To,
+                                    ci.Subject
+                                )
+                            )
+                            .GetQuery();
 
+        }
+
+        public dynamic[] Collumns(params dynamic[] array)
+        {
+            return array;
         }
 
         public dynamic Count(dynamic prop)
         {
             return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public int? Top(int i)
+        {
+            return i;
         }
     }
 }

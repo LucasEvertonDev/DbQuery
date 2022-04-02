@@ -74,7 +74,6 @@
     <Compile Include="SignQuery\SelectCustomQuery.cs" />
     <Compile Include="SignQuery\SelectExecuteQuery.cs" />
     <Compile Include="SignQuery\SelectQuery.cs" />
-    <Compile Include="SignQuery\SelectQueryBase.cs" />
     <Compile Include="SignQuery\SignQuery.cs" />
     <Compile Include="SignQuery\UpdateQuery.cs" />
   </ItemGroup>

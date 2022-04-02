@@ -8,62 +8,29 @@ using System.Threading.Tasks;
 
 namespace SIGN.Query.SignQuery
 {
-    public class SelectCustomQuery<T> : SelectQueryBase<T> where T : SignQueryBase
+    public class SelectCustomQuery<T> : SelectQuery<T> where T : SignQueryBase
     {
+        public Expression CustomExpression { get; set; }
+
 
         /// <summary>
-        /// Determina que a função irá usar a nomenclatura do parametro da expression como alias 
-        /// Só será funcional se for utilisado para a mesma tabela o mesmo codenome 
-        /// indenpente da ação realizada
-        /// O parametro alias é usado para setar o alias a classe do rpository(select)
+        /// 
         /// </summary>
-        public virtual SelectCustomQuery<T> UseAlias(string alias)
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public override SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
         {
-            _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
-            this._useAlias = true;
-            return this;
+            AddCollumns();
+            return base.Where(expression);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> GetCollumns<P>(params Expression<Func<P, dynamic>>[] expression)
+        public virtual void AddCollumns()
         {
-            var aux = GetPropertiesExpression<P>(expression);
-            aux.Add("SELECT_CONCAT");
-            if (_query.Contains("*"))
-            {
-                _query = _query.Replace("*", String.Join(", ", aux));
-            }
-            else if (_query.Contains("SELECT_CONCAT"))
-            {
-                _query = _query.Replace("SELECT_CONCAT",  String.Join(", ", aux));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> GetCollumns(params Expression<Func<T, dynamic>>[] expression)
-        {
-            var aux = GetPropertiesExpression<T>(expression);
-            aux.Add("SELECT_CONCAT");
-            if (_query.Contains("*"))
-            {
-                _query = _query.Replace("*", String.Join(", ", aux));
-            }
-            else if (_query.Contains("SELECT_CONCAT"))
-            {
-                _query = _query.Replace("SELECT_CONCAT", String.Join(", ", aux));
-            }
-            return this;
+            var props = GetPropertiesExpression(this.CustomExpression);
+            _query = _query.Replace("*", string.Join(", ", props));
         }
     }
 }

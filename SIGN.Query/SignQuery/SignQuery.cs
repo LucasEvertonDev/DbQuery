@@ -412,34 +412,37 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        protected List<string> GetPropertiesExpression<P>(params Expression<Func<P, dynamic>>[] expression)
+        protected List<string> GetPropertiesExpression(Expression expression)
         {
             var properties = new List<string>();
-            if (expression != null)
+            dynamic exp = expression;
+            foreach (var a in exp.Body.Arguments[0].Expressions)
             {
-                expression.ToList().ForEach(a =>
+                if (a.NodeType == ExpressionType.MemberAccess)
                 {
-                    if (a.Body.NodeType == ExpressionType.MemberAccess)
+                    dynamic d = a;
+                    properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                }
+                if (a.NodeType == ExpressionType.Convert)
+                {
+                    dynamic body = a;
+                    dynamic d = body.Operand;
+                    properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                }
+                if (a.NodeType == ExpressionType.Call)
+                {
+                    dynamic ex = a;
+                    if (ex.Method.Name == "Count")
                     {
-                        dynamic d = a.Body;
-                        properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                        properties.Add("COUNT(*)");
                     }
-                    if (a.Body.NodeType == ExpressionType.Convert)
+                    else 
                     {
-                        dynamic body = a;
-                        dynamic d = body.Body.Operand;
-                        properties.Add(GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                        //var d = exp.Body.Arguments[0];
+                        //var aux = d.Expressions[0].Arguments[0].Operand;
+                        //properties.Add(String.Format("Count({0})", GetTableName(aux.Expression.Type, aux.Expression) + "." + GetCollumnName(aux.Member)));
                     }
-                    if (a.Body.NodeType == ExpressionType.Call)
-                    {
-                        dynamic exp = a;
-                        if (exp.Body.Method.Name == "Count")
-                        {
-                            var d = exp.Body.Arguments[0];
-                            properties.Add(String.Format("Count({0})", GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member)));
-                        }
-                    }
-                });
+                }
             }
             return properties;
         }
@@ -713,7 +716,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="tipo"></param>
-        protected SelectExecuteQuery<T> AddOrderBy<P>(string tipo, params Expression<Func<P, dynamic>>[] expressions)
+        protected SelectExecuteQuery<T> AddOrderBy(string tipo, Expression expressions)
         {
             bool contains = _query.Contains("ORDER BY");
             if (!contains)
@@ -722,7 +725,7 @@ namespace SIGN.Query.SignQuery
             }
             if (expressions != null)
             {
-                var properties = GetPropertiesExpression<P>(expressions);
+                var properties = GetPropertiesExpression(expressions);
                 if (contains && properties.Count > 0)
                 {
                     _query += ", " + string.Join($" {tipo}, ", properties) + $" {tipo}";

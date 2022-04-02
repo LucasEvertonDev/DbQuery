@@ -15,31 +15,19 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public SelectExecuteQuery<T> OrderBy<P>(params Expression<Func<P, dynamic>>[] expression)
+        public SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic[]>> expression)
         {
-            return AddOrderBy<P>("ASC", expression);
+            return AddOrderBy("ASC", expression);
         }
-
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public SelectExecuteQuery<T> OrderByDesc<P>(params Expression<Func<P, dynamic>>[] expression)
+        public SelectExecuteQuery<T> OrderBy<A>(Expression<Func<A, dynamic[]>> expression)
         {
-            return AddOrderBy<P>("DESC", expression);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectExecuteQuery<T> OrderBy(params Expression<Func<T, dynamic>>[] expression)
-        {
-            AddOrderBy<T>("ASC", expression);
+            AddOrderBy("ASC", expression);
             return CreateDbQuery<SelectExecuteQuery<T>>(); ;
         }
 
@@ -49,9 +37,116 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public SelectExecuteQuery<T> OrderByDesc(params Expression<Func<T, dynamic>>[] expression)
+        public SelectExecuteQuery<T> OrderByDesc<A>(Expression<Func<A, dynamic[]>> expression)
         {
-            AddOrderBy<T>("DESC", expression);
+            AddOrderBy("DESC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic[]>> expression)
+        {
+            return AddOrderBy("DESC", expression);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderBy<A, B>(Expression<Func<A, B, dynamic[]>> expression)
+        {
+            AddOrderBy("ASC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderByDesc<A, B>(Expression<Func<A, B, dynamic[]>> expression)
+        {
+            AddOrderBy("DESC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderBy<A, B, C>(Expression<Func<A, B, C, dynamic[]>> expression)
+        {
+            AddOrderBy("ASC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderByDesc<A, B, C>(Expression<Func<A, B, C, dynamic[]>> expression)
+        {
+            AddOrderBy("DESC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderBy<A, B, C, D>(Expression<Func<A, B, C, D, dynamic[]>> expression)
+        {
+            AddOrderBy("ASC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderByDesc<A, B, C, D>(Expression<Func<A, B, C, D, dynamic[]>> expression)
+        {
+            AddOrderBy("DESC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderBy<A, B, C, D, E>(Expression<Func<A, B, C, D, E, dynamic[]>> expression)
+        {
+            AddOrderBy("ASC", expression);
+            return CreateDbQuery<SelectExecuteQuery<T>>(); ;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectExecuteQuery<T> OrderByDesc<A, B, C, D, E>(Expression<Func<A, B, C, D, E, dynamic[]>> expression)
+        {
+            AddOrderBy("DESC", expression);
             return CreateDbQuery<SelectExecuteQuery<T>>(); ;
         }
     }
