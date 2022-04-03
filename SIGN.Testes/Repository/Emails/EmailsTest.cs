@@ -176,6 +176,43 @@ namespace SIGN.Testes.Repository.Emails
             });
         }
 
+
+        [TestMethod]
+        public void INNERJOIN()
+        {
+            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            {
+                var email = GetEmail();
+                var itens = _ciEmails_ReenvioRepository.UseAlias("em")
+                    .Select<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) =>
+                            Columns(
+                                em.EmailTo,
+                                em.EmailFrom,
+                                anx.CiEmails_Reenvio_Id
+                            )
+                    )
+                    .Join<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => (em.ID == anx.CiEmails_Reenvio_Id)
+                    )
+                    .Where<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => em.ID != 0
+                    )
+                    .OrderBy<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) =>
+                            Columns(
+                                 anx.CiEmails_Reenvio_Id
+                            )
+                    )
+                    .Execute()
+                    .GetDtRetorno();
+
+                transaction.Commit();
+            });
+        }
+
+
+
         /// <summary>
         /// 
         /// </summary>
