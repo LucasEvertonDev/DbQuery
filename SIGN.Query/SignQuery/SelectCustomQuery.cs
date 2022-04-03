@@ -55,7 +55,7 @@ namespace SIGN.Query.SignQuery
         public virtual void AddCollumns()
         {
             var props = GetPropertiesExpression(this._customExpression, useAlias: true);
-            _query = _query.Replace(SQLKeys.DISTINCT_ALL, SQLKeys.DISTINCT_WITH_SPACE + string.Join(", ", props));
+            _query = _query.Replace(SQLKeys.SELECT_ALL, SQLKeys.SELECT_KEY + " " + string.Join(", ", props));
         }
 
         /// <summary>

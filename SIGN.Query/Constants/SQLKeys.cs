@@ -9,7 +9,7 @@ namespace SIGN.Query.Constants
     public static class SQLKeys
     {
   
-        public const string SELECT = "SELECT DISTINCT {0} FROM {1} {2}";
+        public const string SELECT = "SELECT {0} FROM {1} {2}";
 
         public const string INNER_JOIN = "INNER JOIN {0} ON {1}";
 
@@ -26,10 +26,16 @@ namespace SIGN.Query.Constants
         public const string ASC = "ASC";
 
         public const string DESC = "DESC";
+
+        public const string SELECT_ALL = "SELECT *";
+
+        public const string SELECT_KEY = "SELECT";
  
         public const string SELECT_DISTINCT = "SELECT DISTINCT";
 
         public const string SELECT_TOP = "SELECT TOP({0})";
+
+        public const string SELECT_DISTINCT_TOP = "SELECT DISTINCT TOP({0})";
 
         public const string OUTPUT_INSERTED = "OUTPUT Inserted.";
  

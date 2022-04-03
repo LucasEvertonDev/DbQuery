@@ -127,6 +127,7 @@ namespace SIGN.Query.Test
         {
             var query = _dominioRepository
                             .Select(ci => Count())
+                            .Distinct()
                             .Where(
                                 (Dominio) => Dominio.Codigo > 1 
                                 && Dominio.Descricao.LIKE("TESTE_LIKE") && Dominio.Nome != null
@@ -141,6 +142,7 @@ namespace SIGN.Query.Test
         {
             var query = _dominioRepository
                             .Select()
+                            .Distinct()
                             .Where(
                                 (Dominio) => Dominio.Codigo > 1 && Dominio.Descricao.LIKE("TESTE_LIKE") 
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
@@ -158,6 +160,7 @@ namespace SIGN.Query.Test
         {
             var query = _dominioRepository
                             .Select()
+                            .Distinct()
                             .Where(
                                 (Dominio) => Dominio.Codigo > TesteFunction() 
                                 && Dominio.Descricao.LIKE("TESTE_LIKE") 

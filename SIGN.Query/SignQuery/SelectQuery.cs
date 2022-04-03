@@ -34,10 +34,29 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public void IncludeTop()
         {
+            if (_top.HasValue && !_query.Contains(DbQueryConstants.TOP_FUNCTION))
+            {
+                _query = _query.Replace(SQLKeys.SELECT_KEY, string.Format(SQLKeys.SELECT_TOP, _top.Value));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public SelectQuery<T> Distinct()
+        {
+            PreRoutine();
             if (_top.HasValue)
             {
-                _query = _query.Replace(SQLKeys.SELECT_DISTINCT, string.Format(SQLKeys.SELECT_TOP, _top.Value));
+                _query = _query.Replace(string.Format(SQLKeys.SELECT_TOP, _top.Value), String.Format(SQLKeys.SELECT_DISTINCT_TOP, _top.Value));
             }
+            else
+            {
+                _query = _query.Replace(SQLKeys.SELECT_KEY, SQLKeys.SELECT_DISTINCT);
+            }
+
+            return this;
         }
 
         /// <summary>

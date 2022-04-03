@@ -16,6 +16,8 @@ namespace SIGN.Query.Constants
 
         public const string MAX_FUNCTION = "Max";
 
+        public const string TOP_FUNCTION = "TOP";
+
         public const string LIKE_FUNCTION = "LIKE";
 
         public const string IN_FUNCTION = "IN";

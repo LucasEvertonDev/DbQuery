@@ -138,6 +138,36 @@ namespace SIGN.Query.Repository
             return select;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="B"></typeparam>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectCustomQuery<T> Select<A>(Expression<Func<A, dynamic[]>> expression)
+        {
+            var select = CreateDbQuery<SelectCustomQuery<T>>();
+            select._customExpression = expression;
+            return select;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="B"></typeparam>
+        /// <param name="top"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public SelectCustomQuery<T> Select<A>(int? top, Expression<Func<A, dynamic[]>> expression)
+        {
+            var select = CreateDbQuery<SelectCustomQuery<T>>();
+            select._customExpression = expression;
+            select._top = top;
+            return select;
+        }
+
 
 
         /// <summary>

@@ -17,6 +17,7 @@ namespace SIGN.Testes.Repository
         {
             var query = _ciEmails_ReenvioRepository
                             .Select()
+                            .Distinct()
                             .Where(a => a.EmailTo != null
                                 && a.ID.IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
@@ -28,6 +29,7 @@ namespace SIGN.Testes.Repository
         {
             var query = _ciEmails_ReenvioRepository
                             .Select()
+                            .Distinct()
                             .Where(a => a.EmailTo != null
                                 && a.ID.NOT_IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
