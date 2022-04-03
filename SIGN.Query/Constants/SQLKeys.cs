@@ -92,5 +92,9 @@ namespace SIGN.Query.Constants
         public const string AS = "AS";
 
         public const string AS_WITH_SPACE = " AS ";
+
+        public const string DISTINCT_ALL = " DISTINCT *";
+
+        public const string DISTINCT_WITH_SPACE = " DISTINCT ";
     }
 }

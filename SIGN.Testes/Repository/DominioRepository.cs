@@ -2,12 +2,13 @@
 using SIGN.Query.Domains.SignCi;
 using SIGN.Query.Extensions;
 using SIGN.Query.Repository;
+using SIGN.Query.Services;
 using System;
 
 namespace SIGN.Query.Test
 {
     [TestClass]
-    public class DominioRepository
+    public class DominioRepository : SignQueryService
     {
         private Repository<Dominio> _dominioRepository { get; set; } = new Repository<Dominio>();
         private Repository<ItemDominio> _itemDominioRepository { get; set; } = new Repository<ItemDominio>();
@@ -86,7 +87,7 @@ namespace SIGN.Query.Test
                                 && (Dominio.Nome == dominio.Nome && Dominio.Descricao != null)
                             )
                             .OrderBy<Dominio, ItemDominio>(
-                                (Dominio, ItemDominio) => Collumns(
+                                (Dominio, ItemDominio) => Columns(
                                     Dominio.Codigo,
                                     ItemDominio.Nome
                                 )
@@ -111,7 +112,7 @@ namespace SIGN.Query.Test
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
                             .OrderBy<Dominio, ItemDominio>(
-                                (Dominio, ItemDominio) => Collumns(
+                                (Dominio, ItemDominio) => Columns(
                                     Dominio.Codigo,
                                     ItemDominio.Nome
                                 )
@@ -132,7 +133,7 @@ namespace SIGN.Query.Test
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT COUNT(*) FROM SignCi..CiDominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL)");
+            Assert.AreEqual(query, "SELECT DISTINCT COUNT(*) AS Count FROM SignCi..CiDominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL)");
         }
 
         [TestMethod]
@@ -188,7 +189,7 @@ namespace SIGN.Query.Test
                                 && (d1.Nome == dominio.Nome && d1.Descricao != null)
                             )
                             .OrderBy<Dominio, ItemDominio>(
-                                (d1, i1) => Collumns(
+                                (d1, i1) => Columns(
                                     d1.Codigo,
                                     i1.Nome
                                 )
@@ -196,30 +197,6 @@ namespace SIGN.Query.Test
                             .GetQuery();
 
             Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio AS d1 INNER JOIN SignCi..CiItemDominio AS i1 ON d1.Codigo = i1.Codigo_Dominio WHERE ((d1.Codigo > 1 AND i1.Descricao LIKE '%TESTE_LIKE%') AND (d1.Nome = 'Teste Nome' AND d1.Descricao IS NOT NULL)) ORDER BY d1.Codigo ASC, i1.Nome ASC");
-        }
-
-
-        public dynamic[] Collumns(params dynamic[] array)
-        {
-            return array;
-        }
-
-        public object Count(object prop)
-        {
-            return null;
-        }
-
-        public object Count()
-        {
-            return null;
-        }// <summary>
-        /// 
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public int? Top(int i)
-        {
-            return i;
         }
 
         public int TesteFunction()

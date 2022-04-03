@@ -423,19 +423,19 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        protected List<string> GetPropertiesExpression(Expression expression)
+        protected List<string> GetPropertiesExpression(Expression expression, bool useAlias = false)
         {
             var properties = new List<string>();
             dynamic exp = expression;
             if (expression.Type == typeof(Func<T, dynamic>))
             {
-                properties.Add(GetPropertyOfSingleExpression(expression, false));
+                properties.Add(GetPropertyOfSingleExpression(expression, false, useAlias));
             }
             else
             {
                 foreach (var a in exp.Body.Arguments[0].Expressions)
                 {
-                    properties.Add(GetPropertyOfSingleExpression(a, false));
+                    properties.Add(GetPropertyOfSingleExpression(a, false, useAlias));
                 }
             }
            
@@ -448,7 +448,7 @@ namespace SIGN.Query.SignQuery
         /// <param name="expression"></param>
         /// <param name="hasParamter"></param>
         /// <returns></returns>
-        public string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter)
+        public string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter, bool useAlias)
         {
             if (expression != null)
             {
@@ -467,13 +467,38 @@ namespace SIGN.Query.SignQuery
                     {
                         if (DbQueryConstants.COUNT_FUNCTION.Equals(exp.Method.Name) && !hasParamter)
                         {
-                            return SQLKeys.COUNT;
+                            return useAlias 
+                                    ? string.Concat(SQLKeys.COUNT, SQLKeys.AS_WITH_SPACE, DbQueryConstants.COUNT_FUNCTION)
+                                    : SQLKeys.COUNT;
                         }
                         else
                         {
-                            var d = exp.Body.Arguments[0];
-                            var aux = d.Expressions[0].Arguments[0].Operand;
-                            return string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                            if (ContainsProperty(exp, "Body"))
+                            {
+                                var d = exp.Body.Arguments[0];
+                                var aux = d.Expressions[0].Arguments[0].Operand;
+                                return useAlias
+                                    ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
+                                    : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                            }
+                            else
+                            {
+                                var d = exp.Arguments[0];
+                                if (ContainsProperty(d, "Expressions"))
+                                {
+                                    var aux = d.Expressions[0].Arguments[0].Operand;
+                                    return useAlias
+                                        ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
+                                        : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                                }
+                                else 
+                                {
+                                    var aux = d.Operand;
+                                    return useAlias
+                                        ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
+                                        : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                                }
+                            }
                         }
                     }
                 }

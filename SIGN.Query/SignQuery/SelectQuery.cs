@@ -41,6 +41,14 @@ namespace SIGN.Query.SignQuery
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public virtual void PreRoutine()
+        {
+            IncludeTop();
+        }
+
+        /// <summary>
         /// Determina que a função irá usar a nomenclatura do parametro da expression como alias 
         /// Só será funcional se for utilisado para a mesma tabela o mesmo codenome 
         /// indenpente da ação realizada
@@ -48,7 +56,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public virtual SelectQuery<T> UseAlias(string alias)
         {
-            IncludeTop();
+            PreRoutine();
             _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
             this._useAlias = true;
             return this;
@@ -61,10 +69,21 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
         {
-            IncludeTop();
+            PreRoutine();
             return IncludeWhereConditions(expression);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override ResultQuery<T> Execute()
+        {
+            PreRoutine();
+            return base.Execute();
+        }
+
+        #region JOINS
         /// <summary>
         /// 
         /// </summary>
@@ -73,7 +92,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual JoinQuery<T> Join<J, P>(Expression<Func<J, P, bool>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return IncludeJoinOnQuery<J, P>(expression, SQLKeys.INNER_JOIN);
         }
 
@@ -85,9 +104,10 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual JoinQuery<T> LeftJoin<J, P>(Expression<Func<J, P, bool>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return IncludeJoinOnQuery<J, P>(expression, SQLKeys.LEFT_JOIN);
         }
+        #endregion
 
         #region Order BY
         /// <summary>
@@ -97,7 +117,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> OrderBy(Expression<Func<T, dynamic[]>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return AddOrderBy(SQLKeys.ASC, expression);
         }
 
@@ -108,7 +128,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> OrderByDesc(Expression<Func<T, dynamic[]>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return AddOrderBy(SQLKeys.DESC, expression);
         }
 
@@ -119,7 +139,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> OrderBy(Expression<Func<T, dynamic>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return AddOrderBy(SQLKeys.ASC, expression);
         }
 
@@ -130,19 +150,9 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> OrderByDesc(Expression<Func<T, dynamic>> expression)
         {
-            IncludeTop();
+            PreRoutine();
             return AddOrderBy(SQLKeys.DESC, expression);
         }
         #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override ResultQuery<T> Execute()
-        {
-            IncludeTop();
-            return base.Execute();
-        }
     }
 }

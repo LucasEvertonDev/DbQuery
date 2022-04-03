@@ -1,4 +1,5 @@
-﻿using SIGN.Query.Domains;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.Domains;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public override SelectExecuteQuery<T> Where(Expression<Func<T, bool>> expression = null)
         {
-            AddCollumns();
+            PreRoutine();
             return base.Where(expression);
         }
 
@@ -31,7 +32,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> GroupBy(Expression<Func<T, dynamic[]>> expression)
         {
-            AddCollumns();
+            PreRoutine();
             return AddGroupBy(expression);
         }
 
@@ -43,7 +44,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public virtual OrderByQuery<T> GroupBy(Expression<Func<T, dynamic>> expression)
         {
-            AddCollumns();
+            PreRoutine();
             return AddGroupBy(expression);
         }
         #endregion
@@ -53,8 +54,17 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public virtual void AddCollumns()
         {
-            var props = GetPropertiesExpression(this._customExpression);
-            _query = _query.Replace("*", string.Join(", ", props));
+            var props = GetPropertiesExpression(this._customExpression, useAlias: true);
+            _query = _query.Replace(SQLKeys.DISTINCT_ALL, SQLKeys.DISTINCT_WITH_SPACE + string.Join(", ", props));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void PreRoutine()
+        {
+            base.PreRoutine();
+            AddCollumns();
         }
 
         /// <summary>
@@ -63,7 +73,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public override ResultQuery<T> Execute()
         {
-            AddCollumns();
+            PreRoutine();
             return base.Execute();
         }
     }

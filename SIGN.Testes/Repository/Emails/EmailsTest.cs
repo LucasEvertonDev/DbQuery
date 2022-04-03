@@ -97,7 +97,44 @@ namespace SIGN.Testes.Repository.Emails
                     .Execute()
                     .GetItens();
 
+                transaction.Commit();
+            });
+        }
 
+        [TestMethod]
+        public void Sum()
+        {
+            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            {
+                var email = GetEmail();
+                var itens = _ciEmails_ReenvioRepository
+                    .Select<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => 
+                            Columns(
+                                Sum(anx.Tipo),
+                                anx.CiEmails_Reenvio_Id
+                            )
+                    )
+                    .Join<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => (em.ID == anx.CiEmails_Reenvio_Id)
+                    )
+                    .Where<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => em.ID != 0
+                    )
+                    .GroupBy<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) => 
+                            Columns(
+                                anx.CiEmails_Reenvio_Id
+                            )
+                    )
+                    .OrderBy<CiEmails_Reenvio, CiEmails_Anexos>(
+                        (em, anx) =>
+                            Columns(
+                                 Sum(anx.Tipo)
+                            )
+                    )
+                    .Execute()
+                    .GetDtRetorno();
 
                 transaction.Commit();
             });

@@ -65,11 +65,11 @@ namespace SIGN.Query.Services
         }
 
         /// <summary>
-        /// 
+        /// Trata a lista de colunas a ser usada
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
-        public dynamic[] Collumns(params dynamic[] array)
+        public dynamic[] Columns(params dynamic[] array)
         {
             return array;
         }
@@ -91,7 +91,7 @@ namespace SIGN.Query.Services
         /// <returns></returns>
         public Count Count(dynamic prop)
         {
-            return new Count();
+            return null;
         }
 
 
@@ -111,7 +111,7 @@ namespace SIGN.Query.Services
         /// <returns></returns>
         public Max Max(dynamic prop)
         {
-            return new Max();
+            return null;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SIGN.Query.Services
         /// <returns></returns>
         public Min Min(dynamic prop)
         { 
-            return new Min();
+            return null;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace SIGN.Query.Services
         /// <returns></returns>
         public Sum Sum(dynamic prop)
         { 
-            return new Sum();
+            return null;
         }
     }
 }

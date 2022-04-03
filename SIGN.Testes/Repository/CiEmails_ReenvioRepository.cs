@@ -3,12 +3,13 @@ using SIGN.Query.Domains;
 using SIGN.Query.Domains.SignCi;
 using SIGN.Query.Extensions;
 using SIGN.Query.Repository;
+using SIGN.Query.Services;
 using System;
 
 namespace SIGN.Testes.Repository
 {
     [TestClass]
-    public class CiEmails_ReenvioRepository
+    public class CiEmails_ReenvioRepository : SignQueryService
     {
         private Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; } = new Repository<CiEmails_Reenvio>();
         [TestMethod]
@@ -38,7 +39,7 @@ namespace SIGN.Testes.Repository
         {
             var query = _ciEmails_ReenvioRepository
                             .Select<CiEmails_Reenvio, CiEmails_Anexos>(Top(1),
-                                (ci, ciA) => Collumns(
+                                (ci, ciA) => Columns(
                                     ci.EmailFrom,
                                     ci.EmailTo,
                                     ci.Cc,
@@ -56,33 +57,13 @@ namespace SIGN.Testes.Repository
                                 (ci, ciA) => ci.EmailFrom != null && ciA.CHAVE != null
                             )
                             .OrderBy(
-                                (ci) => Collumns(
+                                (ci) => Columns(
                                     ci.To,
                                     ci.Subject
                                 )
                             )
                             .GetQuery();
 
-        }
-
-        public dynamic[] Collumns(params dynamic[] array)
-        {
-            return array;
-        }
-
-        public dynamic Count(dynamic prop)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public int? Top(int i)
-        {
-            return i;
         }
     }
 }
