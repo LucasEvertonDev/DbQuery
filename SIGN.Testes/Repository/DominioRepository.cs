@@ -175,11 +175,10 @@ namespace SIGN.Query.Test
         [TestMethod]
         public void UseAlias()
         {
-            var query = _dominioRepository
+            var query = _dominioRepository.UseAlias("d1")
                             .Select(
                                 Top(1)
                             )
-                            .UseAlias("d1")
                             .Join<Dominio, ItemDominio>(
                                 (d1, i1) => (d1.Codigo == i1.Codigo_Dominio)
                             )

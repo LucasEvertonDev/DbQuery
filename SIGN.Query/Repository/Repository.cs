@@ -43,7 +43,8 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectQuery<T> Select()
         {
-            return CreateDbQuery<SelectQuery<T>>();
+            var select = CreateDbQuery<SelectQuery<T>>();
+            return select;
         }
 
        
@@ -271,5 +272,15 @@ namespace SIGN.Query.Repository
             return select;
         }
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Repository<T> UseAlias(string alias)
+        {
+            _alias = alias;
+            return this;
+        }
     }
 }

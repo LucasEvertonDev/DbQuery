@@ -45,21 +45,12 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         public virtual void PreRoutine()
         {
+            if (!this._query.Contains(SQLKeys.AS) && !string.IsNullOrEmpty(_alias))
+            {
+                _useAlias = true;
+                _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + SQLKeys.AS_WITH_SPACE + _alias);
+            }
             IncludeTop();
-        }
-
-        /// <summary>
-        /// Determina que a função irá usar a nomenclatura do parametro da expression como alias 
-        /// Só será funcional se for utilisado para a mesma tabela o mesmo codenome 
-        /// indenpente da ação realizada
-        /// O parametro alias é usado para setar o alias a classe do rpository(select)
-        /// </summary>
-        public virtual SelectQuery<T> UseAlias(string alias)
-        {
-            PreRoutine();
-            _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + " AS " + alias);
-            this._useAlias = true;
-            return this;
         }
 
         /// <summary>

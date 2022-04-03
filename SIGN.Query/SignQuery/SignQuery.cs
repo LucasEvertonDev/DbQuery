@@ -2,6 +2,7 @@
 using SIGN.Query.DataAnnotations;
 using SIGN.Query.Domains;
 using SIGN.Query.Extensions;
+using SIGN.Query.Repository;
 using SIGN.Query.Services;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace SIGN.Query.SignQuery
         protected string _query { get; set; }
         protected string _dataBase { get; set; }
         protected bool _useAlias { get; set; }
-        public List<string> _defaultFunctions { get; set; }
+        protected List<string> _defaultFunctions { get; set; }
+        protected string _alias { get; set; }
         public SignQuery()
         {
             _domain = null;
@@ -374,8 +376,13 @@ namespace SIGN.Query.SignQuery
                 obj._query = this._query;
             }
             VerifyChangeDataBase();
+            obj._alias = this._alias;
             obj._useAlias = this._useAlias;
             obj._signTransaction = this._signTransaction;
+            if (typeof(Repository<T>) == this.GetType())
+            {
+                this._alias = null;
+            }
             return obj;
         }
 

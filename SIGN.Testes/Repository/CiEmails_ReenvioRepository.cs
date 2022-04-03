@@ -37,7 +37,7 @@ namespace SIGN.Testes.Repository
         [TestMethod]
         public void SelectCustom()
         {
-            var query = _ciEmails_ReenvioRepository
+            var query = _ciEmails_ReenvioRepository.UseAlias("ci")
                             .Select<CiEmails_Reenvio, CiEmails_Anexos>(Top(1),
                                 (ci, ciA) => Columns(
                                     ci.EmailFrom,
@@ -49,7 +49,6 @@ namespace SIGN.Testes.Repository
                                     ciA.ID
                                 )
                              )
-                            .UseAlias("ci")
                             .Join<CiEmails_Reenvio, CiEmails_Anexos>(
                                 (ci, ciA) => (ci.ID == ciA.CiEmails_Reenvio_Id)
                             )
