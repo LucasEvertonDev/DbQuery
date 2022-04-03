@@ -1,4 +1,5 @@
-﻿using SIGN.Query.Domains;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.Domains;
 using SIGN.Query.Services;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,6 @@ namespace SIGN.Query.SignQuery
 {
     public class SelectQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-
-        protected const string SELECT = "SELECT DISTINCT {0} FROM {1} {2}";
-        protected const string INNER_JOIN = "INNER JOIN {0} ON {1}";
-        protected const string LEFT_JOIN = "LEFT JOIN {0} ON {1}";
         public int? _top { get; set; }
 
         /// <summary>
@@ -23,13 +20,13 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
-        protected override void SetDefaultFields(T domain, Type origin)
+        protected override void SetDefaultFields(T domain, bool isScalar)
         {
-            base.SetDefaultFields(domain, origin);
-            _query = string.Format(SELECT,
-                                  "*",
+            base.SetDefaultFields(domain, isScalar);
+            _query = string.Format(SQLKeys.SELECT,
+                                  SQLKeys.ALL_COLUMNS,
                                   string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
-                                  "");
+                                  string.Empty);
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace SIGN.Query.SignQuery
         {
             if (_top.HasValue)
             {
-                _query = _query.Replace("SELECT DISTINCT", $"SELECT TOP({_top.Value})");
+                _query = _query.Replace(SQLKeys.SELECT_DISTINCT, string.Format(SQLKeys.SELECT_TOP, _top.Value));
             }
         }
 
@@ -77,7 +74,7 @@ namespace SIGN.Query.SignQuery
         public virtual JoinQuery<T> Join<J, P>(Expression<Func<J, P, bool>> expression)
         {
             IncludeTop();
-            return IncludeJoinOnQuery<J, P>(expression, INNER_JOIN);
+            return IncludeJoinOnQuery<J, P>(expression, SQLKeys.INNER_JOIN);
         }
 
         /// <summary>
@@ -89,7 +86,19 @@ namespace SIGN.Query.SignQuery
         public virtual JoinQuery<T> LeftJoin<J, P>(Expression<Func<J, P, bool>> expression)
         {
             IncludeTop();
-            return IncludeJoinOnQuery<J, P>(expression, LEFT_JOIN);
+            return IncludeJoinOnQuery<J, P>(expression, SQLKeys.LEFT_JOIN);
+        }
+
+        #region Order BY
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual OrderByQuery<T> OrderBy(Expression<Func<T, dynamic[]>> expression)
+        {
+            IncludeTop();
+            return AddOrderBy(SQLKeys.ASC, expression);
         }
 
         /// <summary>
@@ -97,10 +106,10 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic[]>> expression)
+        public virtual OrderByQuery<T> OrderByDesc(Expression<Func<T, dynamic[]>> expression)
         {
             IncludeTop();
-            return AddOrderBy("ASC", expression);
+            return AddOrderBy(SQLKeys.DESC, expression);
         }
 
         /// <summary>
@@ -108,10 +117,10 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic[]>> expression)
+        public virtual OrderByQuery<T> OrderBy(Expression<Func<T, dynamic>> expression)
         {
             IncludeTop();
-            return AddOrderBy("DESC", expression);
+            return AddOrderBy(SQLKeys.ASC, expression);
         }
 
         /// <summary>
@@ -119,45 +128,12 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderBy(Expression<Func<T, dynamic>> expression)
+        public virtual OrderByQuery<T> OrderByDesc(Expression<Func<T, dynamic>> expression)
         {
             IncludeTop();
-            return AddOrderBy("ASC", expression);
+            return AddOrderBy(SQLKeys.DESC, expression);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderByDesc(Expression<Func<T, dynamic>> expression)
-        {
-            IncludeTop();
-            return AddOrderBy("DESC", expression);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderBy<P>(Expression<Func<P, dynamic>> expression)
-        {
-            IncludeTop();
-            return AddOrderBy("ASC", expression);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public virtual SelectExecuteQuery<T> OrderByDesc<P>(Expression<Func<P, dynamic>> expression)
-        {
-            IncludeTop();
-            return AddOrderBy("DESC", expression);
-        }
+        #endregion
 
         /// <summary>
         /// 

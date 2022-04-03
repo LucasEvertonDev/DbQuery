@@ -53,7 +53,7 @@ namespace SIGN.Query.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public static List<T> ConvertToList<T>(this DataTable dt)
+        public static List<T> OfType<T>(this DataTable dt)
         {
             if (dt.Columns.Count == 1)
             {

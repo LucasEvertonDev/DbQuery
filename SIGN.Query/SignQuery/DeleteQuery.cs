@@ -28,9 +28,9 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
-        protected override void SetDefaultFields(T domain, Type origin)
+        protected override void SetDefaultFields(T domain, bool isScalar)
         {
-            base.SetDefaultFields(domain, origin);
+            base.SetDefaultFields(domain, isScalar);
             _query = String.Format(DELETE, string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + ".." + GetTableName(typeof(T)), "");
         }
     }

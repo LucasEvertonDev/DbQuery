@@ -1,4 +1,5 @@
-﻿using SIGN.Query.DataAnnotations;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.DataAnnotations;
 using SIGN.Query.Domains;
 using SIGN.Query.Extensions;
 using SIGN.Query.Services;
@@ -19,21 +20,21 @@ namespace SIGN.Query.SignQuery
     {
         private Dictionary<string, string> _expressions { get; set; }
         private Expression _currentExpression { get; set; }
-        protected Type _origin { get; set; }
+        protected bool _isScalar { get; set; }
         protected SignTransaction _signTransaction { get; set; }
-        protected List<Type> _typesSemAspas { get; set; }
+        protected List<Type> _typesWithOutQuotes { get; set; }
         protected T _domain { get; set; }
         protected string _query { get; set; }
-        protected string _dataBase { get; set; } = "";
+        protected string _dataBase { get; set; }
         protected bool _useAlias { get; set; }
+        public List<string> _defaultFunctions { get; set; }
         public SignQuery()
         {
             _domain = null;
             _query = string.Empty;
-            _origin = null;
             _dataBase = GetDatabaseName(typeof(T));
             _expressions = new Dictionary<string, string>();
-            _typesSemAspas = new List<Type>()
+            _typesWithOutQuotes = new List<Type>()
             {
                 typeof(decimal),
                 typeof(decimal?),
@@ -50,6 +51,13 @@ namespace SIGN.Query.SignQuery
                 typeof(double?),
                 typeof(double),
             };
+            _defaultFunctions = new List<string>()
+            {
+                DbQueryConstants.SUM_FUNCTION,
+                DbQueryConstants.MAX_FUNCTION, 
+                DbQueryConstants.MIN_FUNCTION,
+                DbQueryConstants.COUNT_FUNCTION
+            };
         }
 
         /// <summary>
@@ -58,8 +66,11 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public string GetQuery()
         {
-            _query = _query.Replace(", SELECT_CONCAT", "");
-            return _query.Replace("  ", " ");
+            while (_query.Contains("  "))
+            {
+                _query = _query.Replace("  ", " ");
+            }
+            return _query;
         }
 
         /// <summary>
@@ -68,11 +79,11 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected string GetTableName(Type type, dynamic exp = null)
         {
-            if (_useAlias && exp != null && VerificaPropriedade(exp, "Expression"))
+            if (_useAlias && exp != null && ContainsProperty(exp, "Expression"))
             {
                 return exp.Expression.Name;
             }
-            if (_useAlias && exp != null && VerificaPropriedade(exp, "NodeType") && exp.NodeType == ExpressionType.Call)
+            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call)
             {
                 return exp.Arguments[0].Expression.Name;
             }
@@ -94,7 +105,7 @@ namespace SIGN.Query.SignQuery
                 var attr = prop.GetCustomAttributes(typeof(IdentityAttribute), false).FirstOrDefault() as IdentityAttribute;
                 if (attr != null)
                 {
-                    key = string.Concat("OUTPUT Inserted.", prop.Name);
+                    key = string.Concat(SQLKeys.OUTPUT_INSERTED, prop.Name);
                 }
             });
             return key;
@@ -124,7 +135,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected string GetFullName(Type type)
         {
-            return GetDatabaseName(type) + ".." + GetTableName(type);
+            return string.Concat(GetDatabaseName(type), SQLKeys.T_A, GetTableName(type));
         }
 
         /// <summary>
@@ -133,7 +144,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected List<string> GetProperties()
         {
-            bool insert = typeof(InsertQuery<T>) == _origin;
+            bool insert = this.GetType() == typeof(InsertQuery<T>) || this.GetType() == typeof(InsertNotExistsQuery<T>); ;
 
             List<PropertyInfo> infs = typeof(T).GetProperties().ToList();
             var list = new List<string>();
@@ -147,11 +158,11 @@ namespace SIGN.Query.SignQuery
                         var propName = prop.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                         if (propName != null)
                         {
-                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? propName.DisplayName : GetTableName(typeof(T)) + "." + propName.DisplayName);
+                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? propName.DisplayName : GetTableName(typeof(T)) + SQLKeys.SINGLE_POINT + propName.DisplayName);
                         }
                         else
                         {
-                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? prop.Name : GetTableName(typeof(T)) + "." + prop.Name);
+                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? prop.Name : GetTableName(typeof(T)) + SQLKeys.SINGLE_POINT + prop.Name);
                         }
                     }
                 }
@@ -166,38 +177,38 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected string GetComparador(Expression expression)
         {
-            string equalty = "";
+            string equalty = string.Empty;
             if (expression.NodeType == ExpressionType.Equal)
             {
-                equalty = "=";
+                equalty = SQLKeys.EQUALS;
             }
             if (expression.NodeType == ExpressionType.AndAlso)
             {
-                equalty = "AND";
+                equalty = SQLKeys.AND;
             }
             if (expression.NodeType == ExpressionType.OrElse)
             {
-                equalty = "OR";
+                equalty = SQLKeys.OR;
             }
             if (expression.NodeType == ExpressionType.NotEqual)
             {
-                equalty = "<>";
+                equalty = SQLKeys.NOT_EQUAL;
             }
             if (expression.NodeType == ExpressionType.GreaterThan)
             {
-                equalty = ">";
+                equalty = SQLKeys.GREATER_THAN;
             }
             if (expression.NodeType == ExpressionType.GreaterThanOrEqual)
             {
-                equalty = ">=";
+                equalty = SQLKeys.GREATER_THAN_OR_EQUAL;
             }
             if (expression.NodeType == ExpressionType.LessThan)
             {
-                equalty = "<";
+                equalty = SQLKeys.LESS_THAN; ;
             }
             if (expression.NodeType == ExpressionType.LessThanOrEqual)
             {
-                equalty = "<=";
+                equalty = SQLKeys.LESS_THAN_OR_EQUAL;
             }
             return equalty;
         }
@@ -229,16 +240,16 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="val"></param>
         /// <returns></returns>
-        protected object TratarValor(dynamic val, bool includeAspas = false)
+        protected object TreatValue(dynamic val, bool useQuotes = false)
         {
-            if (val == null || string.IsNullOrEmpty(val?.ToString()) && includeAspas)
+            if (val == null || string.IsNullOrEmpty(val?.ToString()) && useQuotes)
             {
-                return "NULL";
+                return SQLKeys.NULL;
             }
 
             if (val.GetType() == typeof(DateTime))
             {
-                return includeAspas ? $"'{val.ToString("yyyy-MM-dd HH:mm:ss")}'" : val.ToString("yyyy-MM-dd HH:mm:ss");
+                return useQuotes ? $"'{val.ToString(SQLKeys.DATE_FORMAT)}'" : val.ToString(SQLKeys.DATE_FORMAT);
             }
             else if (val.GetType() == typeof(bool))
             {
@@ -246,7 +257,7 @@ namespace SIGN.Query.SignQuery
             }
             else if (val.GetType() == typeof(decimal))
             {
-                return val?.ToString("0.##")?.Replace(",", ".");
+                return val?.ToString(SQLKeys.DECIMAL_FORMAT)?.Replace(",", ".");
             }
             else if (val.GetType() == typeof(int) || val.GetType() == typeof(decimal))
             {
@@ -254,7 +265,7 @@ namespace SIGN.Query.SignQuery
             }
             else
             {
-                return includeAspas ? $"'{val}'" : val;
+                return useQuotes ? $"'{val}'" : val;
             }
         }
 
@@ -283,7 +294,7 @@ namespace SIGN.Query.SignQuery
             if (right is MethodCallExpression)
             {
                 dynamic r = right;
-                if (VerificaPropriedade(r, "Method") && ("LIKE".Equals(r.Method.Name)
+                if (ContainsProperty(r, "Method") && ("LIKE".Equals(r.Method.Name)
                     || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name)))
                 {
                     return ExtractMethod(right);
@@ -317,12 +328,12 @@ namespace SIGN.Query.SignQuery
                     return result;
                 }
             }
-            if (right != null && VerificaPropriedade(right, "NodeType") && right.NodeType == ExpressionType.Call)
+            if (right != null && ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.Call)
             {
                 return Expression.Lambda(right).Compile().DynamicInvoke();
             }
 
-            return "";
+            return string.Empty;
         }
 
         /// <summary>
@@ -357,7 +368,7 @@ namespace SIGN.Query.SignQuery
         protected P CreateDbQuery<P>() where P : SignQuery<T>
         {
             P obj = Activator.CreateInstance<P>();
-            obj.SetDefaultFields(this._domain, this._origin);
+            obj.SetDefaultFields(this._domain, this._isScalar);
             if (!string.IsNullOrEmpty(this._query))
             {
                 obj._query = this._query;
@@ -382,10 +393,10 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void SetDefaultFields(T domain, Type origin)
+        protected virtual void SetDefaultFields(T domain, bool isScalar)
         {
             this._domain = domain;
-            this._origin = origin;
+            this._isScalar = isScalar;
         }
 
         /// <summary>
@@ -399,8 +410,8 @@ namespace SIGN.Query.SignQuery
             {
                 if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0 && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0)
                 {
-                    var val = TratarValor((dynamic)prop.GetValue(_domain), true);
-                    list.Add(prop.Name + " = " + val?.ToString());
+                    var val = TreatValue((dynamic)prop.GetValue(_domain), true);
+                    list.Add(string.Concat(prop.Name, SQLKeys.EQUALS_WITH_SPACE, val?.ToString()));
                 }
             });
 
@@ -441,33 +452,43 @@ namespace SIGN.Query.SignQuery
         {
             if (expression != null)
             {
-                var exp = VerificaPropriedade(expression, "Body") ? expression?.Body : expression;
+                var exp = ContainsProperty(expression, "Body") ? expression?.Body : expression;
                 if (exp.NodeType == ExpressionType.MemberAccess)
                 {
-                    return (GetTableName(exp.Expression.Type, exp) + "." + GetCollumnName(exp.Member));
+                    return GetPropretyFullName(exp.Expression.Type, exp);
                 }
                 if (exp.NodeType == ExpressionType.Convert)
                 {
-                    dynamic d = exp.Operand;
-                    return (GetTableName(d.Expression.Type, d) + "." + GetCollumnName(d.Member));
+                    return GetPropretyFullName(exp.Operand.Expression.Type, exp.Operand);
                 }
                 if (exp.NodeType == ExpressionType.Call)
                 {
-                    if (exp.Method.Name == "Count" && !hasParamter)
+                    if (_defaultFunctions.Exists(f => f.Equals(exp.Method.Name)))
                     {
-                        return ("COUNT(*)");
-                    }
-                    else if(exp.Method.Name == "Count" && hasParamter)
-                    {
-                        var d = exp.Body.Arguments[0];
-                        var aux = d.Expressions[0].Arguments[0].Operand;
-                        return (String.Format("Count({0})", GetTableName(aux.Expression.Type, aux.Expression) + "." + GetCollumnName(aux.Member)));
+                        if (DbQueryConstants.COUNT_FUNCTION.Equals(exp.Method.Name) && !hasParamter)
+                        {
+                            return SQLKeys.COUNT;
+                        }
+                        else
+                        {
+                            var d = exp.Body.Arguments[0];
+                            var aux = d.Expressions[0].Arguments[0].Operand;
+                            return string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                        }
                     }
                 }
             }
-            return "";
+            return string.Empty;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected string GetPropretyFullName(Type type, dynamic exp, dynamic member = null)
+        {
+            return string.Concat(GetTableName(type, exp), SQLKeys.SINGLE_POINT, GetCollumnName(member == null ? exp.Member : member));
+        }
 
         /// <summary>
         /// 
@@ -489,13 +510,13 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected string ExtractMethod(Expression method)
         {
-            string valueA = "";
-            string valueB = "";
-            string comparador = "";
+            string valueA = string.Empty;
+            string valueB = string.Empty;
+            string comparador = string.Empty;
             if (method is MethodCallExpression)
             {
                 var mtd = (MethodCallExpression)method;
-                comparador = TratarComparadorPorMetodo(mtd.Method.Name);
+                comparador = TreatComparerByMethod(mtd.Method.Name);
 
                 if (mtd.Arguments.Count > 0)
                 {
@@ -503,23 +524,23 @@ namespace SIGN.Query.SignQuery
                     for (var i = 0; i < mtd.Arguments.Count; i++)
                     {
                         bool isValue = true;
-                        string value = "";
+                        string value = string.Empty;
                         if (IsValue(mtd.Arguments[i]))
                         {
                             dynamic arg = mtd.Arguments[i];
-                            if (arg != null && VerificaPropriedade(arg, "Member") && VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.MemberAccess)
+                            if (arg != null && ContainsProperty(arg, "Member") && ContainsProperty(arg, "NodeType") && arg.NodeType == ExpressionType.MemberAccess)
                             {
                                 value = GetValue(arg);
                             }
                             else if (arg.GetType().Name.Equals("PropertyExpression"))
                             {
-                                value = GetTableName(arg.Member.DeclaringType, mtd) + "." + GetCollumnName(arg.Member);
+                                value = string.Concat(GetTableName(arg.Member.DeclaringType, mtd), SQLKeys.SINGLE_POINT, GetCollumnName(arg.Member));
                             }
                             else if (arg.GetType().Name.Equals("ConstantExpression"))
                             {
                                 value = arg.Value;
                             }
-                            else if (VerificaPropriedade(arg, "NodeType") && arg.NodeType == ExpressionType.Call)
+                            else if (ContainsProperty(arg, "NodeType") && arg.NodeType == ExpressionType.Call)
                             {
                                 value = GetValue(arg);
                             }
@@ -528,9 +549,9 @@ namespace SIGN.Query.SignQuery
                         {
                             isValue = false;
                             dynamic arg = mtd.Arguments[i];
-                            if (VerificaPropriedade(arg, "Expression") && VerificaPropriedade(arg, "Type"))
+                            if (ContainsProperty(arg, "Expression") && ContainsProperty(arg, "Type"))
                             {
-                                value = GetTableName(arg.Expression.Type, mtd) + "." + GetCollumnName(arg.Member);
+                                value = string.Concat(GetTableName(arg.Expression.Type, mtd), SQLKeys.SINGLE_POINT, GetCollumnName(arg.Member));
                             }
                         }
 
@@ -539,7 +560,7 @@ namespace SIGN.Query.SignQuery
 
                     if (values.Any())
                     {
-                        valueA = values[0].isValue ? TratarValor(values[0].value, true) : values[0].value;
+                        valueA = values[0].isValue ? TreatValue(values[0].value, true) : values[0].value;
                         valueB = ValidateValueByMethod(values[1], mtd.Method.Name);
                     }
                 }
@@ -555,20 +576,17 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public string ValidateValueByMethod(dynamic obj, string methodName)
         {
-            string valorTratado = TratarValor(obj.value, true).ToString();
-            if ("LIKE".Equals(methodName))
+            string valorTratado = TreatValue(obj.value, true).ToString();
+            if (DbQueryConstants.LIKE_FUNCTION.Equals(methodName))
             {
-                if (valorTratado.Contains("'") && obj.isValue)
+                if (!obj.isValue)
                 {
-                    return $"{valorTratado}".Replace("'", "%");
+                    return string.Format(SQLKeys.CONCAT, $"'%', {obj.value} ,'%'");
                 }
-                else if (!obj.isValue)
-                {
-                    return $"CONCAT('%', {obj.value} ,'%')";
-                }
-                return $"'%{valorTratado}%'";
+                return $"'%{obj.value}%'";
             }
-            else if (methodName.Equals("IN") || methodName.Equals("NOT_IN"))
+            else if (DbQueryConstants.IN_FUNCTION.Equals(methodName) 
+                    || DbQueryConstants.NOT_IN_FUNCTION.Equals(methodName))
             {
                 return obj.value.ToString();
             }
@@ -583,23 +601,23 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        public string TratarComparadorPorMetodo(string methodName)
+        public string TreatComparerByMethod(string methodName)
         {
-            if ("LIKE".Equals(methodName))
+            if (DbQueryConstants.LIKE_FUNCTION.Equals(methodName))
             {
-                return "LIKE";
+                return SQLKeys.LIKE;
             }
-            else if ("IN".Equals(methodName))
+            else if (DbQueryConstants.IN_FUNCTION.Equals(methodName))
             {
-                return "IN";
+                return SQLKeys.IN;
             }
-            else if ("NOT_IN".Equals(methodName))
+            else if (DbQueryConstants.NOT_IN_FUNCTION.Equals(methodName))
             {
-                return "NOT IN";
+                return SQLKeys.NOT_IN;
             }
             else
             {
-                return "==";
+                return SQLKeys.EQUALS;
             }
         }
 
@@ -608,7 +626,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        protected string GetConditionsJoin(Expression expression)
+        protected string DememberExpression(Expression expression)
         {
             if ((expression is LambdaExpression) && ((dynamic)expression).Parameters.Count > 1)
             {
@@ -616,20 +634,20 @@ namespace SIGN.Query.SignQuery
             }
 
             bool ignore = false;
-            string value = "", oldExpression = "", equalty = "";
+            string value = String.Empty, oldExpression = String.Empty, equalty = string.Empty;
             Expression left = null, right = null;
 
-            if (VerificaPropriedade(expression, "Left"))
+            if (ContainsProperty(expression, "Left"))
             {
                 left = GetLeftNode(expression);
             }
 
-            if (VerificaPropriedade(expression, "Right"))
+            if (ContainsProperty(expression, "Right"))
             {
                 right = GetRightNode(expression);
             }
 
-            if (VerificaPropriedade(expression, "NodeType"))
+            if (ContainsProperty(expression, "NodeType"))
             {
                 equalty = GetComparador(expression);
             }
@@ -639,7 +657,7 @@ namespace SIGN.Query.SignQuery
                 var isValue = IsValue(left);
                 if (isValue)
                 {
-                    var val = TratarValor(GetValue(left), true);
+                    var val = TreatValue(GetValue(left), true);
                     oldExpression = expression.ToString();
                     value = string.Format("{0} {1} {2}", val, "{0}", "{1}");
                 }
@@ -668,8 +686,8 @@ namespace SIGN.Query.SignQuery
 
             if (value == "" && !ignore)
             {
-                var leftVal = GetConditionsJoin(left);
-                var rigthVal = GetConditionsJoin(right);
+                var leftVal = DememberExpression(left);
+                var rigthVal = DememberExpression(right);
 
                 value = string.Format("{0} {1} {2}", leftVal, equalty, rigthVal);
             }
@@ -695,12 +713,12 @@ namespace SIGN.Query.SignQuery
                     }
                     else
                     {
-                        value = TratarExpression(right, equalty, value);
+                        value = TreatExpression(right, equalty, value);
                     }
                 }
                 else
                 {
-                    value = TratarExpression(right, equalty, value);
+                    value = TreatExpression(right, equalty, value);
                 }
 
                 if (!string.IsNullOrEmpty(oldExpression) && !string.IsNullOrEmpty(value) && !_expressions.ContainsKey(oldExpression))
@@ -723,11 +741,11 @@ namespace SIGN.Query.SignQuery
             dynamic exp = _currentExpression;
             bool isValue = true;
 
-            if (_currentExpression != null && VerificaPropriedade(exp, "Parameters") && exp.Parameters != null)
+            if (_currentExpression != null && ContainsProperty(exp, "Parameters") && exp.Parameters != null)
             {
                 foreach (var e in exp.Parameters)
                 {
-                    if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Member"))
+                    if (ContainsProperty(r, "Expression") && r.Expression != null && ContainsProperty(r.Expression, "Member"))
                     {
                         if (r.Expression.Member != null && e.Name == r.Expression.Member.Name)
                         {
@@ -735,7 +753,7 @@ namespace SIGN.Query.SignQuery
                             break;
                         }
                     }
-                    else if (VerificaPropriedade(r, "Expression") && r.Expression != null && VerificaPropriedade(r.Expression, "Name"))
+                    else if (ContainsProperty(r, "Expression") && r.Expression != null && ContainsProperty(r.Expression, "Name"))
                     {
                         if (e.Name == r.Expression.Name)
                         {
@@ -757,18 +775,18 @@ namespace SIGN.Query.SignQuery
         /// <param name="equality"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected string TratarExpression(Expression right, string equality, string value)
+        protected string TreatExpression(Expression right, string equality, string value)
         {
-            var val = TratarValor(GetValue(right), true);
-            if ("NULL".Equals(val))
+            var val = TreatValue(GetValue(right), true);
+            if (SQLKeys.NULL.Equals(val))
             {
-                if ("=".Equals(equality))
+                if (SQLKeys.EQUALS.Equals(equality))
                 {
-                    equality = "IS";
+                    equality = SQLKeys.IS;
                 }
-                else if ("<>".Equals(equality))
+                else if (SQLKeys.NOT_EQUAL.Equals(equality))
                 {
-                    equality = "IS NOT";
+                    equality = SQLKeys.IS_NOT;
                 }
             }
             return string.Format(value, equality, val);
@@ -778,11 +796,11 @@ namespace SIGN.Query.SignQuery
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="NomeDaPropriedade"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        protected bool VerificaPropriedade(object obj, string NomeDaPropriedade)
+        protected bool ContainsProperty(object obj, string name)
         {
-            return obj.GetType().GetProperty(NomeDaPropriedade) != null;
+            return obj.GetType().GetProperty(name) != null;
         }
 
         /// <summary>
@@ -790,12 +808,12 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="tipo"></param>
-        protected SelectExecuteQuery<T> AddOrderBy(string tipo, Expression expressions)
+        protected OrderByQuery<T> AddOrderBy(string tipo, Expression expressions)
         {
-            bool contains = _query.Contains("ORDER BY");
+            bool contains = _query.Contains(SQLKeys.ORDER_BY);
             if (!contains)
             {
-                _query += " ORDER BY ";
+                _query += SQLKeys.ORDER_BY_WITH_SPACE;
             }
             if (expressions != null)
             {
@@ -810,8 +828,39 @@ namespace SIGN.Query.SignQuery
                 }
             }
 
-            return CreateDbQuery<SelectExecuteQuery<T>>();
+            return CreateDbQuery<OrderByQuery<T>>();
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="tipo"></param>
+        protected OrderByQuery<T> AddGroupBy(Expression expressions)
+        {
+            bool contains = _query.Contains(SQLKeys.GROUP_BY);
+            if (!contains)
+            {
+                _query += SQLKeys.GROUP_BY_WITH_SPACE;
+            }
+            if (expressions != null)
+            {
+                var properties = GetPropertiesExpression(expressions);
+                if (contains && properties.Count > 0)
+                {
+                    _query += ", " + string.Join(", ", properties);
+                }
+                else
+                {
+                    _query += string.Join(", ", properties);
+                }
+            }
+
+            return CreateDbQuery<OrderByQuery<T>>();
+        }
+
+
 
         /// <summary>
         /// 
@@ -819,14 +868,14 @@ namespace SIGN.Query.SignQuery
         /// <param name="Conditions"></param>
         protected SelectExecuteQuery<T> IncludeWhereConditions(Expression expression)
         {
-            string condition = "";
+            string condition = string.Empty;
             this._currentExpression = expression;
             if (expression != null)
             {
-                var x = new List<string> { "=>" };
+                var x = new List<string> { DbQueryConstants.EXPRESSION_DIVISOR };
                 string aux = ((Expression)((dynamic)expression).Body).ToString();
                 string exp = aux.Split(x.ToArray(), StringSplitOptions.RemoveEmptyEntries)[0];
-                condition = GetConditionsJoin(((dynamic)expression).Body);
+                condition = DememberExpression(((dynamic)expression).Body);
 
                 if (_expressions.Keys.ToList().Exists(a => exp.Contains(a)))
                 {
@@ -835,13 +884,14 @@ namespace SIGN.Query.SignQuery
                         exp = exp.Replace(key, _expressions[key]);
                     });
 
-                    exp = exp.Replace("AndAlso", "AND").Replace("OrElse", "OR");
+                    exp = exp.Replace(DbQueryConstants.AND_ALSO, SQLKeys.AND)
+                            .Replace(DbQueryConstants.OR_ELSE, SQLKeys.OR);
 
-                    _query += " WHERE " + exp;
+                    _query += string.Concat(SQLKeys.WHERE_WITH_SPACE, exp);
                 }
                 else
                 {
-                    _query += " WHERE " + condition;
+                    _query += string.Concat(SQLKeys.WHERE_WITH_SPACE, exp);
                 }
             }
 
@@ -858,10 +908,11 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public JoinQuery<T> IncludeJoinOnQuery<J, P>(Expression expression, string strJoin)
         {
-            this._origin = typeof(JoinQuery<T>);
             this._currentExpression = expression;
-            var aux = _useAlias ? GetFullName(typeof(P)) + " AS " + ((dynamic)expression).Parameters[1].Name : GetFullName(typeof(P));
-            _query += string.Format(strJoin, aux, this.GetConditionsJoin(expression));
+            var aux = _useAlias 
+                ? string.Concat(GetFullName(typeof(P)), SQLKeys.AS_WITH_SPACE, ((dynamic)expression).Parameters[1].Name)
+                : GetFullName(typeof(P));
+            _query += string.Format(strJoin, aux, this.DememberExpression(expression));
             return CreateDbQuery<JoinQuery<T>>();
         }
     }

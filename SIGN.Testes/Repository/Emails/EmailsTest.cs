@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SIGN.Query.Domains.SignCi;
+using SIGN.Query.Domains.SignEst;
 using SIGN.Query.Extensions;
 using SIGN.Query.Repository;
 using SIGN.Query.Services;
@@ -17,6 +18,7 @@ namespace SIGN.Testes.Repository.Emails
         protected string CONEXAO = @"Data Source=LAPTOP-JGT9FNST\SQLEXPRESS;Integrated Security=True";
         protected Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; } = new Repository<CiEmails_Reenvio>();
         protected Repository<CiEmails_Anexos> _ciEmailsAnexos_Repository { get; set; } = new Repository<CiEmails_Anexos>();
+        protected Repository<EstTesteDecimal> _estTesteDecimalRepository { get; set; } = new Repository<EstTesteDecimal>();
 
         [TestMethod]
         public void Delete()
@@ -28,14 +30,14 @@ namespace SIGN.Testes.Repository.Emails
                 var count = _ciEmails_ReenvioRepository
                                 .Select(ci => Count())
                                 .Execute()
-                                .Output;
+                                .GetOutput();
 
                 var ret = _ciEmails_ReenvioRepository
                             .Select(Top(1), ci => ci.ID)
                             .Where(ci => ci.EmailTo.LIKE(email.EmailTo))
                             .OrderBy(ci => ci.ID)
                             .Execute()
-                            .Retorno.ConvertToList<int>();
+                            .GetItens<int>();
 
                 if (ret != null)
                 {
@@ -59,16 +61,25 @@ namespace SIGN.Testes.Repository.Emails
             OnTransaction(CONEXAO, (SignTransaction transaction) =>
             {
                 var email = GetEmail();
-                var ret = _ciEmails_ReenvioRepository.Insert(email).Execute().Output;
+                var ret = _ciEmails_ReenvioRepository.Insert(email).Execute().GetOutput();
 
                 if (ret != null)
                 {
                     email.ListCiEmails_Anexos.ForEach(a =>
                     {
                         a.CiEmails_Reenvio_Id = ret;
-                        var idAnexo = _ciEmailsAnexos_Repository.Insert(a).Execute().Output;
+                        var idAnexo = _ciEmailsAnexos_Repository.Insert(a).Execute().GetOutput();
                     });
                 }
+
+                // deve trocar a database automático
+                _estTesteDecimalRepository.Insert(new EstTesteDecimal
+                {
+                    column1 = decimal.Parse("18"),
+                    column2 = decimal.Parse("18,9999"),
+                    column3 = decimal.Parse("18,1")
+                }).Execute();
+
                 transaction.Commit();
             });
         }
@@ -84,7 +95,9 @@ namespace SIGN.Testes.Repository.Emails
                     .Where(ci => email.EmailFrom.LIKE(ci.EmailFrom))
                     .OrderByDesc(ci => ci.ID)
                     .Execute()
-                    .Itens;
+                    .GetItens();
+
+
 
                 transaction.Commit();
             });

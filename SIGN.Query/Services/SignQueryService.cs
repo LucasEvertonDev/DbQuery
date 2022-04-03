@@ -1,4 +1,5 @@
 ﻿using SIGN.Query.Domains;
+using SIGN.Query.Functions;
 using SIGN.Query.Repository;
 using System;
 using System.Collections.Generic;
@@ -76,11 +77,21 @@ namespace SIGN.Query.Services
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public int? Top(int i)
+        {
+            return i;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="prop"></param>
         /// <returns></returns>
         public Count Count(dynamic prop)
         {
-            return null;
+            return new Count();
         }
 
 
@@ -97,11 +108,28 @@ namespace SIGN.Query.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="i"></param>
         /// <returns></returns>
-        public int? Top(int i)
+        public Max Max(dynamic prop)
         {
-            return i;
+            return new Max();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Min Min(dynamic prop)
+        { 
+            return new Min();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Sum Sum(dynamic prop)
+        { 
+            return new Sum();
         }
     }
 }

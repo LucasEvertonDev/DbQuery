@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\DbQueryConstants.cs" />
+    <Compile Include="Constants\SQLKeys.cs" />
     <Compile Include="DataAnnotations\DatabaseAttribute.cs" />
     <Compile Include="DataAnnotations\IdentityAttribute.cs" />
     <Compile Include="DataAnnotations\IgnoreAttribute.cs" />
@@ -50,6 +52,8 @@
     <Compile Include="Domains\SignCi\CiCadUsuario.cs" />
     <Compile Include="Domains\SignCi\CiEmails_Anexos.cs" />
     <Compile Include="Domains\SignCi\CiEmails_BlackList.cs" />
+    <Compile Include="Domains\SignEst\SignEst.cs" />
+    <Compile Include="Domains\SignEst\TesteDecimal.cs" />
     <Compile Include="Enuns\DbStatus.cs" />
     <Compile Include="Domains\SignCi\CiEmails_Reenvio.cs" />
     <Compile Include="Domains\SignCi\Dominio.cs" />
@@ -61,6 +65,9 @@
     <Compile Include="Extensions\SqlExtensions.cs" />
     <Compile Include="Extensions\DbQueryExtensions.cs" />
     <Compile Include="Functions\Count.cs" />
+    <Compile Include="Functions\Max.cs" />
+    <Compile Include="Functions\Min.cs" />
+    <Compile Include="Functions\Sum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Services\SignTransaction.cs" />
@@ -75,10 +82,14 @@
     <Compile Include="SignQuery\SelectCountQuery.cs" />
     <Compile Include="SignQuery\SelectCustomQuery.cs" />
     <Compile Include="SignQuery\SelectExecuteQuery.cs" />
+    <Compile Include="SignQuery\OrderByQuery.cs" />
     <Compile Include="SignQuery\SelectQuery.cs" />
     <Compile Include="SignQuery\SignQuery.cs" />
     <Compile Include="SignQuery\UpdateQuery.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Query\SignCi\" />
+    <Folder Include="Query\SignEst\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

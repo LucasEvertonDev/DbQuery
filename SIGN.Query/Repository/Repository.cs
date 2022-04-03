@@ -14,7 +14,6 @@ namespace SIGN.Query.Repository
 {
     public class Repository<T> : SignQuery<T> where T : SignQueryBase
     {
-        public string IdInserido { get; set; }
 
         /// <summary>
         /// 
@@ -23,7 +22,7 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public ExecuteQuery<T> Insert(T domain)
         {
-            this._origin = typeof(InsertQuery<T>);
+            this._isScalar = true;
             this._domain = domain;
             return CreateDbQuery<InsertQuery<T>>().Add();
         }
@@ -34,7 +33,7 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public DeleteQuery<T> Delete()
         {
-            this._origin = typeof(DeleteQuery<T>);
+            this._isScalar = true;
             return CreateDbQuery<DeleteQuery<T>>();
         }
 
@@ -44,7 +43,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectQuery<T> Select()
         {
-            this._origin = typeof(SelectQuery<T>);
             return CreateDbQuery<SelectQuery<T>>();
         }
 
@@ -56,7 +54,7 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public UpdateQuery<T> Update(T domain)
         {
-            this._origin = typeof(UpdateQuery<T>);
+            this._isScalar = true;
             this._domain = domain;
             return CreateDbQuery<UpdateQuery<T>>();
         }
@@ -68,11 +66,10 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public ExecuteQuery<T> InsertIfNotExists(T domain)
         {
-            this._origin = typeof(InsertQuery<T>);
+            this._isScalar = true;
             this._domain = domain;
 
-            var insert = CreateDbQuery<InsertNotExistsQuery<T>>();
-            return insert.Add();
+            return CreateDbQuery<InsertNotExistsQuery<T>>().Add();
         }
 
         #region CustomSelect
@@ -83,7 +80,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectQuery<T> Select(int? top)
         {
-            this._origin = typeof(SelectQuery<T>);
             var select = CreateDbQuery<SelectQuery<T>>();
             select._top = top;
             return select;
@@ -96,7 +92,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select(Expression<Func<T, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -109,7 +104,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select(Expression<Func<T, dynamic>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -123,7 +117,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select(int? top, Expression<Func<T, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;
@@ -138,7 +131,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select(int? top, Expression<Func<T, dynamic>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;
@@ -156,7 +148,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B>(Expression<Func<A, B, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -172,7 +163,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B>(int? top, Expression<Func<A, B, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;
@@ -189,7 +179,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C>(Expression<Func<A, B, C, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -206,7 +195,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C>(int? top, Expression<Func<A, B, C, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;
@@ -224,7 +212,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C, D>(Expression<Func<A, B, C, D, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -242,7 +229,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C, D>(int? top, Expression<Func<A, B, C, D, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;
@@ -261,7 +247,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C, D, E>(Expression<Func<A, B, C, D, E, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             return select;
@@ -280,7 +265,6 @@ namespace SIGN.Query.Repository
         /// <returns></returns>
         public SelectCustomQuery<T> Select<A, B, C, D, E>(int? top, Expression<Func<A, B, C, D, E, dynamic[]>> expression)
         {
-            this._origin = typeof(SelectCustomQuery<T>);
             var select = CreateDbQuery<SelectCustomQuery<T>>();
             select._customExpression = expression;
             select._top = top;

@@ -1,4 +1,5 @@
-﻿using SIGN.Query.DataAnnotations;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.DataAnnotations;
 using SIGN.Query.Domains;
 using SIGN.Query.Services;
 using System;
@@ -11,8 +12,7 @@ namespace SIGN.Query.SignQuery
 {
     public class InsertQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-        protected const string INSERT = "INSERT INTO {0} ({1}) {2} VALUES ({3})";
-
+      
         /// <summary>
         /// 
         /// </summary>
@@ -27,10 +27,10 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
-        protected override void SetDefaultFields(T domain, Type origin)
+        protected override void SetDefaultFields(T domain, bool isScalar)
         {
-            base.SetDefaultFields(domain, origin);
-            _query = String.Format(INSERT,
+            base.SetDefaultFields(domain, isScalar);
+            _query = String.Format(SQLKeys.INSERT,
                                      string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : GetFullName(typeof(T)),
                                      string.Join(", ", GetProperties()),
                                      GetPrimaryKeyName(typeof(T)),
@@ -43,16 +43,14 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected List<string> GetValues()
         {
-            bool insert = typeof(InsertQuery<T>) == _origin;
-
             var values = new List<string>();
             _domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
-                if ((insert && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0) || !insert)
+                if ((prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0))
                 {
                     if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
                     {
-                        var val = TratarValor((dynamic)prop.GetValue(_domain), true);
+                        var val = TreatValue((dynamic)prop.GetValue(_domain), true);
                         values.Add(val?.ToString());
                     }
                 }

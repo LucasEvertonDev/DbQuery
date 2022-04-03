@@ -1,4 +1,5 @@
-﻿using SIGN.Query.DataAnnotations;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.DataAnnotations;
 using SIGN.Query.Domains;
 using SIGN.Query.Services;
 using System;
@@ -12,8 +13,6 @@ namespace SIGN.Query.SignQuery
 {
     public class UpdateQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-        protected const string UPDATE = "UPDATE {0} SET {1} {2}";
-
         /// <summary>
         /// 
         /// </summary>
@@ -29,14 +28,14 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
-        protected override void SetDefaultFields(T domain, Type origin)
+        protected override void SetDefaultFields(T domain, bool isScalar)
         {
-            base.SetDefaultFields(domain, origin);
+            base.SetDefaultFields(domain, isScalar);
             var list = GetObjectClausules();
-            _query = String.Format(UPDATE,
+            _query = String.Format(SQLKeys.UPDATE,
                                  string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + ".." + GetTableName(typeof(T)),
                                  string.Join(", ", list),
-                                 "");
+                                 string.Empty);
         }
     }
 }

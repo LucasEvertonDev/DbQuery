@@ -1,4 +1,5 @@
-﻿using SIGN.Query.Domains;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.Domains;
 using SIGN.Query.Services;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,6 @@ namespace SIGN.Query.SignQuery
 {
     public class JoinQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-        protected const string INNER_JOIN = " INNER JOIN {0} ON {1}";
-        protected const string LEFT_JOIN = " LEFT JOIN {0} ON {1}";
-
         /// <summary>
         /// 
         /// </summary>
@@ -23,7 +21,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public JoinQuery<T> Join<J, P>(Expression<Func<J, P, bool>> expression = null)
         {
-            return IncludeJoinOnQuery<J, P>(expression, INNER_JOIN);
+            return IncludeJoinOnQuery<J, P>(expression, SQLKeys.INNER_JOIN);
         }
 
         /// <summary>
@@ -34,7 +32,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         public JoinQuery<T> LeftJoin<J, P>(Expression<Func<J, P, bool>> expression = null)
         {
-            return IncludeJoinOnQuery<J, P>(expression, LEFT_JOIN);
+            return IncludeJoinOnQuery<J, P>(expression, SQLKeys.LEFT_JOIN);
         }
 
         /// <summary>
@@ -97,9 +95,9 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="origin"></param>
-        protected override void SetDefaultFields(T domain, Type origin)
+        protected override void SetDefaultFields(T domain, bool isScalar)
         {
-            base.SetDefaultFields(domain, origin);
+            base.SetDefaultFields(domain, isScalar);
         }
     }
 }

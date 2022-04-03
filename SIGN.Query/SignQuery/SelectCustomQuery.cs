@@ -23,6 +23,31 @@ namespace SIGN.Query.SignQuery
             return base.Where(expression);
         }
 
+        #region Group BY
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual OrderByQuery<T> GroupBy(Expression<Func<T, dynamic[]>> expression)
+        {
+            AddCollumns();
+            return AddGroupBy(expression);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual OrderByQuery<T> GroupBy(Expression<Func<T, dynamic>> expression)
+        {
+            AddCollumns();
+            return AddGroupBy(expression);
+        }
+        #endregion
+
         /// <summary>
         /// 
         /// </summary>
