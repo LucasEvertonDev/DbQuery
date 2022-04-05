@@ -218,8 +218,11 @@ namespace SIGN.Testes.V2
                         u.Email
                     )
                 )
+                .Distinct()
                 .Top(1)
                 .Where(u => u.Ativo == true)
+                .OrderBy(u => u.Descricao)
+                .OrderByDesc(u => u.Codigo)
                 .GetQuery();
         }
     }
