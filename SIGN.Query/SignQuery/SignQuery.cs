@@ -30,6 +30,7 @@ namespace SIGN.Query.SignQuery
         protected bool _useAlias { get; set; }
         protected List<string> _defaultFunctions { get; set; }
         protected string _alias { get; set; }
+        protected Expression _customExpression { get; set; }
         public SignQuery()
         {
             _domain = null;
@@ -386,7 +387,6 @@ namespace SIGN.Query.SignQuery
             return obj;
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -440,9 +440,16 @@ namespace SIGN.Query.SignQuery
             }
             else
             {
-                foreach (var a in exp.Body.Arguments[0].Expressions)
+                if (ContainsProperty(exp.Body, "Arguments"))
                 {
-                    properties.Add(GetPropertyOfSingleExpression(a, false, useAlias));
+                    foreach (var a in exp.Body.Arguments[0].Expressions)
+                    {
+                        properties.Add(GetPropertyOfSingleExpression(a, false, useAlias));
+                    }
+                }
+                else
+                {
+                    properties.Add(GetPropertyOfSingleExpression(exp, false, useAlias));
                 }
             }
            
@@ -455,7 +462,7 @@ namespace SIGN.Query.SignQuery
         /// <param name="expression"></param>
         /// <param name="hasParamter"></param>
         /// <returns></returns>
-        public string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter, bool useAlias)
+        protected string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter, bool useAlias)
         {
             if (expression != null)
             {
@@ -534,7 +541,6 @@ namespace SIGN.Query.SignQuery
             return name1;
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -606,7 +612,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public string ValidateValueByMethod(dynamic obj, string methodName)
+        protected string ValidateValueByMethod(dynamic obj, string methodName)
         {
             string valorTratado = TreatValue(obj.value, true).ToString();
             if (DbQueryConstants.LIKE_FUNCTION.Equals(methodName))
@@ -633,7 +639,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        public string TreatComparerByMethod(string methodName)
+        protected string TreatComparerByMethod(string methodName)
         {
             if (DbQueryConstants.LIKE_FUNCTION.Equals(methodName))
             {
@@ -766,7 +772,7 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public bool IsValue(dynamic expression)
+        protected bool IsValue(dynamic expression)
         {
             var right = expression;
             dynamic r = right;
@@ -798,7 +804,6 @@ namespace SIGN.Query.SignQuery
 
             return isValue;
         }
-
 
         /// <summary>
         /// 
@@ -863,7 +868,6 @@ namespace SIGN.Query.SignQuery
             return CreateDbQuery<OrderByQuery<T>>();
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -891,8 +895,6 @@ namespace SIGN.Query.SignQuery
 
             return CreateDbQuery<OrderByQuery<T>>();
         }
-
-
 
         /// <summary>
         /// 
@@ -938,7 +940,7 @@ namespace SIGN.Query.SignQuery
         /// <param name="expression"></param>
         /// <param name="strJoin"></param>
         /// <returns></returns>
-        public JoinQuery<T> IncludeJoinOnQuery<J, P>(Expression expression, string strJoin)
+        protected JoinQuery<T> IncludeJoinOnQuery<J, P>(Expression expression, string strJoin)
         {
             this._currentExpression = expression;
             var aux = _useAlias 
@@ -946,6 +948,15 @@ namespace SIGN.Query.SignQuery
                 : GetFullName(typeof(P));
             _query += string.Format(strJoin, aux, this.DememberExpression(expression));
             return CreateDbQuery<JoinQuery<T>>();
+        }
+  
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        public void SetExpression(Expression expression)
+        {
+            _customExpression = expression;
         }
     }
 }

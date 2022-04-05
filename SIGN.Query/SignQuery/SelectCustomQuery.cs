@@ -11,7 +11,6 @@ namespace SIGN.Query.SignQuery
 {
     public class SelectCustomQuery<T> : SelectQuery<T> where T : SignQueryBase
     {
-        public Expression _customExpression { get; set; }
 
         /// <summary>
         /// 
@@ -61,7 +60,7 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        public override void PreRoutine()
+        protected override void PreRoutine()
         {
             base.PreRoutine();
             AddCollumns();

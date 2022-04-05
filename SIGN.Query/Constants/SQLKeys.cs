@@ -8,7 +8,8 @@ namespace SIGN.Query.Constants
 {
     public static class SQLKeys
     {
-  
+        public const string DELETE = "DELETE FROM {0}{1}";
+
         public const string SELECT = "SELECT {0} FROM {1} {2}";
 
         public const string INNER_JOIN = "INNER JOIN {0} ON {1}";

@@ -5,7 +5,7 @@ using SIGN.Query.Repository;
 using SIGN.Query.Services;
 using System;
 
-namespace SIGN.Query.Test
+namespace SIGN.Query.Test.V2
 {
     [TestClass]
     public class DominioRepository : SignQueryService

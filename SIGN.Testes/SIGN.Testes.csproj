@@ -63,6 +63,8 @@
     <Compile Include="Repository\DominioRepository.cs" />
     <Compile Include="Repository\CiEmails_ReenvioRepository.cs" />
     <Compile Include="Repository\Emails\EmailsTest.cs" />
+    <Compile Include="v2\CiEmails_ReenvioRepository.cs" />
+    <Compile Include="v2\DominioRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

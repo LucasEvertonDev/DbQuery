@@ -13,7 +13,7 @@ namespace SIGN.Query.SignQuery
 {
     public class SelectQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-        public int? _top { get; set; }
+        private int? _top { get; set; }
 
         /// <summary>
         /// 
@@ -32,12 +32,20 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        public void IncludeTop()
+        /// <param name="top"></param>
+        /// <returns></returns>
+        public SelectQuery<T> Top(int top)
         {
-            if (_top.HasValue && !_query.Contains(DbQueryConstants.TOP_FUNCTION))
+            PreRoutine();
+            if (_query.Contains(SQLKeys.SELECT_DISTINCT))
             {
-                _query = _query.Replace(SQLKeys.SELECT_KEY, string.Format(SQLKeys.SELECT_TOP, _top.Value));
+                _query = _query.Replace(SQLKeys.SELECT_DISTINCT, string.Format(SQLKeys.SELECT_DISTINCT_TOP, top));
             }
+            else
+            {
+                _query = _query.Replace(SQLKeys.SELECT_KEY, string.Format(SQLKeys.SELECT_TOP, top));
+            }
+            return this;
         }
 
         /// <summary>
@@ -62,14 +70,13 @@ namespace SIGN.Query.SignQuery
         /// <summary>
         /// 
         /// </summary>
-        public virtual void PreRoutine()
+        protected virtual void PreRoutine()
         {
             if (!this._query.Contains(SQLKeys.AS) && !string.IsNullOrEmpty(_alias))
             {
                 _useAlias = true;
                 _query = _query.Replace(GetFullName(typeof(T)), GetFullName(typeof(T)) + SQLKeys.AS_WITH_SPACE + _alias);
             }
-            IncludeTop();
         }
 
         /// <summary>

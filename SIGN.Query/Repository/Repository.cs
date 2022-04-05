@@ -47,7 +47,7 @@ namespace SIGN.Query.Repository
             return select;
         }
 
-       
+
         /// <summary>
         /// 
         /// </summary>
@@ -77,24 +77,12 @@ namespace SIGN.Query.Repository
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="top"></param>
-        /// <returns></returns>
-        public SelectQuery<T> Select(int? top)
-        {
-            var select = CreateDbQuery<SelectQuery<T>>();
-            select._top = top;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
         public SelectCustomQuery<T> Select(Expression<Func<T, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
+            select.SetExpression(expression);
             return select;
         }
 
@@ -106,35 +94,7 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select(Expression<Func<T, dynamic>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select(int? top, Expression<Func<T, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select(int? top, Expression<Func<T, dynamic>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
+            select.SetExpression(expression);
             return select;
         }
 
@@ -148,27 +108,9 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select<A>(Expression<Func<A, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
+            select.SetExpression(expression);
             return select;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select<A>(int? top, Expression<Func<A, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
-            return select;
-        }
-
-
 
         /// <summary>
         /// 
@@ -180,25 +122,10 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select<A, B>(Expression<Func<A, B, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
+            select.SetExpression(expression);
             return select;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select<A, B>(int? top, Expression<Func<A, B, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
-            return select;
-        }
 
         /// <summary>
         /// 
@@ -211,24 +138,7 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select<A, B, C>(Expression<Func<A, B, C, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <typeparam name="C"></typeparam>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select<A, B, C>(int? top, Expression<Func<A, B, C, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
+            select.SetExpression(expression);
             return select;
         }
 
@@ -244,25 +154,7 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select<A, B, C, D>(Expression<Func<A, B, C, D, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <typeparam name="C"></typeparam>
-        /// <typeparam name="D"></typeparam>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select<A, B, C, D>(int? top, Expression<Func<A, B, C, D, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
+            select.SetExpression(expression);
             return select;
         }
 
@@ -279,26 +171,7 @@ namespace SIGN.Query.Repository
         public SelectCustomQuery<T> Select<A, B, C, D, E>(Expression<Func<A, B, C, D, E, dynamic[]>> expression)
         {
             var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            return select;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <typeparam name="C"></typeparam>
-        /// <typeparam name="D"></typeparam>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="top"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public SelectCustomQuery<T> Select<A, B, C, D, E>(int? top, Expression<Func<A, B, C, D, E, dynamic[]>> expression)
-        {
-            var select = CreateDbQuery<SelectCustomQuery<T>>();
-            select._customExpression = expression;
-            select._top = top;
+            select.SetExpression(expression);
             return select;
         }
         #endregion

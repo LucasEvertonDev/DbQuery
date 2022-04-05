@@ -1,4 +1,5 @@
-﻿using SIGN.Query.Domains;
+﻿using SIGN.Query.Constants;
+using SIGN.Query.Domains;
 using SIGN.Query.Services;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,6 @@ namespace SIGN.Query.SignQuery
 {
     public class DeleteQuery<T> : SignQuery<T> where T : SignQueryBase
     {
-        protected const string DELETE = "DELETE FROM {0}{1}";
-
         /// <summary>
         /// 
         /// </summary>
@@ -31,7 +30,7 @@ namespace SIGN.Query.SignQuery
         protected override void SetDefaultFields(T domain, bool isScalar)
         {
             base.SetDefaultFields(domain, isScalar);
-            _query = String.Format(DELETE, string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + ".." + GetTableName(typeof(T)), "");
+            _query = String.Format(SQLKeys.DELETE, string.IsNullOrEmpty(this._dataBase) ? GetTableName(typeof(T)) : this._dataBase + SQLKeys.T_A + GetTableName(typeof(T)), "");
         }
     }
 }

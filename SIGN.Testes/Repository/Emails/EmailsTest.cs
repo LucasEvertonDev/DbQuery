@@ -33,9 +33,10 @@ namespace SIGN.Testes.Repository.Emails
                                 .GetOutput();
 
                 var ret = _ciEmails_ReenvioRepository
-                            .Select(Top(1), ci => ci.ID)
+                            .Select(ci => ci.ID)
+                            .Top(1)
                             .Where(ci => ci.EmailTo.LIKE(email.EmailTo))
-                            .OrderBy(ci => ci.ID)
+                            .OrderByDesc(ci => ci.ID)
                             .Execute()
                             .GetItens<int>();
 
@@ -91,7 +92,8 @@ namespace SIGN.Testes.Repository.Emails
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository
-                    .Select(Top(1))
+                    .Select()
+                    .Top(1)
                     .Where(ci => email.EmailFrom.LIKE(ci.EmailFrom))
                     .OrderByDesc(ci => ci.ID)
                     .Execute()
