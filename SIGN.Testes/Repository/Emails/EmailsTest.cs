@@ -169,7 +169,7 @@ namespace SIGN.Testes.Repository.Emails
                         )
                     )
                         .Where(a => a.Status == 1
-                            && a.EmailTo == Concat("1 Email", a.EmailTo, "2 email", a.EmailFrom))
+                            && a.EmailTo.LIKE(Concat("1 Email", a.EmailTo, "2 email", a.EmailFrom)))
                     .GetQuery();
         }
 

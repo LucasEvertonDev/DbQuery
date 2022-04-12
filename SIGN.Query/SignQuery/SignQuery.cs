@@ -661,7 +661,19 @@ namespace SIGN.Query.SignQuery
                     if (values.Any())
                     {
                         valueA = values[0].isValue ? TreatValue(values[0].value, true) : values[0].value;
-                        valueB = ValidateValueByMethod(values[1], mtd.Method.Name);
+                        if (mtd.Arguments != null && mtd.Arguments.Count > 1)
+                        {
+                            dynamic arg = (dynamic)mtd.Arguments[1];
+                            if (ContainsProperty(arg, "Method") && arg.Method != null
+                                && DbQueryConstants.CONCAT_FUNCTION.Equals(arg.Method.Name))
+                            {
+                                valueB = ValidateValueByMethod(values[1], mtd.Method.Name, true);
+                            }
+                        }
+                        else 
+                        {
+                            valueB = ValidateValueByMethod(values[1], mtd.Method.Name, false);
+                        }
                     }
                 }
             }
@@ -674,12 +686,12 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        protected string ValidateValueByMethod(dynamic obj, string methodName)
+        protected string ValidateValueByMethod(dynamic obj, string methodName, bool isConcatValue)
         {
             string valorTratado = TreatValue(obj.value, true).ToString();
             if (DbQueryConstants.LIKE_FUNCTION.Equals(methodName))
             {
-                if (!obj.isValue)
+                if (!obj.isValue || isConcatValue)
                 {
                     return string.Format(SQLKeys.CONCAT, $"'%', {obj.value} ,'%'");
                 }
