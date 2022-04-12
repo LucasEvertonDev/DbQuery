@@ -125,5 +125,7 @@ namespace SIGN.Query.SignQuery
             }
             return null;
         }
+
+        /// <summary>
     }
 }

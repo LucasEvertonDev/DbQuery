@@ -1,5 +1,5 @@
-﻿using SIGN.Query.Domains;
-using SIGN.Query.Functions;
+﻿using SIGN.Query.DbFunctions;
+using SIGN.Query.Domains;
 using SIGN.Query.Repository;
 using System;
 using System.Collections.Generic;
@@ -129,6 +129,16 @@ namespace SIGN.Query.Services
         /// <returns></returns>
         public Sum Sum(dynamic prop)
         { 
+            return null;
+        }
+
+        public string Concat(params dynamic[] props)
+        {
+            return null;
+        }
+
+        public Alias Alias(object prop, string alias)
+        {
             return null;
         }
     }

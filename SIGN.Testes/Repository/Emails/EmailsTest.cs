@@ -52,6 +52,9 @@ namespace SIGN.Testes.Repository.Emails
                         .Where(ci => ci.ID.IN(ret.GenerateScriptIN()))
                         .Execute();
                 }
+
+                Insert();
+
                 transaction.Commit();
             });
         }
@@ -141,6 +144,33 @@ namespace SIGN.Testes.Repository.Emails
 
                 transaction.Commit();
             });
+        }
+
+        [TestMethod]
+        public void TestNovo()
+        {
+            ////var query = _ciEmails_ReenvioRepository
+            ////        .Select(
+            ////            a => Columns(
+            ////                    Alias(Count(a), "Count"),
+            ////                    Alias(a.Created_At, "Data")
+            ////            )
+            ////        )
+            ////        .Where(a => a.Status == 1)
+            ////        .GetQuery();
+
+
+            var query2 = _ciEmails_ReenvioRepository
+                .Select(
+                        a => Columns(
+                                Alias(Count(a), "Count"),
+                                a.Created_At,
+                                Alias(Concat("1 Email", a.EmailTo, "2 email", a.EmailFrom), "Concat")
+                        )
+                    )
+                        .Where(a => a.Status == 1
+                            && a.EmailTo == Concat("1 Email", a.EmailTo, "2 email", a.EmailFrom))
+                    .GetQuery();
         }
 
 

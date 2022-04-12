@@ -8,6 +8,10 @@ namespace SIGN.Query.Constants
 {
     public static class DbQueryConstants
     {
+        public const string ALIAS_FUNCTION = "Alias";
+
+        public const string CONCAT_FUNCTION = "Concat";
+
         public const string COUNT_FUNCTION = "Count";
 
         public const string SUM_FUNCTION = "Sum";

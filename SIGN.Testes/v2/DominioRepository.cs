@@ -123,7 +123,7 @@ namespace SIGN.Query.Test.V2
         public void CountMethod()
         {
             var query = _dominioRepository
-                            .Select(ci => Count())
+                            .Select(ci => Alias(Count(), "Count"))
                             .Distinct()
                             .Where(
                                 (Dominio) => Dominio.Codigo > 1 

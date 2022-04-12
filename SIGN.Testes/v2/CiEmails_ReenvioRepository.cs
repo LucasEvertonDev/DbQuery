@@ -78,8 +78,8 @@ namespace SIGN.Testes.V2
                 .Select<CiEmails_Reenvio, CiEmails_Anexos>(
                     (em, anx) =>
                         Columns(
-                            Count(anx.CiEmails_Reenvio_Id),
-                            Sum(anx.Tipo),
+                            Alias(Count(anx.CiEmails_Reenvio_Id), "Count"),
+                            Alias(Sum(anx.Tipo), "Sum_Tipo"),
                             anx.CiEmails_Reenvio_Id
                         )
                 )
@@ -178,7 +178,7 @@ namespace SIGN.Testes.V2
                 .Select<CiEmails_Reenvio, CiEmails_Anexos>(
                     (em, anx) =>
                         Columns(
-                            Min(anx.ID),
+                            Alias(Min(anx.ID), "Min_ID"),
                             anx.CiEmails_Reenvio_Id
                         )
                 )

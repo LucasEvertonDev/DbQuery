@@ -59,7 +59,9 @@ namespace SIGN.Query.SignQuery
                 DbQueryConstants.SUM_FUNCTION,
                 DbQueryConstants.MAX_FUNCTION, 
                 DbQueryConstants.MIN_FUNCTION,
-                DbQueryConstants.COUNT_FUNCTION
+                DbQueryConstants.COUNT_FUNCTION,
+                DbQueryConstants.ALIAS_FUNCTION,
+                DbQueryConstants.CONCAT_FUNCTION
             };
         }
 
@@ -243,9 +245,20 @@ namespace SIGN.Query.SignQuery
         /// </summary>
         /// <param name="val"></param>
         /// <returns></returns>
-        protected object TreatValue(dynamic val, bool useQuotes = false)
+        protected object TreatValue(dynamic val, bool useQuotes = false, dynamic expression = null)
         {
-            if (val == null || string.IsNullOrEmpty(val?.ToString()) && useQuotes)
+            if (expression != null)
+            { 
+                if(expression is MethodCallExpression)
+                {
+                    if ("Concat".Equals(expression.Method.Name))
+                    {
+                        return val;
+                    }
+                }
+            }
+
+            if (val == null || (val.GetType() != typeof(string) && string.IsNullOrEmpty(val?.ToString())) && useQuotes)
             {
                 return SQLKeys.NULL;
             }
@@ -298,7 +311,8 @@ namespace SIGN.Query.SignQuery
             {
                 dynamic r = right;
                 if (ContainsProperty(r, "Method") && ("LIKE".Equals(r.Method.Name)
-                    || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name)))
+                    || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name) 
+                    || "Concat".Equals(r.Method.Name)))
                 {
                     return ExtractMethod(right);
                 }
@@ -332,6 +346,10 @@ namespace SIGN.Query.SignQuery
                 }
             }
             if (right != null && ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.Call)
+            {
+                return Expression.Lambda(right).Compile().DynamicInvoke();
+            }
+            else if (right != null && ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.ConvertChecked)
             {
                 return Expression.Lambda(right).Compile().DynamicInvoke();
             }
@@ -433,6 +451,7 @@ namespace SIGN.Query.SignQuery
         protected List<string> GetPropertiesExpression(Expression expression, bool useAlias = false)
         {
             var properties = new List<string>();
+            _currentExpression = expression;
             dynamic exp = expression;
             if (expression.Type == typeof(Func<T, dynamic>))
             {
@@ -479,11 +498,18 @@ namespace SIGN.Query.SignQuery
                 {
                     if (_defaultFunctions.Exists(f => f.Equals(exp.Method.Name)))
                     {
+                        if (DbQueryConstants.ALIAS_FUNCTION.Equals(exp.Method.Name))
+                        { 
+                            var ret = GetPropertyOfSingleExpression(exp.Arguments[0], hasParamter, false);
+                            return String.Concat(ret, SQLKeys.AS_WITH_SPACE, exp.Arguments[1].Value); 
+                        }
                         if (DbQueryConstants.COUNT_FUNCTION.Equals(exp.Method.Name) && !hasParamter)
                         {
-                            return useAlias 
-                                    ? string.Concat(SQLKeys.COUNT, SQLKeys.AS_WITH_SPACE, DbQueryConstants.COUNT_FUNCTION)
-                                    : SQLKeys.COUNT;
+                            return SQLKeys.COUNT;
+                        }
+                        else if (DbQueryConstants.CONCAT_FUNCTION.Equals(exp.Method.Name))
+                        {
+                            return ConcatFunction(exp);
                         }
                         else
                         {
@@ -491,9 +517,7 @@ namespace SIGN.Query.SignQuery
                             {
                                 var d = exp.Body.Arguments[0];
                                 var aux = d.Expressions[0].Arguments[0].Operand;
-                                return useAlias
-                                    ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
-                                    : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                                return string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
                             }
                             else
                             {
@@ -501,16 +525,12 @@ namespace SIGN.Query.SignQuery
                                 if (ContainsProperty(d, "Expressions"))
                                 {
                                     var aux = d.Expressions[0].Arguments[0].Operand;
-                                    return useAlias
-                                        ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
-                                        : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                                    return string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
                                 }
-                                else 
+                                else
                                 {
                                     var aux = d.Operand;
-                                    return useAlias
-                                        ? string.Format(string.Concat(exp.Method.Name, "({0}) {1} {2}"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member), SQLKeys.AS, exp.Method.Name + "_" + GetCollumnName(aux.Member))
-                                        : string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
+                                    return string.Format(string.Concat(exp.Method.Name, "({0})"), GetPropretyFullName(aux.Expression.Type, aux.Expression, aux.Member));
                                 }
                             }
                         }
@@ -518,6 +538,44 @@ namespace SIGN.Query.SignQuery
                 }
             }
             return string.Empty;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exp"></param>
+        private string ConcatFunction(dynamic exp)
+        {
+            var d = exp.Arguments[0];
+            var list = new List<String>();
+            foreach (var xp in d.Expressions)
+            {
+                string value = "";
+                if (xp is MemberExpression)
+                {
+                    bool isValue = true;
+                    isValue = IsValue(xp);
+
+                    if (!isValue)
+                    {
+                        var propertyInfo1 = (PropertyInfo)xp.Member;
+
+                        var name1 = GetCollumnName(propertyInfo1);
+
+                        value = GetTableName(propertyInfo1.DeclaringType, xp) + "." + name1;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = TreatValue(GetValue(xp), true);
+                }
+
+                value = $"CONVERT(varchar, {value})";
+                list.Add(value);
+            }
+
+            return $"Concat({string.Join(",", list)})";
         }
 
         /// <summary>
@@ -554,6 +612,10 @@ namespace SIGN.Query.SignQuery
             if (method is MethodCallExpression)
             {
                 var mtd = (MethodCallExpression)method;
+                if (DbQueryConstants.CONCAT_FUNCTION.Equals(mtd.Method.Name))
+                {
+                    return ConcatFunction(method);
+                }
                 comparador = TreatComparerByMethod(mtd.Method.Name);
 
                 if (mtd.Arguments.Count > 0)
@@ -716,6 +778,11 @@ namespace SIGN.Query.SignQuery
                     }
                 }
             }
+            else if (left != null && ContainsProperty(expression, "Method") && DbQueryConstants.CONCAT_FUNCTION.Equals(((dynamic)left).Method?.Name))
+            {
+                oldExpression = expression.ToString();
+                value = string.Format("{0} {1} {2}", ExtractMethod(left), "{0}", "{1}");
+            }
             else if (left == null)
             {
                 oldExpression = expression.ToString();
@@ -726,7 +793,6 @@ namespace SIGN.Query.SignQuery
             {
                 var leftVal = DememberExpression(left);
                 var rigthVal = DememberExpression(right);
-
                 value = string.Format("{0} {1} {2}", leftVal, equalty, rigthVal);
             }
             else
@@ -814,7 +880,7 @@ namespace SIGN.Query.SignQuery
         /// <returns></returns>
         protected string TreatExpression(Expression right, string equality, string value)
         {
-            var val = TreatValue(GetValue(right), true);
+            var val = TreatValue(GetValue(right), true, right);
             if (SQLKeys.NULL.Equals(val))
             {
                 if (SQLKeys.EQUALS.Equals(equality))
