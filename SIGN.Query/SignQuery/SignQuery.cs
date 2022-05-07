@@ -57,11 +57,12 @@ namespace SIGN.Query.SignQuery
             _defaultFunctions = new List<string>()
             {
                 DbQueryConstants.SUM_FUNCTION,
-                DbQueryConstants.MAX_FUNCTION, 
+                DbQueryConstants.MAX_FUNCTION,
                 DbQueryConstants.MIN_FUNCTION,
                 DbQueryConstants.COUNT_FUNCTION,
                 DbQueryConstants.ALIAS_FUNCTION,
-                DbQueryConstants.CONCAT_FUNCTION
+                DbQueryConstants.CONCAT_FUNCTION,
+                DbQueryConstants.ALL_COLUMNS
             };
         }
 
@@ -88,9 +89,13 @@ namespace SIGN.Query.SignQuery
             {
                 return exp.Expression.Name;
             }
-            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call)
+            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count > 0)
             {
                 return exp.Arguments[0].Expression.Name;
+            }
+            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count == 0)
+            {
+                return exp.Object.Name;
             }
             var displayName = type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault() as TableAttribute;
 
@@ -147,12 +152,18 @@ namespace SIGN.Query.SignQuery
         /// 
         /// </summary>
         /// <returns></returns>
-        protected List<string> GetProperties()
+        protected List<string> GetProperties(dynamic exp = null, Type type = null)
         {
             bool insert = this.GetType() == typeof(InsertQuery<T>) || this.GetType() == typeof(InsertNotExistsQuery<T>); ;
-
             List<PropertyInfo> infs = typeof(T).GetProperties().ToList();
+            Type currentType = typeof(T);
             var list = new List<string>();
+
+            if (type != null)
+            {
+                currentType = type;
+                infs = type.GetProperties().ToList();
+            }
 
             infs.ForEach(prop =>
             {
@@ -163,11 +174,11 @@ namespace SIGN.Query.SignQuery
                         var propName = prop.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                         if (propName != null)
                         {
-                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? propName.DisplayName : GetTableName(typeof(T)) + SQLKeys.SINGLE_POINT + propName.DisplayName);
+                            list.Add(string.IsNullOrEmpty(GetTableName(currentType, exp)) ? propName.DisplayName : GetTableName(currentType, exp) + SQLKeys.SINGLE_POINT + propName.DisplayName);
                         }
                         else
                         {
-                            list.Add(string.IsNullOrEmpty(GetTableName(typeof(T))) ? prop.Name : GetTableName(typeof(T)) + SQLKeys.SINGLE_POINT + prop.Name);
+                            list.Add(string.IsNullOrEmpty(GetTableName(currentType, exp)) ? prop.Name : GetTableName(currentType, exp) + SQLKeys.SINGLE_POINT + prop.Name);
                         }
                     }
                 }
@@ -248,10 +259,10 @@ namespace SIGN.Query.SignQuery
         protected object TreatValue(dynamic val, bool useQuotes = false, dynamic expression = null)
         {
             if (expression != null)
-            { 
-                if(expression is MethodCallExpression)
+            {
+                if (expression is MethodCallExpression)
                 {
-                    if ("Concat".Equals(expression.Method.Name))
+                    if (DbQueryConstants.CONCAT_FUNCTION.Equals(expression.Method.Name))
                     {
                         return val;
                     }
@@ -266,6 +277,10 @@ namespace SIGN.Query.SignQuery
             if (val.GetType() == typeof(DateTime))
             {
                 return useQuotes ? $"'{val.ToString(SQLKeys.DATE_FORMAT)}'" : val.ToString(SQLKeys.DATE_FORMAT);
+            }
+            if (val.GetType() == typeof(DateTimeOffset))
+            {
+                return useQuotes ? $"'{val.ToString(SQLKeys.DATE_OFF_SET_FORMAT)}'" : val.ToString(SQLKeys.DATE_OFF_SET_FORMAT);
             }
             else if (val.GetType() == typeof(bool))
             {
@@ -311,8 +326,8 @@ namespace SIGN.Query.SignQuery
             {
                 dynamic r = right;
                 if (ContainsProperty(r, "Method") && ("LIKE".Equals(r.Method.Name)
-                    || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name) 
-                    || "Concat".Equals(r.Method.Name)))
+                    || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name)
+                    || DbQueryConstants.CONCAT_FUNCTION.Equals(r.Method.Name)))
                 {
                     return ExtractMethod(right);
                 }
@@ -349,7 +364,11 @@ namespace SIGN.Query.SignQuery
             {
                 return Expression.Lambda(right).Compile().DynamicInvoke();
             }
-            else if (right != null && ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.ConvertChecked)
+            else if (right != null && ContainsProperty(right, "NodeType") && (right.NodeType == ExpressionType.ConvertChecked || right.NodeType == ExpressionType.Convert))
+            {
+                return Expression.Lambda(right).Compile().DynamicInvoke();
+            }
+            else if (right != null && ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.Lambda)
             {
                 return Expression.Lambda(right).Compile().DynamicInvoke();
             }
@@ -401,6 +420,9 @@ namespace SIGN.Query.SignQuery
             if (typeof(Repository<T>) == this.GetType())
             {
                 this._alias = null;
+                this._isScalar = false;
+                this._useAlias = false;
+                this._domain = null;
             }
             return obj;
         }
@@ -471,7 +493,7 @@ namespace SIGN.Query.SignQuery
                     properties.Add(GetPropertyOfSingleExpression(exp, false, useAlias));
                 }
             }
-           
+
             return properties;
         }
 
@@ -492,18 +514,30 @@ namespace SIGN.Query.SignQuery
                 }
                 if (exp.NodeType == ExpressionType.Convert)
                 {
-                    return GetPropretyFullName(exp.Operand.Expression.Type, exp.Operand);
+                    if (ContainsProperty(exp.Operand, "Expression"))
+                    {
+                        return GetPropretyFullName(exp.Operand.Expression.Type, exp.Operand);
+                    }
+                    else
+                    {
+                        return exp.Operand.Value?.ToString();
+                    }
                 }
                 if (exp.NodeType == ExpressionType.Call)
                 {
                     if (_defaultFunctions.Exists(f => f.Equals(exp.Method.Name)))
                     {
-                        if (DbQueryConstants.ALIAS_FUNCTION.Equals(exp.Method.Name))
-                        { 
-                            var ret = GetPropertyOfSingleExpression(exp.Arguments[0], hasParamter, false);
-                            return String.Concat(ret, SQLKeys.AS_WITH_SPACE, exp.Arguments[1].Value); 
+                        if (DbQueryConstants.ALL_COLUMNS.Equals(exp.Method.Name))
+                        {
+                            List<string> props = GetProperties(exp, exp.Object.Type);
+                            return string.Join(", ", props);
                         }
-                        if (DbQueryConstants.COUNT_FUNCTION.Equals(exp.Method.Name) && !hasParamter)
+                        else if (DbQueryConstants.ALIAS_FUNCTION.Equals(exp.Method.Name))
+                        {
+                            var ret = GetPropertyOfSingleExpression(exp.Arguments[0], hasParamter, false);
+                            return String.Concat(ret, SQLKeys.AS_WITH_SPACE, exp.Arguments[1].Value);
+                        }
+                        else if (DbQueryConstants.COUNT_FUNCTION.Equals(exp.Method.Name) && !hasParamter)
                         {
                             return SQLKeys.COUNT;
                         }
@@ -571,11 +605,11 @@ namespace SIGN.Query.SignQuery
                     value = TreatValue(GetValue(xp), true);
                 }
 
-                value = $"CONVERT(varchar, {value})";
+                value = string.Format(SQLKeys.CONVERT_VARCHAR, value);
                 list.Add(value);
             }
 
-            return $"Concat({string.Join(",", list)})";
+            return string.Format(SQLKeys.CONCAT, string.Join(",", list));
         }
 
         /// <summary>
@@ -669,8 +703,12 @@ namespace SIGN.Query.SignQuery
                             {
                                 valueB = ValidateValueByMethod(values[1], mtd.Method.Name, true);
                             }
+                            else
+                            {
+                                valueB = ValidateValueByMethod(values[1], mtd.Method.Name, false);
+                            }
                         }
-                        else 
+                        else
                         {
                             valueB = ValidateValueByMethod(values[1], mtd.Method.Name, false);
                         }
@@ -697,12 +735,12 @@ namespace SIGN.Query.SignQuery
                 }
                 return $"'%{obj.value}%'";
             }
-            else if (DbQueryConstants.IN_FUNCTION.Equals(methodName) 
+            else if (DbQueryConstants.IN_FUNCTION.Equals(methodName)
                     || DbQueryConstants.NOT_IN_FUNCTION.Equals(methodName))
             {
                 return obj.value.ToString();
             }
-            else 
+            else
             {
                 return valorTratado;
             }
@@ -1021,13 +1059,13 @@ namespace SIGN.Query.SignQuery
         protected JoinQuery<T> IncludeJoinOnQuery<J, P>(Expression expression, string strJoin)
         {
             this._currentExpression = expression;
-            var aux = _useAlias 
+            var aux = _useAlias
                 ? string.Concat(GetFullName(typeof(P)), SQLKeys.AS_WITH_SPACE, ((dynamic)expression).Parameters[1].Name)
                 : GetFullName(typeof(P));
             _query += string.Format(strJoin, aux, this.DememberExpression(expression));
             return CreateDbQuery<JoinQuery<T>>();
         }
-  
+
         /// <summary>
         /// 
         /// </summary>

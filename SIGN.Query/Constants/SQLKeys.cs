@@ -23,7 +23,7 @@ namespace SIGN.Query.Constants
         public const string UPDATE = "UPDATE {0} SET {1} {2}";
 
         public const string ALL_COLUMNS = "*";
- 
+
         public const string ASC = "ASC";
 
         public const string DESC = "DESC";
@@ -31,7 +31,7 @@ namespace SIGN.Query.Constants
         public const string SELECT_ALL = "SELECT *";
 
         public const string SELECT_KEY = "SELECT";
- 
+
         public const string SELECT_DISTINCT = "SELECT DISTINCT";
 
         public const string SELECT_TOP = "SELECT TOP({0})";
@@ -39,9 +39,9 @@ namespace SIGN.Query.Constants
         public const string SELECT_DISTINCT_TOP = "SELECT DISTINCT TOP({0})";
 
         public const string OUTPUT_INSERTED = "OUTPUT Inserted.";
- 
+
         public const string T_A = "..";
-   
+
         public const string EQUALS = "=";
 
         public const string AND = "AND";
@@ -49,21 +49,23 @@ namespace SIGN.Query.Constants
         public const string AND_WITH_SPACE = " AND ";
 
         public const string OR = "OR";
- 
+
         public const string NOT_EQUAL = "<>";
-     
+
         public const string GREATER_THAN = ">";
-     
+
         public const string LESS_THAN = "<";
-     
+
         public const string LESS_THAN_OR_EQUAL = "<=";
- 
+
         public const string GREATER_THAN_OR_EQUAL = ">=";
-   
+
         public const string NULL = "NULL";
-      
+
         public const string DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-       
+
+        public const string DATE_OFF_SET_FORMAT = "yyyy-MM-dd HH:mm:ss.fffffffzzz";
+
         public const string DECIMAL_FORMAT = "0.##########";
 
         public const string EQUALS_WITH_SPACE = " = ";
@@ -71,6 +73,8 @@ namespace SIGN.Query.Constants
         public const string COUNT = "COUNT(*)";
 
         public const string SINGLE_POINT = ".";
+
+        public const string CONVERT_VARCHAR = "CONVERT(varchar, {0})";
 
         public const string CONCAT = "CONCAT({0})";
 

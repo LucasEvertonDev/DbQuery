@@ -8,6 +8,8 @@ namespace SIGN.Query.Constants
 {
     public static class DbQueryConstants
     {
+        public const string ALL_COLUMNS = "AllColumns";
+
         public const string ALIAS_FUNCTION = "Alias";
 
         public const string CONCAT_FUNCTION = "Concat";
@@ -33,5 +35,12 @@ namespace SIGN.Query.Constants
         public const string AND_ALSO = "AndAlso";
 
         public const string OR_ELSE = "OrElse";
+
+        public const string INSERT = "INSERT";
+
+        public const string UPDATE = "UPDATE";
+
+        public const string DELETE = "DELETE";
     }
+
 }
