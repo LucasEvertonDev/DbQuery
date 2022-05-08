@@ -58,7 +58,7 @@
       <Project>{13fb4aaa-ad5f-4394-8c63-4a8e6505fad6}</Project>
       <Name>Application.Core.Domains</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DBQuery\Application.DBQuery.csproj">
+    <ProjectReference Include="..\Application.DBQuery\Application.DBQuery.csproj">
       <Project>{9a97580d-c94d-476f-aa96-a7a9fb80247c}</Project>
       <Name>Application.DBQuery</Name>
     </ProjectReference>
