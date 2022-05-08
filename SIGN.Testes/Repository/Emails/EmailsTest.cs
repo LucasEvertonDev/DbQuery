@@ -1,9 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIGN.Query.Domains.SignCi;
-using SIGN.Query.Domains.SignEst;
-using SIGN.Query.Extensions;
-using SIGN.Query.Repository;
-using SIGN.Query.Services;
+﻿using Application.Domains;
+using DBQuery;
+using DBQuery.Core.Transaction;
+using DBQuery.Domains;
+using DBQuery.Core.Extensions;
+using DBQuery.Repository;
+using DBQuery.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 namespace SIGN.Testes.Repository.Emails
 {
     [TestClass]
-    public class EmailsTest : SignQueryService
+    public class EmailsTest : DbQueryService
     {
         protected string CONEXAO = @"Data Source=LAPTOP-JGT9FNST\SQLEXPRESS;Integrated Security=True";
         protected Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; } = new Repository<CiEmails_Reenvio>();
@@ -23,7 +25,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void Delete()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
 
@@ -62,7 +64,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void Insert()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var ret = _ciEmails_ReenvioRepository.Insert(email).Execute().GetOutput();
@@ -91,7 +93,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void SimpleSelect()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository
@@ -109,12 +111,12 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void Sum()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository
                     .Select<CiEmails_Reenvio, CiEmails_Anexos>(
-                        (em, anx) => 
+                        (em, anx) =>
                             Columns(
                                 Count(anx.CiEmails_Reenvio_Id),
                                 Sum(anx.Tipo),
@@ -128,7 +130,7 @@ namespace SIGN.Testes.Repository.Emails
                         (em, anx) => em.ID != 0
                     )
                     .GroupBy<CiEmails_Reenvio, CiEmails_Anexos>(
-                        (em, anx) => 
+                        (em, anx) =>
                             Columns(
                                 anx.CiEmails_Reenvio_Id
                             )
@@ -177,7 +179,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void LeftJoin()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository
@@ -212,7 +214,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void INNERJOIN()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository.UseAlias("em")
@@ -251,7 +253,7 @@ namespace SIGN.Testes.Repository.Emails
         [TestMethod]
         public void Min()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
                 var itens = _ciEmails_ReenvioRepository

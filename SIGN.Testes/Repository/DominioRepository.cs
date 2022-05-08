@@ -1,14 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIGN.Query.Domains.SignCi;
-using SIGN.Query.Extensions;
-using SIGN.Query.Repository;
-using SIGN.Query.Services;
+﻿using Application.Domains;
+using DBQuery;
+using DBQuery.Core.Extensions;
+using DBQuery.Repository;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace SIGN.Query.Test
 {
     [TestClass]
-    public class DominioRepository : SignQueryService
+    public class DominioRepository : DbQueryService
     {
         private Repository<Dominio> _dominioRepository { get; set; } = new Repository<Dominio>();
         private Repository<ItemDominio> _itemDominioRepository { get; set; } = new Repository<ItemDominio>();
@@ -126,7 +126,7 @@ namespace SIGN.Query.Test
                             .Select(ci => Alias(Count(), "Count"))
                             .Distinct()
                             .Where(
-                                (Dominio) => Dominio.Codigo > 1 
+                                (Dominio) => Dominio.Codigo > 1
                                 && Dominio.Descricao.LIKE("TESTE_LIKE") && Dominio.Nome != null
                             )
                             .GetQuery();
@@ -141,7 +141,7 @@ namespace SIGN.Query.Test
                             .Select()
                             .Distinct()
                             .Where(
-                                (Dominio) => Dominio.Codigo > 1 && Dominio.Descricao.LIKE("TESTE_LIKE") 
+                                (Dominio) => Dominio.Codigo > 1 && Dominio.Descricao.LIKE("TESTE_LIKE")
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
                             .OrderBy(
@@ -159,8 +159,8 @@ namespace SIGN.Query.Test
                             .Select()
                             .Distinct()
                             .Where(
-                                (Dominio) => Dominio.Codigo > TesteFunction() 
-                                && Dominio.Descricao.LIKE("TESTE_LIKE") 
+                                (Dominio) => Dominio.Codigo > TesteFunction()
+                                && Dominio.Descricao.LIKE("TESTE_LIKE")
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
                             .OrderBy(

@@ -1,15 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIGN.Query.Domains;
-using SIGN.Query.Domains.SignCi;
-using SIGN.Query.Extensions;
-using SIGN.Query.Repository;
-using SIGN.Query.Services;
+﻿using Application.Domains;
+using DBQuery;
+using DBQuery.Core.Extensions;
+using DBQuery.Repository;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace SIGN.Testes.V2
 {
     [TestClass]
-    public class CiEmails_ReenvioRepository : SignQueryService
+    public class CiEmails_ReenvioRepository : DbQueryService
     {
         private Repository<CICadUsuario> _ciCadUsuario = new Repository<CICadUsuario>();
         private Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; } = new Repository<CiEmails_Reenvio>();
@@ -208,7 +207,7 @@ namespace SIGN.Testes.V2
         [TestMethod]
         public void SelectUsuario()
         {
-            var query =_ciCadUsuario
+            var query = _ciCadUsuario
                 .UseAlias("u")
                 .Select(
                     u => Columns(

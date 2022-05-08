@@ -1,8 +1,8 @@
-﻿using SIGN.Query.Domains.SignCi;
-using SIGN.Query.Domains.SignEst;
-using SIGN.Query.Extensions;
-using SIGN.Query.Repository;
-using SIGN.Query.Services;
+﻿using Application.Domains;
+using DBQuery;
+using DBQuery.Core.Extensions;
+using DBQuery.Core.Transaction;
+using DBQuery.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +11,11 @@ using System.Threading.Tasks;
 
 namespace Console
 {
-    public class Ajuste : SignQueryService
+    public class Ajuste : DbQueryService
     {
         protected string CONEXAO = @"Data Source=LAPTOP-JGT9FNST\SQLEXPRESS;Integrated Security=True";
         protected Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; }
         protected Repository<CiEmails_Anexos> _ciEmailsAnexos_Repository { get; set; }
-
 
         public Ajuste()
         { 
@@ -58,7 +57,7 @@ namespace Console
 
         public void Delete()
         {
-            OnTransaction(CONEXAO, (SignTransaction transaction) =>
+            OnTransaction(CONEXAO, (DbTransaction transaction) =>
             {
                 var email = GetEmail();
 

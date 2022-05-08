@@ -1,15 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIGN.Query.Domains;
-using SIGN.Query.Domains.SignCi;
-using SIGN.Query.Extensions;
-using SIGN.Query.Repository;
-using SIGN.Query.Services;
+﻿using Application.Domains;
+using DBQuery;
+using DBQuery.Core.Extensions;
+using DBQuery.Repository;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace SIGN.Testes.Repository
 {
     [TestClass]
-    public class CiEmails_ReenvioRepository : SignQueryService
+    public class CiEmails_ReenvioRepository : DbQueryService
     {
         private Repository<CiEmails_Reenvio> _ciEmails_ReenvioRepository { get; set; } = new Repository<CiEmails_Reenvio>();
         [TestMethod]
