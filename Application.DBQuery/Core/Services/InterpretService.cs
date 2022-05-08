@@ -39,6 +39,11 @@ namespace DBQuery.Core.Services
             _expressions = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="levelModels"></param>
+        /// <returns></returns>
         public string StartToInterpret(List<DBQueryLevelModel> levelModels)
         {
             _levelModels = levelModels;
