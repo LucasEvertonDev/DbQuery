@@ -81,6 +81,7 @@ namespace DBQuery.Core.Services
             }
         }
 
+        #region Generate Scripts
 
         /// <summary>
         /// 
@@ -123,7 +124,7 @@ namespace DBQuery.Core.Services
             var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
             if (where != null)
             {
-                query += GetWhereScript(where.LevelExpression);
+                query += AddWhere(where.LevelExpression);
             }
             return query;
         }
@@ -168,15 +169,15 @@ namespace DBQuery.Core.Services
                 }
                 else if(step.LevelType == StepType.WHERE)
                 {
-                    query += GetWhereScript(step.LevelExpression);
+                    query += AddWhere(step.LevelExpression);
                 }
                 else if (step.LevelType == StepType.JOIN)
                 {
-                    query += GetScriptJoinQuery(step.LevelExpression, DBKeysConstants.INNER_JOIN);
+                    query += AddJoin(step.LevelExpression, DBKeysConstants.INNER_JOIN);
                 }
                 else if (step.LevelType == StepType.LEFT_JOIN)
                 {
-                    query += GetScriptJoinQuery(step.LevelExpression, DBKeysConstants.LEFT_JOIN);
+                    query += AddJoin(step.LevelExpression, DBKeysConstants.LEFT_JOIN);
                 }
                 else if (step.LevelType == StepType.ORDER_BY_ASC)
                 {
@@ -209,12 +210,14 @@ namespace DBQuery.Core.Services
             var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
             if (where != null)
             {
-                query += GetWhereScript(where.LevelExpression);
+                query += AddWhere(where.LevelExpression);
             }
 
             return query;
         }
+        #endregion
 
+        #region Iterpret Expressions
 
         /// <summary>
         /// 
@@ -244,6 +247,212 @@ namespace DBQuery.Core.Services
             return _query;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="tipo"></param>
+        protected string AddOrderBy(string tipo, Expression expressions, string query)
+        {
+            bool contains = query.Contains(DBKeysConstants.ORDER_BY);
+            if (!contains)
+            {
+                query += DBKeysConstants.ORDER_BY_WITH_SPACE;
+            }
+            if (expressions != null)
+            {
+                var properties = GetPropertiesExpression(expressions);
+                if (contains && properties.Count > 0)
+                {
+                    query += ", " + string.Join($" {tipo}, ", properties) + $" {tipo}";
+                }
+                else
+                {
+                    query += string.Join($" {tipo}, ", properties) + $" {tipo}";
+                }
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Conditions"></param>
+        protected string AddWhere(Expression expression)
+        {
+            string condition = string.Empty;
+            this._currentExpression = expression;
+            if (expression != null)
+            {
+                var splitCriteria = new List<string> { DBQueryConstants.EXPRESSION_DIVISOR };
+                string expressionText = ((Expression)((dynamic)expression).Body).ToString();
+                string exp = expressionText.Split(splitCriteria.ToArray(), StringSplitOptions.RemoveEmptyEntries)[0];
+
+                DememberExpression(((dynamic)expression).Body);
+
+                if (_expressions.Keys.ToList().Exists(a => exp.Contains(a)))
+                {
+                    _expressions.Keys.ToList().ForEach(key =>
+                    {
+                        exp = exp.Replace(key, _expressions[key]);
+                    });
+
+                    exp = exp.Replace(DBQueryConstants.AND_ALSO, DBKeysConstants.AND)
+                            .Replace(DBQueryConstants.OR_ELSE, DBKeysConstants.OR);
+
+                    condition += string.Concat(DBKeysConstants.WHERE_WITH_SPACE, exp);
+                }
+                else
+                {
+                    condition += string.Concat(DBKeysConstants.WHERE_WITH_SPACE, exp);
+                }
+            }
+
+            return condition;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="J"></typeparam>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="expression"></param>
+        /// <param name="strJoin"></param>
+        /// <returns></returns>
+        protected string AddJoin(Expression expression, string strJoin)
+        {
+            var query = string.Empty;
+            this._currentExpression = expression;
+            var aux = _useAlias
+                ? string.Concat(GetFullName(((dynamic)expression).Parameters[1].Type), DBKeysConstants.AS_WITH_SPACE, ((dynamic)expression).Parameters[1].Name)
+                : GetFullName(((dynamic)expression).Parameters[1].Type);
+
+            query += string.Format(strJoin, aux, this.DememberExpression(expression));
+
+            return query;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected string GetTableName(Type type, dynamic exp = null)
+        {
+            if (_useAlias && exp != null && ContainsProperty(exp, "Expression"))
+            {
+                return exp.Expression.Name;
+            }
+            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count > 0)
+            {
+                return exp.Arguments[0].Expression.Name;
+            }
+            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count == 0)
+            {
+                return exp.Object.Name;
+            }
+            var displayName = type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault() as TableAttribute;
+
+            return displayName != null ? displayName.TableName : type.Name;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected string GetPrimaryKeyName(Type type)
+        {
+            string key = string.Empty;
+            List<PropertyInfo> infs = type.GetProperties().ToList();
+            infs.ForEach(prop =>
+            {
+                var attr = prop.GetCustomAttributes(typeof(IdentityAttribute), false).FirstOrDefault() as IdentityAttribute;
+                if (attr != null)
+                {
+                    key = string.Concat(DBKeysConstants.OUTPUT_INSERTED, prop.Name);
+                }
+            });
+            return key;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string GetDatabaseName(Type type)
+        {
+            var displayName = type.GetCustomAttributes(typeof(DatabaseAttribute), true).FirstOrDefault() as DatabaseAttribute;
+            if (displayName != null)
+            {
+                return displayName.DatabaseName;
+            }
+            else
+            {
+                throw new Exception("Informe o nome da database");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected List<string> GetObjectClausules()
+        {
+            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS || a.LevelType == StepType.UPDATE).First().LevelValue;
+            var list = new List<string>();
+            domain.GetType().GetProperties().ToList().ForEach(prop =>
+            {
+                if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0 && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0)
+                {
+                    var val = TreatValue((dynamic)prop.GetValue(domain), true);
+                    list.Add(string.Concat(prop.Name, DBKeysConstants.EQUALS_WITH_SPACE, val?.ToString()));
+                }
+            });
+            return list;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected List<string> GetValuesToInsert()
+        {
+            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS).First().LevelValue;
+            var values = new List<string>();
+            domain.GetType().GetProperties().ToList().ForEach(prop =>
+            {
+                if ((prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0))
+                {
+                    if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
+                    {
+                        var val = TreatValue((dynamic)prop.GetValue(domain), true);
+                        values.Add(val?.ToString());
+                    }
+                }
+            });
+            return values;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected string GetPropretyFullName(Type type, dynamic exp, dynamic member = null)
+        {
+            return string.Concat(GetTableName(type, exp), DBKeysConstants.SINGLE_POINT, GetCollumnName(member == null ? exp.Member : member));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        protected string GetCollumnName(PropertyInfo prop)
+        {
+            var att1 = prop.GetCustomAttributes(typeof(DisplayNameAttribute), false);
+            var name1 = att1.Length > 0 ? (att1[0] as DisplayNameAttribute).DisplayName : prop.Name;
+            return name1;
+        }
 
         /// <summary>
         /// 
@@ -353,135 +562,7 @@ namespace DBQuery.Core.Services
             }
             return string.Empty;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="J"></typeparam>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="expression"></param>
-        /// <param name="strJoin"></param>
-        /// <returns></returns>
-        protected string GetScriptJoinQuery(Expression expression, string strJoin)
-        {
-            var query = string.Empty;
-            this._currentExpression = expression;
-            var aux = _useAlias
-                ? string.Concat(GetFullName(((dynamic)expression).Parameters[1].Type), DBKeysConstants.AS_WITH_SPACE, ((dynamic)expression).Parameters[1].Name)
-                : GetFullName(((dynamic)expression).Parameters[1].Type);
-
-            query += string.Format(strJoin, aux, this.DememberExpression(expression));
-
-            return query;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="tipo"></param>
-        protected string AddOrderBy(string tipo, Expression expressions, string query)
-        {
-            bool contains = query.Contains(DBKeysConstants.ORDER_BY);
-            if (!contains)
-            {
-                query += DBKeysConstants.ORDER_BY_WITH_SPACE;
-            }
-            if (expressions != null)
-            {
-                var properties = GetPropertiesExpression(expressions);
-                if (contains && properties.Count > 0)
-                {
-                    query += ", " + string.Join($" {tipo}, ", properties) + $" {tipo}";
-                }
-                else
-                {
-                    query += string.Join($" {tipo}, ", properties) + $" {tipo}";
-                }
-            }
-
-            return query;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected string GetTableName(Type type, dynamic exp = null)
-        {
-            if (_useAlias && exp != null && ContainsProperty(exp, "Expression"))
-            {
-                return exp.Expression.Name;
-            }
-            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count > 0)
-            {
-                return exp.Arguments[0].Expression.Name;
-            }
-            if (_useAlias && exp != null && ContainsProperty(exp, "NodeType") && exp.NodeType == ExpressionType.Call && exp.Arguments.Count == 0)
-            {
-                return exp.Object.Name;
-            }
-            var displayName = type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault() as TableAttribute;
-
-            return displayName != null ? displayName.TableName : type.Name;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected string GetPrimaryKeyName(Type type)
-        {
-            string key = string.Empty;
-            List<PropertyInfo> infs = type.GetProperties().ToList();
-            infs.ForEach(prop =>
-            {
-                var attr = prop.GetCustomAttributes(typeof(IdentityAttribute), false).FirstOrDefault() as IdentityAttribute;
-                if (attr != null)
-                {
-                    key = string.Concat(DBKeysConstants.OUTPUT_INSERTED, prop.Name);
-                }
-            });
-            return key;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public string GetDatabaseName(Type type)
-        {
-            var displayName = type.GetCustomAttributes(typeof(DatabaseAttribute), true).FirstOrDefault() as DatabaseAttribute;
-            if (displayName != null)
-            {
-                return displayName.DatabaseName;
-            }
-            else
-            {
-                throw new Exception("Informe o nome da database");
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected List<string> GetObjectClausules()
-        {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS || a.LevelType == StepType.UPDATE).First().LevelValue;
-            var list = new List<string>();
-            domain.GetType().GetProperties().ToList().ForEach(prop =>
-            {
-                if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0 && prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0)
-                {
-                    var val = TreatValue((dynamic)prop.GetValue(domain), true);
-                    list.Add(string.Concat(prop.Name, DBKeysConstants.EQUALS_WITH_SPACE, val?.ToString()));
-                }
-            });
-            return list;
-        }
-
-
+      
         /// <summary>
         /// 
         /// </summary>
@@ -518,65 +599,6 @@ namespace DBQuery.Core.Services
             });
 
             return list;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected List<string> GetValuesToInsert()
-        {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS).First().LevelValue;
-            var values = new List<string>();
-            domain.GetType().GetProperties().ToList().ForEach(prop =>
-            {
-                if ((prop.GetCustomAttributes(typeof(IdentityAttribute), false).Count() == 0))
-                {
-                    if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
-                    {
-                        var val = TreatValue((dynamic)prop.GetValue(domain), true);
-                        values.Add(val?.ToString());
-                    }
-                }
-            });
-            return values;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Conditions"></param>
-        protected string GetWhereScript(Expression expression)
-        {
-            string condition = string.Empty;
-            this._currentExpression = expression;
-            if (expression != null)
-            {
-                var splitCriteria = new List<string> { DBQueryConstants.EXPRESSION_DIVISOR };
-                string expressionText = ((Expression)((dynamic)expression).Body).ToString();
-                string exp = expressionText.Split(splitCriteria.ToArray(), StringSplitOptions.RemoveEmptyEntries)[0];
-
-                DememberExpression(((dynamic)expression).Body);
-
-                if (_expressions.Keys.ToList().Exists(a => exp.Contains(a)))
-                {
-                    _expressions.Keys.ToList().ForEach(key =>
-                    {
-                        exp = exp.Replace(key, _expressions[key]);
-                    });
-
-                    exp = exp.Replace(DBQueryConstants.AND_ALSO, DBKeysConstants.AND)
-                            .Replace(DBQueryConstants.OR_ELSE, DBKeysConstants.OR);
-
-                    condition += string.Concat(DBKeysConstants.WHERE_WITH_SPACE, exp);
-                }
-                else
-                {
-                    condition += string.Concat(DBKeysConstants.WHERE_WITH_SPACE, exp);
-                }
-            }
-
-            return condition;
         }
 
         /// <summary>
@@ -691,7 +713,7 @@ namespace DBQuery.Core.Services
             return value;
         }
 
-        // <summary>
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="right"></param>
@@ -714,7 +736,6 @@ namespace DBQuery.Core.Services
             }
             return string.Format(value, equality, val);
         }
-
 
         /// <summary>
         /// 
@@ -840,7 +861,6 @@ namespace DBQuery.Core.Services
             return string.Format(DBKeysConstants.CONCAT, string.Join(",", list));
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -892,29 +912,6 @@ namespace DBQuery.Core.Services
                 return DBKeysConstants.EQUALS;
             }
         }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected string GetPropretyFullName(Type type, dynamic exp, dynamic member = null)
-        {
-            return string.Concat(GetTableName(type, exp), DBKeysConstants.SINGLE_POINT, GetCollumnName(member == null ? exp.Member : member));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        protected string GetCollumnName(PropertyInfo prop)
-        {
-            var att1 = prop.GetCustomAttributes(typeof(DisplayNameAttribute), false);
-            var name1 = att1.Length > 0 ? (att1[0] as DisplayNameAttribute).DisplayName : prop.Name;
-            return name1;
-        }
-
 
         /// <summary>
         /// 
@@ -1142,5 +1139,6 @@ namespace DBQuery.Core.Services
                 return useQuotes ? $"'{val}'" : val;
             }
         }
+        #endregion
     }
 }
