@@ -80,6 +80,19 @@ namespace DBQuery.Core.Factory
             };
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public DBQueryLevelModel PrepareUpdateOrInsertStep(EntityBase domain)
+        {
+            return new DBQueryLevelModel
+            {
+                LevelType = StepType.UPDATE_OR_INSERT,
+                LevelValue = domain,
+                Documentation = "Reponsável por chamar a etapa update ou insert. Caso a condição encontre resultados é realizado o update se não insert"
+            };
+        }
 
         /// <summary>
         /// 

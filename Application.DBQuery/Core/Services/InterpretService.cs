@@ -80,6 +80,10 @@ namespace DBQuery.Core.Services
             {
                 return GenerateUpdateScript();
             }
+            else if (_levelModels.Exists(a => a.LevelType == StepType.UPDATE_OR_INSERT))
+            {
+                return GenerateUpdateOrInsertScript();
+            }
             else
             {
                 return "";
@@ -217,6 +221,32 @@ namespace DBQuery.Core.Services
             {
                 query += AddWhere(where.LevelExpression);
             }
+
+            return query;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private string GenerateUpdateOrInsertScript()
+        {
+            var query = String.Format(
+                DBKeysConstants.INSERT_NOT_EXISTS_ELSE_UPDATE,
+                GetFullName(typeof(TEntity)),
+                "{0}",
+                "{1}",
+                "{2}");
+
+            var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
+            if (where != null)
+            {
+                query = query.Replace("{0}", AddWhere(where.LevelExpression));
+            }
+
+            query = query.Replace("{1}", GenerateInsertScript());
+
+            query = query.Replace("{2}", GenerateUpdateScript());
 
             return query;
         }
@@ -403,7 +433,8 @@ namespace DBQuery.Core.Services
         /// <returns></returns>
         protected List<string> GetObjectClausules()
         {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS || a.LevelType == StepType.UPDATE).First().LevelValue;
+            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS
+                || a.LevelType == StepType.UPDATE || a.LevelType == StepType.UPDATE_OR_INSERT).First().LevelValue;
             var list = new List<string>();
             domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
@@ -422,7 +453,7 @@ namespace DBQuery.Core.Services
         /// <returns></returns>
         protected List<string> GetValuesToInsert()
         {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS).First().LevelValue;
+            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS || a.LevelType == StepType.UPDATE_OR_INSERT).First().LevelValue;
             var values = new List<string>();
             domain.GetType().GetProperties().ToList().ForEach(prop =>
             {

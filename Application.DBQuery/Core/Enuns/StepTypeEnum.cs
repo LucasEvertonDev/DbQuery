@@ -15,6 +15,7 @@ namespace DBQuery.Core.Enuns
         SELECT,
         CUSTOM_SELECT,
         UPDATE,
+        UPDATE_OR_INSERT,
         WHERE,
         EXECUTE,
         DISTINCT,

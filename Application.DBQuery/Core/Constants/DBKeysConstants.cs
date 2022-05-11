@@ -20,6 +20,8 @@ namespace DBQuery.Core.Constants
 
         public const string INSERT_NOT_EXISTS = "IF NOT EXISTS(SELECT * FROM {0} {1}) BEGIN {2} END ";
 
+        public const string INSERT_NOT_EXISTS_ELSE_UPDATE = "IF NOT EXISTS(SELECT * FROM {0}{1}) BEGIN {2} END ELSE BEGIN {3} END";
+
         public const string UPDATE = "UPDATE {0} SET {1} {2}";
 
         public const string ALL_COLUMNS = "*";

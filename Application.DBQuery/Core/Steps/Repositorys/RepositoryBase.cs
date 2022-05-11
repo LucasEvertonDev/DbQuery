@@ -58,6 +58,16 @@ namespace DBQuery.Repository
         /// </summary>
         /// <param name="domain"></param>
         /// <returns></returns>
+        public UpdateStep<TEntity> UpdateOrInsert(TEntity domain)
+        {
+            return InstanceNextLevel<UpdateStep<TEntity>>(_levelFactory.PrepareUpdateOrInsertStep(domain));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns></returns>
         public InsertStep<TEntity> InsertIfNotExists(TEntity domain)
         {
             return InstanceNextLevel<InsertStep<TEntity>>(_levelFactory.PrepareInsertIfNotExistsStep(domain));
