@@ -208,18 +208,21 @@ namespace SIGN.Query.Test.V2
         public void TestGroupBy()
         {
             var query = _dominioRepository
-                    .Select<CiDominio>(
+                    .Select(
                         (CiDominio) => Columns(
                             Count(),
                             CiDominio.Descricao
                         )
                     )
-                    .GroupBy<CiItemDominio>(
+                    .Where(
+                         (CiDominio) => CiDominio.Codigo == 1
+                    )
+                    .GroupBy(
                        (CiDominio) => Columns(
                             CiDominio.Descricao
                         )
                     )
-                    .OrderBy<CiItemDominio>(
+                    .OrderBy(
                         (CiDominio) => Columns(
                             CiDominio.Descricao
                         )

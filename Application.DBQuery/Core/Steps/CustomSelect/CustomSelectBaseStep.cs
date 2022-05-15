@@ -34,6 +34,25 @@ namespace DBQuery.Core.Steps.SelectSteps
         }
 
         /// <summary>
+        ///     Responsável pela etapa de condições da query
+        ///     <para>
+        ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
+        ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
+        ///     </para>
+        ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.SelectManyTables(Expression{Func{EntityBase, EntityBase, dynamic[]}})" > Clique aqui.</see></para>
+        ///     <para><see cref="InterpretService{TEntity}.AddWhere(Expression)">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <returns>
+        ///     Retorno do tipo SelectAfterWhereStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectAfterWhereStep<TEntity> Where<TEntity1>(Expression<Func<TEntity1, bool>> expression = null)
+        {
+            return InstanceNextLevel<CustomSelectAfterWhereStep<TEntity>>(_levelFactory.PrepareWhereStep(expression));
+        }
+
+        /// <summary>
         ///     Responsável pela etapa de join da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
