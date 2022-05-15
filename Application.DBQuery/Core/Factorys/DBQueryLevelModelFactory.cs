@@ -134,9 +134,9 @@ namespace DBQuery.Core.Factory
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de EXECUTE. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna uma etapa corresponte a EXECUTE</returns>
         public DBQueryStepModel PrepareExecuteStep()
         {
             return new DBQueryStepModel
@@ -147,57 +147,63 @@ namespace DBQuery.Core.Factory
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de CUSTOM_SELECT. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateSelectScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna uma etapa corresponte a CUSTOM_SELECT</returns>
         public DBQueryStepModel PrepareSelectStep(Expression expression)
         {
             return new DBQueryStepModel
             {
                 StepType = StepType.CUSTOM_SELECT,
                 StepExpression = expression,
-                Documentation = "Reponsável por chamar a etapa select de uma consulta personalizada"
+                Documentation = "Reponsável por chamar a etapa select de uma consulta customizada."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de WHERE. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateSelectScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna uma etapa corresponte a WHERE</returns>
         public DBQueryStepModel PrepareWhereStep(Expression expression)
         {
             return new DBQueryStepModel
             {
                 StepType = StepType.WHERE,
                 StepExpression = expression,
-                Documentation = "Responsável pelas condições da operação"
+                Documentation = "Responsável pelas condições da operação. A expressão deve ter um resultado booleano," +
+                " porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos," +
+                " mesmo em casos redundantes que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true"
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de DISTINCT. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateSelectScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna uma etapa corresponte a DISTINCT</returns>
         public DBQueryStepModel PrepareDistinctStep()
         {
             return new DBQueryStepModel
             {
                 StepType = StepType.DISTINCT,
-                Documentation = "Implica a Key DISTINCT a consulta acionada"
+                Documentation = "Responsável por adicionar a key distinct na query montada"
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de TOP. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateSelectScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna uma etapa corresponte a TOP</returns>
         public DBQueryStepModel PrepareTopStep(int top)
         {
             return new DBQueryStepModel
             {
                 StepType = StepType.TOP,
                 StepValue = top,
-                Documentation = "Implica a Key TOP a consulta acionada"
+                Documentation = "Responsável por adicionar a key top na query montada"
             };
         }
 

@@ -16,9 +16,11 @@ namespace DBQuery.Core.Base
     public class PersistenceStep<TEntity> : DBQuery<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
         /// <summary>
-        /// 
+        ///     Realiza a execução de toda a querie montada
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///     Retorno do tipo ResultStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação
+        /// </returns>
         public ResultStep<TEntity> Execute()
         {
             var res = ExecuteSql();
@@ -27,9 +29,11 @@ namespace DBQuery.Core.Base
         }
 
         /// <summary>
-        /// 
+        ///     Retorna a querie montada
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///     Retorno do tipo string
+        /// </returns>
         public string GetQuery()
         { 
             var query = Activator.CreateInstance<InterpretService<TEntity>>().StartToInterpret(this._steps);

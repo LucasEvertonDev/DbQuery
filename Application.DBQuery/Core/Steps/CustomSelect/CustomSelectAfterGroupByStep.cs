@@ -10,5 +10,6 @@ namespace DBQuery.Core.Steps.CustomSelects
 {
     public class CustomSelectAfterGroupByStep<TEntity> : CustomSelectOrderByStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
+
     }
 }

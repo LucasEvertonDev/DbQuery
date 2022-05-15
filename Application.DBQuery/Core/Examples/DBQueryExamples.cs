@@ -98,7 +98,28 @@ namespace SIGN.Query.Core.Examples
                      )
                      .Pagination(pageNumber: 1, pageSize: 10)
                     .Execute();
+            });
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SelectDistinct()
+        {
+            OnTransaction(this, Conexao, (transaction) =>
+            {
+                _dominioRepository.Select().Distinct().Where(CiDominio => CiDominio.Codigo == 1).Execute();
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SelectTop()
+        {
+            OnTransaction(this, Conexao, (transaction) =>
+            {
+                _dominioRepository.Select().Top(10).Where(CiDominio => CiDominio.Codigo == 1).Execute();
             });
         }
 
@@ -160,6 +181,7 @@ namespace SIGN.Query.Core.Examples
 
                 // Function Alias 
                 _dominioRepository.Select(CiDominio => Alias(CiDominio.Codigo, "Cod")).Execute();
+
             });
         }
 
