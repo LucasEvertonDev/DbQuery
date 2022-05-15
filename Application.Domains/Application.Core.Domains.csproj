@@ -51,8 +51,8 @@
     <Compile Include="Entities\SignCi\CiEmails_Anexos.cs" />
     <Compile Include="Entities\SignCi\CiEmails_BlackList.cs" />
     <Compile Include="Entities\SignCi\CiEmails_Reenvio.cs" />
-    <Compile Include="Entities\SignCi\Dominio.cs" />
-    <Compile Include="Entities\SignCi\ItemDominio.cs" />
+    <Compile Include="Entities\SignCi\CiDominio.cs" />
+    <Compile Include="Entities\SignCi\CiItemDominio.cs" />
     <Compile Include="Entities\SignCi\SignCi.cs" />
     <Compile Include="Entities\SignEst\SignEst.cs" />
     <Compile Include="Entities\SignEst\TesteDecimal.cs" />

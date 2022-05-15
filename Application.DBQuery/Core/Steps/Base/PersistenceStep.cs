@@ -1,5 +1,4 @@
-﻿using Application.Domains.Entities;
-using DBQuery.Core.Services;
+﻿using DBQuery.Core.Services;
 using DBQuery.Core.Steps;
 using DBQuery.Core.Extensions;
 using System;
@@ -10,11 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DBQuery.Core.Enuns;
+using Application.Domains.Entities;
 
 namespace DBQuery.Core.Base
 {
     public class PersistenceStep<TEntity> : DBQuery<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public ResultStep<TEntity> Execute()
         {
             var res = ExecuteSql();
@@ -22,6 +26,10 @@ namespace DBQuery.Core.Base
             return new ResultStep<TEntity>(res);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetQuery()
         { 
             var query = Activator.CreateInstance<InterpretService<TEntity>>().StartToInterpret(this._steps);
@@ -29,6 +37,7 @@ namespace DBQuery.Core.Base
             {
                 query = query.Replace("  ", " ");
             }
+            ClearOldConfigurations();
             return query;
         }
 
@@ -48,10 +57,8 @@ namespace DBQuery.Core.Base
 
             VerifyChangeDataBase();
 
-            Console.WriteLine(query);
-
             SqlCommand Sql_Comando = new SqlCommand(query, _transaction.GetConnection(), _transaction.GetTransaction()) { CommandType = CommandType.Text };
-            if (_steps.Exists(a => a.LevelType == StepType.SELECT || a.LevelType == StepType.CUSTOM_SELECT))
+            if (_steps.Exists(a => a.StepType == StepType.SELECT || a.StepType == StepType.CUSTOM_SELECT))
             {
                 return Sql_Comando.ExecuteSql();
             }

@@ -1,8 +1,8 @@
-﻿using Application.Domains.Entities;
-using DBQuery.Core.Factory;
+﻿using DBQuery.Core.Factory;
 using DBQuery.Core.Model;
 using DBQuery.Core.Services;
 using DBQuery.Core.Transaction;
+using Application.Domains.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,13 @@ namespace DBQuery.Core.Base
 {
     public class DBQuery<TEntity> : IDBQuery where TEntity : EntityBase
     {
-        protected List<DBQueryLevelModel> _steps { get; set; }
+        protected List<DBQueryStepModel> _steps { get; set; }
         protected DbTransaction _transaction { get; set; }
         protected DBQueryLevelModelFactory _levelFactory { get; set; }
         public DBQuery()
         { 
             _transaction = new DbTransaction();
-            _steps = new List<DBQueryLevelModel>();
+            _steps = new List<DBQueryStepModel>();
             _levelFactory = new DBQueryLevelModelFactory();
         }
 
@@ -27,7 +27,7 @@ namespace DBQuery.Core.Base
         /// 
         /// </summary>
         /// <returns></returns>
-        protected TNextStep InstanceNextLevel<TNextStep>(DBQueryLevelModel levelModel) where TNextStep : DBQuery<TEntity>
+        protected TNextStep InstanceNextLevel<TNextStep>(DBQueryStepModel levelModel) where TNextStep : DBQuery<TEntity>
         {
             var dbQuery = Activator.CreateInstance<TNextStep>();
             dbQuery._steps = this._steps;
@@ -48,7 +48,7 @@ namespace DBQuery.Core.Base
         /// 
         /// </summary>
         /// <param name="dBQueryLevels"></param>
-        protected void IncludeStep(DBQueryLevelModel dBQueryLevels)
+        protected void IncludeStep(DBQueryStepModel dBQueryLevels)
         {
             _steps.Add(dBQueryLevels);
         }
@@ -58,7 +58,7 @@ namespace DBQuery.Core.Base
         /// </summary>
         protected void VerifyChangeDataBase()
         {
-            if (_transaction != null)
+            if (_transaction != null && _transaction.GetConnection() != null)
             {
                 var databaseName = new InterpretService<TEntity>().GetDatabaseName(typeof(TEntity));
                 if (!databaseName.Equals(_transaction.GetConnection().Database))
@@ -68,20 +68,10 @@ namespace DBQuery.Core.Base
             }
         }
 
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="dataBaseService"></param>
-        public void BindTransaction(DbTransaction dataBaseService)
-        {
-            this._transaction = dataBaseService;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void ClearOldConfigurations()
+        protected void ClearOldConfigurations()
         {
             this._transaction = null;
             this._steps.Clear();

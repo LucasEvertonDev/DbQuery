@@ -1,7 +1,7 @@
-﻿using Application.Domains.Entities;
-using DBQuery.Core.Base;
+﻿using DBQuery.Core.Base;
 using DBQuery.Core.Steps.CustomSelects;
 using DBQuery.Core.Steps.SimpleSelectSteps;
+using Application.Domains.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Application.Domains
 {
     [Table("CiItemDominio")]
-    public class ItemDominio : SignCi
+    public class CiItemDominio : SignCi
     {
         [Identity]
         public int Codigo { get; set; }

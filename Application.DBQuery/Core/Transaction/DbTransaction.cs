@@ -9,6 +9,7 @@ namespace DBQuery.Core.Transaction
 {
     public class DbTransaction
     {
+        protected bool hasCommit { get; set; }
         protected SqlConnection _sqlConnection { get; set; }
         protected SqlTransaction _sqlTransaction { get; set; }
 
@@ -57,6 +58,7 @@ namespace DBQuery.Core.Transaction
         /// </summary>
         public int Commit()
         {
+            hasCommit = true;
             if (_sqlTransaction != null)
                 _sqlTransaction.Commit();
             if (_sqlConnection != null)
@@ -85,6 +87,15 @@ namespace DBQuery.Core.Transaction
         public void ChangeDatabase(string database)
         {
             _sqlConnection.ChangeDatabase(database);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool HasCommited()
+        {
+            return hasCommit;
         }
     }
 }

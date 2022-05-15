@@ -1,6 +1,7 @@
 ﻿using Application.Domains.Entities;
 using DBQuery.Core.Enuns;
 using DBQuery.Core.Model;
+using DBQuery.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,97 +14,121 @@ namespace DBQuery.Core.Factory
     public class DBQueryLevelModelFactory
     {
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de UseAlias. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareAliasStep(string alias)
+        /// <returns>Retorna uma etapa corresponte a USE_ALIAS</returns>
+        public DBQueryStepModel PrepareAliasStep(string alias)
         {
-            return new DBQueryLevelModel()
+            return new DBQueryStepModel()
             {
-                LevelType = StepType.USE_ALIAS,
-                LevelValue = alias,
-                Documentation = "Responsável por indicar se os apelidos usados nas expressions serão denominados como chaves apelidos 'as'"
+                StepType = StepType.USE_ALIAS,
+                StepValue = alias,
+                Documentation = "Responsável por indicar se os apelidos usados nas expressions serão denominados como chaves apelidos 'as'."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de Insert. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateInsertScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareInsertStep (EntityBase domain)
+        /// <returns>Retorna uma etapa corresponte a INSERT</returns>
+        public DBQueryStepModel PrepareInsertStep (EntityBase domain)
         {
-            return new DBQueryLevelModel()
+            return new DBQueryStepModel()
             {
-                LevelType = StepType.INSERT,
-                LevelValue = domain,
-                Documentation = "Responsável por chamar a etapa de insert. A mesma recebe um objeto preenchido do tipo TEntity para a persistência"
+                StepType = StepType.INSERT,
+                StepValue = domain,
+                Documentation = "Responsável por chamar a etapa de insert. A mesma recebe um objeto preenchido do tipo TEntity para a persistência."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de DELETE. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateDeleteScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareDeleteStep()
+        /// <returns>Retorna uma etapa corresponte a DELETE</returns>
+        public DBQueryStepModel PrepareDeleteStep()
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.DELETE,
-                Documentation = "Reponsável por chamar a etapa de delete"
+                StepType = StepType.DELETE,
+                Documentation = "Reponsável por chamar a etapa de delete. O controle de propriedades a serem apagadas será realizado na etapa WHERE."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de SELECT. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateSelectScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareSimpleSelectStep()
+        /// <returns>Retorna uma etapa corresponte a SELECT</returns>
+        public DBQueryStepModel PrepareSimpleSelectStep()
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.SELECT,
-                Documentation = "Reponsável por chamar a etapa select de uma consulta simples(sem joins)"
+                StepType = StepType.SELECT,
+                Documentation = "Reponsável por chamar a etapa select de uma consulta SIMPLES. Retornando apenas os dados da entidade passada como tipo na propriedade Repository<TEntity>."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de UPDATE. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateUpdateScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareUpdateStep(EntityBase domain)
+        /// <returns>Retorna uma etapa corresponte a SELECT</returns>
+        public DBQueryStepModel PrepareUpdateStep(EntityBase domain)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.UPDATE,
-                LevelValue = domain,
-                Documentation = "Reponsável por chamar a etapa update. Recebendo parametro do tipo TEntity para atualização"
+                StepType = StepType.UPDATE,
+                StepValue = domain,
+                Documentation = "Reponsável por chamar a etapa update. A mesma recebe um objeto preenchido do tipo TEntity para a atualização."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de INSERT_OR_UPDATE. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateInsertOrUpdateScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareUpdateOrInsertStep(EntityBase domain)
+        /// <returns>Retorna uma etapa corresponte a INSERT_OR_UPDATE</returns>
+        public DBQueryStepModel PrepareInsertOrUpdateStep(EntityBase domain)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.UPDATE_OR_INSERT,
-                LevelValue = domain,
-                Documentation = "Reponsável por chamar a etapa update ou insert. Caso a condição encontre resultados é realizado o update se não insert"
+                StepType = StepType.INSERT_OR_UPDATE,
+                StepValue = domain,
+                Documentation = "Reponsável por chamar a etapa de insert ou update. A etapa WHERE é de suma importância para essa ação." +
+                            " Pois a mesma será a chave para a verificação de existência do objeto ou até mesmo na atualização caso ele já exista."
             };
         }
 
         /// <summary>
-        /// 
+        /// Prepara a criação de uma etapa de DELETE_AND_INSERT. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateDeleteAndInsertScript">aqui.</see>
         /// </summary>
-        /// <returns></returns>
-        public DBQueryLevelModel PrepareInsertIfNotExistsStep(EntityBase domain)
+        /// <returns>Retorna uma etapa corresponte a DELETE_AND_INSERT</returns>
+        public DBQueryStepModel PrepareDeleteAndInsertStep(EntityBase domain)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.INSERT_NOT_EXISTS,
-                LevelValue = domain,
+                StepType = StepType.DELETE_AND_INSERT,
+                StepValue = domain,
+                Documentation = "Reponsável por chamar a etapa delete e insert. Ou seja limpa os registros condizentes com a condição e insere na sequência "
+            };
+        }
+
+
+        /// <summary>
+        /// Prepara a criação de uma etapa de INSERT_NOT_EXISTS. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{EntityBase}.GenerateInsertIfNotExistsScript">aqui.</see>
+        /// </summary>
+        /// <returns>Retorna uma etapa corresponte a INSERT_NOT_EXISTS</returns>
+        public DBQueryStepModel PrepareInsertIfNotExistsStep(EntityBase domain)
+        {
+            return new DBQueryStepModel
+            {
+                StepType = StepType.INSERT_NOT_EXISTS,
+                StepValue = domain,
                 Documentation = "Responsável por chamar a etapa de insert. A mesma recebe um objeto preenchido do tipo TEntity para a persistência, onde será válidada se a tabela não possui nenhum registro igual, com apenas a chave unica diferente. Sendo esse atributo ignorado na validação, representado com a anotação Identity"
             };
         }
@@ -112,11 +137,11 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareExecuteStep()
+        public DBQueryStepModel PrepareExecuteStep()
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.EXECUTE,
+                StepType = StepType.EXECUTE,
                 Documentation = "Comando usado para iniciar processe de leitura e execução da query"
             };
         }
@@ -125,12 +150,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareSelectStep(Expression expression)
+        public DBQueryStepModel PrepareSelectStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.CUSTOM_SELECT,
-                LevelExpression = expression,
+                StepType = StepType.CUSTOM_SELECT,
+                StepExpression = expression,
                 Documentation = "Reponsável por chamar a etapa select de uma consulta personalizada"
             };
         }
@@ -139,12 +164,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareWhereStep(Expression expression)
+        public DBQueryStepModel PrepareWhereStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.WHERE,
-                LevelExpression = expression,
+                StepType = StepType.WHERE,
+                StepExpression = expression,
                 Documentation = "Responsável pelas condições da operação"
             };
         }
@@ -153,11 +178,11 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareDistinctStep()
+        public DBQueryStepModel PrepareDistinctStep()
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.DISTINCT,
+                StepType = StepType.DISTINCT,
                 Documentation = "Implica a Key DISTINCT a consulta acionada"
             };
         }
@@ -166,12 +191,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareTopStep(int top)
+        public DBQueryStepModel PrepareTopStep(int top)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.TOP,
-                LevelValue = top,
+                StepType = StepType.TOP,
+                StepValue = top,
                 Documentation = "Implica a Key TOP a consulta acionada"
             };
         }
@@ -180,12 +205,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareJoinStep(Expression expression)
+        public DBQueryStepModel PrepareJoinStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.JOIN,
-                LevelExpression = expression,
+                StepType = StepType.JOIN,
+                StepExpression = expression,
                 Documentation = "Adiciona a instrução de INNER JOIN e suas condições('ON')"
             };
         }
@@ -194,12 +219,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareLeftJoinStep(Expression expression)
+        public DBQueryStepModel PrepareLeftJoinStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.LEFT_JOIN,
-                LevelExpression = expression,
+                StepType = StepType.LEFT_JOIN,
+                StepExpression = expression,
                 Documentation = "Adiciona a instrução de INNER JOIN e suas condições('ON')"
             };
         }
@@ -208,12 +233,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareOrderByAscStep(Expression expression)
+        public DBQueryStepModel PrepareOrderByAscStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.ORDER_BY_ASC,
-                LevelExpression = expression,
+                StepType = StepType.ORDER_BY_ASC,
+                StepExpression = expression,
                 Documentation = "Adiciona a instrução de ORDER BY ASC a consulta"
             };
         }
@@ -222,12 +247,27 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareOrderByDescStep(Expression expression)
+        public DBQueryStepModel PreparePaginationStep(int pageSize, int pageNumber)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.ORDER_BY_DESC,
-                LevelExpression = expression,
+                StepType = StepType.PAGINATION,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Documentation = "Adiciona a paginação a consulta"
+            };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public DBQueryStepModel PrepareOrderByDescStep(Expression expression)
+        {
+            return new DBQueryStepModel
+            {
+                StepType = StepType.ORDER_BY_DESC,
+                StepExpression = expression,
                 Documentation = "Adiciona a instrução de ORDER BY DESC a consulta"
             };
         }
@@ -236,12 +276,12 @@ namespace DBQuery.Core.Factory
         /// 
         /// </summary>
         /// <returns></returns>
-        public DBQueryLevelModel PrepareGroupByStep(Expression expression)
+        public DBQueryStepModel PrepareGroupByStep(Expression expression)
         {
-            return new DBQueryLevelModel
+            return new DBQueryStepModel
             {
-                LevelType = StepType.GROUP_BY,
-                LevelExpression = expression,
+                StepType = StepType.GROUP_BY,
+                StepExpression = expression,
                 Documentation = "Adiciona a instrução de GROUP BY a consulta"
             };
         }

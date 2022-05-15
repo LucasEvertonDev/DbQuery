@@ -2,7 +2,9 @@
 using DBQuery;
 using DBQuery.Core.Extensions;
 using DBQuery.Repository;
+using DBQuery.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SIGN.Query.Repository;
 using System;
 
 namespace SIGN.Query.Test
@@ -10,14 +12,14 @@ namespace SIGN.Query.Test
     [TestClass]
     public class DominioRepository : DbQueryService
     {
-        private Repository<Dominio> _dominioRepository { get; set; } = new Repository<Dominio>();
-        private Repository<ItemDominio> _itemDominioRepository { get; set; } = new Repository<ItemDominio>();
-        private Dominio dominio { get; set; } = new Dominio();
+        private Repository<CiDominio> _dominioRepository { get; set; } = new Repository<CiDominio>();
+        private Repository<CiItemDominio> _itemDominioRepository { get; set; } = new Repository<CiItemDominio>();
+        private CiDominio dominio { get; set; } = new CiDominio();
 
         [TestInitialize]
         public void Initialize()
         {
-            dominio = new Dominio() { Descricao = "TESTE_LIKE", Nome = "Teste Nome" };
+            dominio = new CiDominio() { Descricao = "TESTE_LIKE", Nome = "Teste Nome" };
         }
 
         [TestMethod]
@@ -76,15 +78,15 @@ namespace SIGN.Query.Test
             var query = _dominioRepository
                             .Select()
                             .Top(1)
-                            .Join<Dominio, ItemDominio>(
+                            .Join<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => (Dominio.Codigo == ItemDominio.Codigo_Dominio)
                             )
-                            .Where<Dominio, ItemDominio>(
+                            .Where<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => Dominio.Codigo > 1
                                 && Dominio.Descricao.LIKE(dominio.Descricao)
                                 && (Dominio.Nome == dominio.Nome && Dominio.Descricao != null)
                             )
-                            .OrderBy<Dominio, ItemDominio>(
+                            .OrderBy<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => Columns(
                                     Dominio.Codigo,
                                     ItemDominio.Nome
@@ -101,14 +103,14 @@ namespace SIGN.Query.Test
             var query = _dominioRepository
                             .Select()
                             .Top(1)
-                            .LeftJoin<Dominio, ItemDominio>(
+                            .LeftJoin<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => Dominio.Codigo == ItemDominio.Codigo_Dominio
                             )
-                            .Where<Dominio, ItemDominio>(
+                            .Where<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => Dominio.Codigo > 1 && Dominio.Descricao.LIKE("TESTE_LIKE")
                                 && Dominio.Nome != null && Dominio.Nome == dominio.Nome
                             )
-                            .OrderBy<Dominio, ItemDominio>(
+                            .OrderBy<CiDominio, CiItemDominio>(
                                 (Dominio, ItemDominio) => Columns(
                                     Dominio.Codigo,
                                     ItemDominio.Nome
@@ -178,15 +180,15 @@ namespace SIGN.Query.Test
             var query = _dominioRepository.UseAlias("d1")
                             .Select()
                             .Top(1)
-                            .Join<Dominio, ItemDominio>(
+                            .Join<CiDominio, CiItemDominio>(
                                 (d1, i1) => (d1.Codigo == i1.Codigo_Dominio)
                             )
-                            .Where<Dominio, ItemDominio>(
+                            .Where<CiDominio, CiItemDominio>(
                                 (d1, i1) => d1.Codigo > 1
                                 && i1.Descricao.LIKE(dominio.Descricao)
                                 && (d1.Nome == dominio.Nome && d1.Descricao != null)
                             )
-                            .OrderBy<Dominio, ItemDominio>(
+                            .OrderBy<CiDominio, CiItemDominio>(
                                 (d1, i1) => Columns(
                                     d1.Codigo,
                                     i1.Nome

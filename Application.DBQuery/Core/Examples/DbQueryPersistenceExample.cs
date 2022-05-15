@@ -8,15 +8,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DBQuery.Services
+namespace DBQuery.Core.Examples
 {
-    public class DbQueryService
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="func"></param>
+    public class DBQueryPersistenceExample
+    {  /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="connection"></param>
+       /// <param name="func"></param>
         protected static void OnTransaction(string connection, Action<DbTransaction> func)
         {
             var _dataBaseService = Activator.CreateInstance<DbTransaction>();
@@ -76,7 +75,7 @@ namespace DBQuery.Services
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected async static Task OnTransactionAsync(DbQueryService dataBase_Persistence, string connection, Action<DbTransaction> func)
+        protected async static Task OnTransactionAsync(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<DbTransaction> func)
         {
             var _dataBaseService = Activator.CreateInstance<DbTransaction>();
             try
@@ -105,7 +104,7 @@ namespace DBQuery.Services
         /// <param name="dataBase_Persistence"></param>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected static void OnTransaction(DbQueryService dataBase_Persistence, string connection, Action<DbTransaction> func)
+        protected static void OnTransaction(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<DbTransaction> func)
         {
             var _dataBaseService = Activator.CreateInstance<DbTransaction>();
             try
@@ -162,7 +161,7 @@ namespace DBQuery.Services
         /// </summary>
         /// <param name="func"></param>
         /// <param name="transaction"></param>
-        private static void getProprerties(DbQueryService dataBase_Persistence, DbTransaction transaction)
+        private static void getProprerties(DBQueryPersistenceExample dataBase_Persistence, DbTransaction transaction)
         {
             var properties = ((Type)(dataBase_Persistence.GetType())).GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToList();
             foreach (var p in properties.Where(prop => prop.PropertyType.Name.Contains("Repository")))
@@ -191,15 +190,6 @@ namespace DBQuery.Services
             return array;
         }
 
-        /// <summary>
-        /// Função para obter o Top da consulta
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        protected int? Top(int i)
-        {
-            return i;
-        }
 
         /// <summary>
         ///  Função para obter o Count

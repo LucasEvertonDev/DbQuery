@@ -1,6 +1,6 @@
-﻿using Application.Domains.Entities;
-using DBQuery.Core.Base;
+﻿using DBQuery.Core.Base;
 using DBQuery.Core.Steps.SelectSteps;
+using Application.Domains.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

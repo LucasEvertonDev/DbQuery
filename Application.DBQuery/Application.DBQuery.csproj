@@ -41,6 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Examples\DBQueryExamples.cs" />
+    <Compile Include="Core\Repositorys\IRepository.cs" />
+    <Compile Include="Core\Repositorys\RepositoryAfterAlias.cs" />
+    <Compile Include="Core\Repositorys\RepositoryBase.cs" />
     <Compile Include="Core\Services\InterpretService.cs" />
     <Compile Include="Core\Steps\Base\DBQuery.cs" />
     <Compile Include="Core\Steps\Base\IDBQuery.cs" />
@@ -77,13 +81,10 @@
     <Compile Include="Core\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Core\Extensions\SqlExtensions.cs" />
     <Compile Include="Core\Models\DbFunctions.cs" />
-    <Compile Include="Services\DbQueryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Steps\Repositorys\IRepository.cs" />
     <Compile Include="Repositorys\Repository.cs" />
-    <Compile Include="Core\Steps\Repositorys\RepositoryAfterAlias.cs" />
-    <Compile Include="Core\Steps\Repositorys\RepositoryBase.cs" />
-    <Compile Include="Services\TransactionService.cs" />
+    <Compile Include="Core\Examples\DBQueryPersistenceExample.cs" />
+    <Compile Include="Services\DbQueryService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

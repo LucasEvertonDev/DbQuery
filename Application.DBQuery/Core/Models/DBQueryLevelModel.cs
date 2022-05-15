@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace DBQuery.Core.Model
 {
-    public class DBQueryLevelModel
+    public class DBQueryStepModel
     {
-        public StepType LevelType { get; set; }
-        public dynamic LevelValue { get; set; }
-        public Expression LevelExpression { get; set; }
+        public StepType StepType { get; set; }
+        public dynamic StepValue { get; set; }
+        public Expression StepExpression { get; set; }
         public string Documentation { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

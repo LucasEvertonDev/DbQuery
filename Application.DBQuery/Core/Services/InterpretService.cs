@@ -1,5 +1,4 @@
 ﻿using DBQuery.Core.Constants;
-using Application.Domains.DataAnnotatios;
 using DBQuery.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using DBQuery.Core.Enuns;
+using Application.Domains.DataAnnotatios;
 
 namespace DBQuery.Core.Services
 {
@@ -17,9 +17,9 @@ namespace DBQuery.Core.Services
     {
         private Dictionary<string, string> _expressions { get; set; }
         private Expression _currentExpression { get; set; }
-        private List<DBQueryLevelModel> _levelModels { get; set; }
-        private bool _useAlias => _levelModels.Exists(a => a.LevelType == StepType.USE_ALIAS);
-        private string _alias => _levelModels.Where(a => a.LevelType == StepType.USE_ALIAS).FirstOrDefault()?.LevelValue;
+        private List<DBQueryStepModel> _levelModels { get; set; }
+        private bool _useAlias => _levelModels.Exists(a => a.StepType == StepType.USE_ALIAS);
+        private string _alias => _levelModels.Where(a => a.StepType == StepType.USE_ALIAS).FirstOrDefault()?.StepValue;
         private bool ContainsProperty(object obj, string name) => obj.GetType().GetProperty(name) != null;
         private string GetFullName(Type type) => string.Concat(GetDatabaseName(type), DBKeysConstants.T_A, GetTableName(type));
         private List<string> _defaultFunctions { get; set; }
@@ -39,12 +39,7 @@ namespace DBQuery.Core.Services
             _expressions = new Dictionary<string, string>();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="levelModels"></param>
-        /// <returns></returns>
-        public string StartToInterpret(List<DBQueryLevelModel> levelModels)
+        public string StartToInterpret(List<DBQueryStepModel> levelModels)
         {
             _levelModels = levelModels;
             return RunInterpret();
@@ -56,33 +51,37 @@ namespace DBQuery.Core.Services
         /// <returns></returns>
         private string RunInterpret()
         {
-            if (_levelModels.Exists(a => a.LevelType == StepType.SELECT))
+            if (_levelModels.Exists(a => a.StepType == StepType.SELECT))
             {
                 return GenerateSelectScript();
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.CUSTOM_SELECT))
+            else if (_levelModels.Exists(a => a.StepType == StepType.CUSTOM_SELECT))
             {
                 return GenerateSelectScript();
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.DELETE))
+            else if (_levelModels.Exists(a => a.StepType == StepType.DELETE))
             {
                 return GenerateDeleteScript();
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.INSERT))
+            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT))
             {
                 return GenerateInsertScript(); ;
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.INSERT_NOT_EXISTS))
+            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT_NOT_EXISTS))
             {
                 return GenerateInsertIfNotExistsScript();
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.UPDATE))
+            else if (_levelModels.Exists(a => a.StepType == StepType.UPDATE))
             {
                 return GenerateUpdateScript();
             }
-            else if (_levelModels.Exists(a => a.LevelType == StepType.UPDATE_OR_INSERT))
+            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT_OR_UPDATE))
             {
-                return GenerateUpdateOrInsertScript();
+                return GenerateInsertOrUpdateScript();
+            }
+            else if (_levelModels.Exists(a => a.StepType == StepType.DELETE_AND_INSERT))
+            {
+                return GenerateDeleteAndInsertScript();
             }
             else
             {
@@ -130,10 +129,10 @@ namespace DBQuery.Core.Services
                 GetFullName(typeof(TEntity)),
                 string.Empty);
 
-            var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
+            var where = _levelModels.Where(step => step.StepType == StepType.WHERE).FirstOrDefault();
             if (where != null)
             {
-                query += AddWhere(where.LevelExpression);
+                query += AddWhere(where.StepExpression);
             }
             return query;
         }
@@ -147,58 +146,62 @@ namespace DBQuery.Core.Services
             var query = string.Empty;
             foreach (var step in _levelModels)
             {
-                if (step.LevelType == StepType.SELECT || step.LevelType == StepType.CUSTOM_SELECT)
+                if (step.StepType == StepType.SELECT || step.StepType == StepType.CUSTOM_SELECT)
                 {
                     query += string.Format(
                         DBKeysConstants.SELECT,
                         DBKeysConstants.ALL_COLUMNS,
                         GetFullName(typeof(TEntity)),
                         string.IsNullOrEmpty(_alias) ? string.Empty : DBKeysConstants.AS_WITH_SPACE + _alias + " ");
-                   
-                    if (step.LevelType == StepType.CUSTOM_SELECT)
+
+                    if (step.StepType == StepType.CUSTOM_SELECT)
                     {
-                        var props = GetPropertiesExpression(step.LevelExpression, useAlias: true);
+                        var props = GetPropertiesExpression(step.StepExpression, useAlias: true);
                         query = query.Replace(DBKeysConstants.SELECT_ALL, DBKeysConstants.SELECT_KEY + " " + string.Join(", ", props));
                     }
                 }
-                else if (step.LevelType == StepType.DISTINCT)
+                else if (step.StepType == StepType.DISTINCT)
                 {
                     query = query.Replace(DBKeysConstants.SELECT_KEY, DBKeysConstants.SELECT_DISTINCT);
                 }
-                else if (step.LevelType == StepType.TOP)
+                else if (step.StepType == StepType.TOP)
                 {
                     if (query.Contains(DBKeysConstants.SELECT_DISTINCT))
                     {
-                        query = query.Replace(DBKeysConstants.SELECT_DISTINCT, string.Format(DBKeysConstants.SELECT_DISTINCT_TOP, step.LevelValue));
+                        query = query.Replace(DBKeysConstants.SELECT_DISTINCT, string.Format(DBKeysConstants.SELECT_DISTINCT_TOP, step.StepValue));
                     }
                     else
                     {
-                        query = query.Replace(DBKeysConstants.SELECT_KEY, string.Format(DBKeysConstants.SELECT_TOP, step.LevelValue));
+                        query = query.Replace(DBKeysConstants.SELECT_KEY, string.Format(DBKeysConstants.SELECT_TOP, step.StepValue));
                     }
                 }
-                else if(step.LevelType == StepType.WHERE)
+                else if (step.StepType == StepType.WHERE)
                 {
-                    query += AddWhere(step.LevelExpression);
+                    query += AddWhere(step.StepExpression);
                 }
-                else if (step.LevelType == StepType.JOIN)
+                else if (step.StepType == StepType.JOIN)
                 {
-                    query += AddJoin(step.LevelExpression, DBKeysConstants.INNER_JOIN);
+                    query += AddJoin(step.StepExpression, DBKeysConstants.INNER_JOIN);
                 }
-                else if (step.LevelType == StepType.LEFT_JOIN)
+                else if (step.StepType == StepType.LEFT_JOIN)
                 {
-                    query += AddJoin(step.LevelExpression, DBKeysConstants.LEFT_JOIN);
+                    query += AddJoin(step.StepExpression, DBKeysConstants.LEFT_JOIN);
                 }
-                else if (step.LevelType == StepType.ORDER_BY_ASC)
+                else if (step.StepType == StepType.ORDER_BY_ASC)
                 {
-                    query = AddOrderBy(DBKeysConstants.ASC, step.LevelExpression, query);
+                    query = AddOrderBy(DBKeysConstants.ASC, step.StepExpression, query);
                 }
-                else if (step.LevelType == StepType.ORDER_BY_DESC)
+                else if (step.StepType == StepType.ORDER_BY_DESC)
                 {
-                    query = AddOrderBy(DBKeysConstants.DESC, step.LevelExpression, query);
+                    query = AddOrderBy(DBKeysConstants.DESC, step.StepExpression, query);
                 }
-                else if(step.LevelType == StepType.GROUP_BY)
+                else if (step.StepType == StepType.GROUP_BY)
                 {
-                    query = AddGroupBy(step.LevelExpression, query);
+                    query = AddGroupBy(step.StepExpression, query);
+                }
+                else if (step.StepType == StepType.PAGINATION)
+                {
+                    query += string.Format(DBKeysConstants.OFFSET, (step.PageSize * (step.PageNumber - 1)), step.PageSize);
                 }
             }
             return query;
@@ -216,38 +219,35 @@ namespace DBQuery.Core.Services
                 string.Join(", ", GetObjectClausules()),
                 string.Empty);
 
-            var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
+            var where = _levelModels.Where(step => step.StepType == StepType.WHERE).FirstOrDefault();
             if (where != null)
             {
-                query += AddWhere(where.LevelExpression);
+                query += AddWhere(where.StepExpression);
             }
 
             return query;
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        private string GenerateUpdateOrInsertScript()
+        private string GenerateInsertOrUpdateScript()
         {
             var query = String.Format(
-                DBKeysConstants.INSERT_NOT_EXISTS_ELSE_UPDATE,
+                DBKeysConstants.INSERT_NOT_EXISTS_ELSE_ACTION,
                 GetFullName(typeof(TEntity)),
-                "{0}",
-                "{1}",
-                "{2}");
+                AddWhere(_levelModels.Where(step => step.StepType == StepType.WHERE).First().StepExpression),
+                GenerateInsertScript(),
+                GenerateUpdateScript());
+            return query;
+        }
 
-            var where = _levelModels.Where(step => step.LevelType == StepType.WHERE).FirstOrDefault();
-            if (where != null)
-            {
-                query = query.Replace("{0}", AddWhere(where.LevelExpression));
-            }
-
-            query = query.Replace("{1}", GenerateInsertScript());
-
-            query = query.Replace("{2}", GenerateUpdateScript());
-
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private string GenerateDeleteAndInsertScript()
+        {
+            var query = GenerateDeleteScript() + " " + GenerateInsertScript();
             return query;
         }
         #endregion
@@ -433,8 +433,8 @@ namespace DBQuery.Core.Services
         /// <returns></returns>
         protected List<string> GetObjectClausules()
         {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS
-                || a.LevelType == StepType.UPDATE || a.LevelType == StepType.UPDATE_OR_INSERT).First().LevelValue;
+            TEntity domain = _levelModels.Where(a => a.StepType == StepType.INSERT || a.StepType == StepType.INSERT_NOT_EXISTS 
+                || a.StepType == StepType.UPDATE || a.StepType == StepType.INSERT_OR_UPDATE || a.StepType == StepType.DELETE_AND_INSERT).First().StepValue;
             var list = new List<string>();
             domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
@@ -453,7 +453,8 @@ namespace DBQuery.Core.Services
         /// <returns></returns>
         protected List<string> GetValuesToInsert()
         {
-            TEntity domain = _levelModels.Where(a => a.LevelType == StepType.INSERT || a.LevelType == StepType.INSERT_NOT_EXISTS || a.LevelType == StepType.UPDATE_OR_INSERT).First().LevelValue;
+            TEntity domain = _levelModels.Where(a => a.StepType == StepType.INSERT || a.StepType == StepType.INSERT_NOT_EXISTS 
+                || a.StepType == StepType.UPDATE || a.StepType == StepType.INSERT_OR_UPDATE || a.StepType == StepType.DELETE_AND_INSERT).First().StepValue;
             var values = new List<string>();
             domain.GetType().GetProperties().ToList().ForEach(prop =>
             {
@@ -606,7 +607,8 @@ namespace DBQuery.Core.Services
         protected List<string> GetProperties(dynamic exp = null, Type type = null)
         {
             var list = new List<string>();
-            bool insert = _levelModels.Exists(s => s.LevelType == StepType.INSERT || s.LevelType == StepType.INSERT_NOT_EXISTS);
+            bool insert = _levelModels.Exists(s => s.StepType == StepType.INSERT || s.StepType == StepType.INSERT_NOT_EXISTS
+                || s.StepType == StepType.INSERT_OR_UPDATE || s.StepType == StepType.DELETE_AND_INSERT);
             
             Type currentType = type != null ? type : typeof(TEntity);
             List<PropertyInfo> infs = currentType.GetProperties().ToList();

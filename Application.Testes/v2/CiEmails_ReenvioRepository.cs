@@ -2,7 +2,9 @@
 using DBQuery;
 using DBQuery.Core.Extensions;
 using DBQuery.Repository;
+using DBQuery.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SIGN.Query.Repository;
 using System;
 
 namespace SIGN.Testes.V2
@@ -243,9 +245,9 @@ namespace SIGN.Testes.V2
                 Created_At = new DateTime(2022, 10, 1)
             };
 
-            var query = _ciEmails_ReenvioRepository.UpdateOrInsert(ciemails).Where(a => a.ID == 1).GetQuery();
+            var query = _ciEmails_ReenvioRepository.InsertOrUpdate(ciemails).Where(a => a.ID == 1).GetQuery();
 
-            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM SignCi..CiEmails_Reenvio WHERE CiEmails_Reenvio.ID = 1) BEGIN INSERT INTO SignCi..CiEmails_Reenvio (CiEmails_Reenvio.ID, CiEmails_Reenvio.EmailFrom, CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailCC, CiEmails_Reenvio.EmailBCC, CiEmails_Reenvio.Subject, CiEmails_Reenvio.Source, CiEmails_Reenvio.Status, CiEmails_Reenvio.Update_At, CiEmails_Reenvio.Created_At) OUTPUT Inserted.ID VALUES ('Email from', 'Email to', 'Email cc', 'Email bcc', 'subkect', 'source', 4, '2022-10-01 00:00:00', '2022-10-01 00:00:00') END ELSE BEGIN UPDATE SignCi..CiEmails_Reenvio SET EmailFrom = 'Email from', EmailTo = 'Email to', EmailCC = 'Email cc', EmailBCC = 'Email bcc', Subject = 'subkect', Source = 'source', Status = 4, Update_At = '2022-10-01 00:00:00', Created_At = '2022-10-01 00:00:00' WHERE CiEmails_Reenvio.ID = 1 END");
+            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM SignCi..CiEmails_Reenvio WHERE CiEmails_Reenvio.ID = 1) BEGIN INSERT INTO SignCi..CiEmails_Reenvio (CiEmails_Reenvio.EmailFrom, CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailCC, CiEmails_Reenvio.EmailBCC, CiEmails_Reenvio.Subject, CiEmails_Reenvio.Source, CiEmails_Reenvio.Status, CiEmails_Reenvio.Update_At, CiEmails_Reenvio.Created_At) OUTPUT Inserted.ID VALUES ('Email from', 'Email to', 'Email cc', 'Email bcc', 'subkect', 'source', 4, '2022-10-01 00:00:00', '2022-10-01 00:00:00') END ELSE BEGIN UPDATE SignCi..CiEmails_Reenvio SET EmailFrom = 'Email from', EmailTo = 'Email to', EmailCC = 'Email cc', EmailBCC = 'Email bcc', Subject = 'subkect', Source = 'source', Status = 4, Update_At = '2022-10-01 00:00:00', Created_At = '2022-10-01 00:00:00' WHERE CiEmails_Reenvio.ID = 1 END");
         }
     }
 }

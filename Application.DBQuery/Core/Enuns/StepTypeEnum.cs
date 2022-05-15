@@ -12,10 +12,11 @@ namespace DBQuery.Core.Enuns
         INSERT,
         INSERT_NOT_EXISTS,
         DELETE,
+        DELETE_AND_INSERT,
         SELECT,
         CUSTOM_SELECT,
         UPDATE,
-        UPDATE_OR_INSERT,
+        INSERT_OR_UPDATE,
         WHERE,
         EXECUTE,
         DISTINCT,
@@ -24,6 +25,7 @@ namespace DBQuery.Core.Enuns
         LEFT_JOIN,
         ORDER_BY_ASC,
         ORDER_BY_DESC,
-        GROUP_BY
+        GROUP_BY,
+        PAGINATION,
     }
 }

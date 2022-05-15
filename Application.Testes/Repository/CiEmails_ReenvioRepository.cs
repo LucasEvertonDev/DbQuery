@@ -2,7 +2,9 @@
 using DBQuery;
 using DBQuery.Core.Extensions;
 using DBQuery.Repository;
+using DBQuery.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SIGN.Query.Repository;
 using System;
 
 namespace SIGN.Testes.Repository
