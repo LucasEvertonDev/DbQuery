@@ -974,14 +974,37 @@ namespace DBQuery.Core.Services
             if (right is MethodCallExpression)
             {
                 dynamic r = right;
-                if (ContainsProperty(r, "Method") && ("LIKE".Equals(r.Method.Name)
-                    || "IN".Equals(r.Method.Name) || "NOT_IN".Equals(r.Method.Name)
-                    || DBQueryConstants.CONCAT_FUNCTION.Equals(r.Method.Name)))
+                if (ContainsProperty(r, "Method") && (DBQueryConstants.LIKE_FUNCTION.Equals(r.Method.Name)
+                    || DBQueryConstants.IN_FUNCTION.Equals(r.Method.Name) 
+                    || DBQueryConstants.NOT_IN_FUNCTION.Equals(r.Method.Name)
+                    || DBQueryConstants.CONCAT_FUNCTION.Equals(r.Method.Name))
+                    || DBQueryConstants.SUB_QUERY_FUNCTION.Equals(r.Method.Name))
                 {
                     return ExtractMethod(right);
                 }
                 else
                 {
+                    if (ContainsProperty(r, "Method") && "GetQuery".Equals(r.Method.Name))
+                    {
+                        while (ContainsProperty(r, "Object") || r.Type.FullName.Contains("DBQuery.Repository.Repository"))
+                        {
+                            if (r.Type.FullName.Contains("DBQuery.Repository.Repository"))
+                            {
+                                var fields = r.Expression.Type.DeclaredFields as FieldInfo[];
+                                var f = fields.Where(a => a.Name == r.Member.Name);
+                                var props = f.GetType().GetProperties();
+                                var prop = props.Where(a => a.Name == "_steps").First();
+                                var infos = prop.GetValue(r.Expression.Value);
+
+                                new InterpretService<TEntity>().StartToInterpret((dynamic)infos);
+
+                            }
+                            if (ContainsProperty(r, "Object"))
+                            { 
+                                r = r.Object;
+                            }
+                        }
+                    }
                     return Expression.Lambda(right).Compile().DynamicInvoke();
                 }
             }

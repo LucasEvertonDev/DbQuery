@@ -31,6 +31,8 @@ namespace DBQuery.Core.Constants
 
         public const string NOT_IN_FUNCTION = "NOT_IN";
 
+        public const string SUB_QUERY_FUNCTION = "SubQuery";
+
         public const string EXPRESSION_DIVISOR = "=>";
 
         public const string AND_ALSO = "AndAlso";

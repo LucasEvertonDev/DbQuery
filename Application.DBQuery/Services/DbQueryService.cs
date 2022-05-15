@@ -144,5 +144,10 @@ namespace DBQuery
         {
             return null;
         }
+
+        public T SubQuery<T>(string query)
+        {
+            return default(T);
+        }
     }
 }
