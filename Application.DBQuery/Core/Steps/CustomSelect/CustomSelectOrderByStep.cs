@@ -22,6 +22,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -37,6 +38,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -52,6 +54,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -67,6 +70,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -82,6 +86,8 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -97,6 +103,8 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam> 
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -112,6 +120,9 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -127,6 +138,9 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -142,6 +156,10 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -157,6 +175,10 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -172,6 +194,11 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>
@@ -179,7 +206,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         {
             return InstanceNextLevel<CustomSelectAfterOrderByStep<TEntity>>(_levelFactory.PrepareOrderByAscStep(expression));
         }
-        
+
         /// <summary>
         ///     Indica que a ação a ser realizada será um Order By Desc! 
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
@@ -187,6 +214,11 @@ namespace DBQuery.Core.Steps.CustomSelects
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterOrderByStep.
         /// </returns>

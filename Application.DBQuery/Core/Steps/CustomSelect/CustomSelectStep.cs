@@ -31,6 +31,7 @@ namespace DBQuery.Core.Steps
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.SelectTop" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
+        /// <param name="top">Indica o número de registros a ser retornado.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterTopStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>

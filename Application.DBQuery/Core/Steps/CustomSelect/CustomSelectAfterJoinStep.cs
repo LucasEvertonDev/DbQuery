@@ -55,8 +55,9 @@ namespace DBQuery.Core.Steps.CustomSelects
             return InstanceNextLevel<CustomSelectAfterJoinStep<TEntity>>(_levelFactory.PrepareLeftJoinStep(expression));
         }
 
+        #region Where
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -74,7 +75,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -93,7 +94,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -113,7 +114,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -134,7 +135,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -156,7 +157,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa de condições da query
         ///     <para>
         ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade. A mesma deve possuir dois passos, mesmo em casos redundantes 
         ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
@@ -177,14 +178,16 @@ namespace DBQuery.Core.Steps.CustomSelects
         {
             return InstanceNextLevel<CustomSelectAfterWhereStep<TEntity>>(_levelFactory.PrepareWhereStep(expression));
         }
+        #endregion
 
+        #region Group by
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group By da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -194,12 +197,13 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -209,12 +213,12 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -224,12 +228,13 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -239,12 +244,14 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -254,12 +261,15 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -269,12 +279,16 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -284,12 +298,17 @@ namespace DBQuery.Core.Steps.CustomSelects
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -298,5 +317,6 @@ namespace DBQuery.Core.Steps.CustomSelects
             return InstanceNextLevel<CustomSelectAfterGroupByStep<TEntity>>(_levelFactory.PrepareGroupByStep(expression));
         }
 
+        #endregion
     }
 }

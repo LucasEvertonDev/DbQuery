@@ -14,12 +14,12 @@ namespace DBQuery.Core.Steps
     public class SelectAfterWhereStep<TEntity> : SelectOrderByStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group By da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -29,12 +29,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -44,12 +44,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -59,12 +59,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -74,12 +74,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -89,12 +89,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -104,12 +104,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -119,12 +119,12 @@ namespace DBQuery.Core.Steps
         }
 
         /// <summary>
-        ///     Responsável pela etapa de condições da querie
+        ///     Responsável pela etapa Group by da query
         ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
         ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
-        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
