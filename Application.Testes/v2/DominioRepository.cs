@@ -203,5 +203,28 @@ namespace SIGN.Query.Test.V2
         {
             return 1;
         }
+
+        [TestMethod]
+        public void TestGroupBy()
+        {
+            var query = _dominioRepository
+                    .Select<CiDominio>(
+                        (CiDominio) => Columns(
+                            Count(),
+                            CiDominio.Descricao
+                        )
+                    )
+                    .GroupBy<CiItemDominio>(
+                       (CiDominio) => Columns(
+                            CiDominio.Descricao
+                        )
+                    )
+                    .OrderBy<CiItemDominio>(
+                        (CiDominio) => Columns(
+                            CiDominio.Descricao
+                        )
+                    )
+                    .GetQuery();
+        }
     }
 }

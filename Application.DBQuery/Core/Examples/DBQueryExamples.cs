@@ -165,7 +165,7 @@ namespace SIGN.Query.Core.Examples
                             CiDominio.Descricao
                         )
                     )
-                    .GetQuery();
+                    .Execute();
 
                 // Function Max
                 _dominioRepository.Select(CiDominio => Max(CiDominio.Codigo)).Execute();

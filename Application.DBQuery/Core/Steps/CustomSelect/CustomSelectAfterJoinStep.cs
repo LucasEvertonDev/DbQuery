@@ -191,7 +191,7 @@ namespace DBQuery.Core.Steps.CustomSelects
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
-        public CustomSelectAfterGroupByStep<TEntity> GroupBy(Expression<Func<TEntity, bool>> expression = null)
+        public CustomSelectAfterGroupByStep<TEntity> GroupBy(Expression<Func<TEntity, dynamic>> expression = null)
         {
             return InstanceNextLevel<CustomSelectAfterGroupByStep<TEntity>>(_levelFactory.PrepareGroupByStep(expression));
         }

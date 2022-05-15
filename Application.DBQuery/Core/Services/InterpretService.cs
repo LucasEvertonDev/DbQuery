@@ -501,7 +501,7 @@ namespace DBQuery.Core.Services
             var properties = new List<string>();
             _currentExpression = expression;
             dynamic exp = expression;
-            if (expression.Type == typeof(Func<TEntity, dynamic>))
+            if (expression.Type == typeof(Func<TEntity, dynamic>) && (!ContainsProperty(exp, "Body")  || (exp.Body.Type != typeof(Object[]))))
             {
                 properties.Add(GetPropertyOfSingleExpression(expression, false, useAlias));
             }
