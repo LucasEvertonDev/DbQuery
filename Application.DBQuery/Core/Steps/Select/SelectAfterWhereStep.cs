@@ -35,6 +35,7 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -65,6 +66,7 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -80,6 +82,8 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -95,6 +99,9 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -110,6 +117,10 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
@@ -125,6 +136,11 @@ namespace DBQuery.Core.Steps
         ///     <para><see cref="InterpretService{TEntity}.AddGroupBy(Expression, string)(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicaras propriedades que serão agrupadas.</param>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
         /// <returns>
         ///     Retorno do tipo CustomSelectAfterGroupByStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
         /// </returns>
