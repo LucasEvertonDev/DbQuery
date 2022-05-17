@@ -215,7 +215,7 @@ namespace SIGN.Query.Test.V2
                         )
                     )
                     .Where(
-                         (CiDominio) => CiDominio.Codigo == 1
+                         (CiDominio) => !(CiDominio.Descricao == "2") && !CiDominio.Ok && CiDominio.Ok1 && dominio.Ok2.Value && !dominio.OK3.Value
                     )
                     .GroupBy(
                        (CiDominio) => Columns(

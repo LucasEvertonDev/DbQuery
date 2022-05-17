@@ -14,5 +14,13 @@ namespace Application.Domains
         public int Codigo { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
+        [Ignore]
+        public bool Ok { get; set; }
+        [Ignore]
+        public bool Ok1 { get; set; }
+        [Ignore]
+        public bool? Ok2 { get; set; }
+        [Ignore]
+        public bool? OK3 { get; set; }
     }
 }
