@@ -215,7 +215,10 @@ namespace SIGN.Query.Test.V2
                         )
                     )
                     .Where(
-                         (CiDominio) => !(CiDominio.Descricao == "2") && !CiDominio.Ok && CiDominio.Ok1 && dominio.Ok2.Value && !dominio.OK3.Value
+                         (CiDominio) => !CiDominio.Ok 
+                            && CiDominio.Ok1 
+                            && dominio.Ok2.Value 
+                            && !dominio.OK3.Value
                     )
                     .GroupBy(
                        (CiDominio) => Columns(
@@ -228,6 +231,8 @@ namespace SIGN.Query.Test.V2
                         )
                     )
                     .GetQuery();
+
+            Assert.AreEqual(query, "SELECT COUNT(*), CiDominio.Descricao FROM SignCi..CiDominio WHERE (((CiDominio.Ok = 0 AND CiDominio.Ok1 = 1) AND CiDominio.Ok2 = 1) AND CiDominio.OK3 = 0) GROUP BY CiDominio.Descricao ORDER BY CiDominio.Descricao ASC");
         }
     }
 }

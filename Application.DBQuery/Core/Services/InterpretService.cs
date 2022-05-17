@@ -330,6 +330,11 @@ namespace DBQuery.Core.Services
                 {
                     _expressions.Keys.ToList().ForEach(key =>
                     {
+                        // se tinha valor a ser traduzido e não foi deve abortar a ação 
+                        if (!string.IsNullOrEmpty(key) && string.IsNullOrEmpty(_expressions[key]))
+                        {
+                            throw new Exception("Não foi possível montar as condições.");
+                        }
                         exp = exp.Replace(key, _expressions[key]);
                     });
 
@@ -704,7 +709,7 @@ namespace DBQuery.Core.Services
             else if (left == null)
             {
                 oldExpression = expression.ToString();
-                var val = GetValueWhereBoolean(expression);
+                var val = TreatBooleanPropertyExpression(expression);
                 if (!string.IsNullOrEmpty(val))
                 {
                     value = val;
@@ -763,13 +768,11 @@ namespace DBQuery.Core.Services
         /// /
         /// </summary>
         /// <param name="expression"></param>
-        public string GetValueWhereBoolean(Expression expression)
+        public string TreatBooleanPropertyExpression(Expression expression)
         {
             string value = null;
             dynamic exp = (dynamic)expression;
-            if (expression.Type == typeof(System.Boolean) && expression is UnaryExpression
-                && (expression.NodeType == ExpressionType.Not || expression.NodeType  == ExpressionType.MemberAccess) 
-                && (!(ContainsProperty(expression, "Operand")) || !ContainsProperty(exp.Operand, "Left")))
+            if (expression.Type == typeof(System.Boolean) && (expression.NodeType == ExpressionType.Not || expression.NodeType  == ExpressionType.MemberAccess))
             {
                 if (ContainsProperty(exp, "Expression"))
                 {
@@ -780,7 +783,7 @@ namespace DBQuery.Core.Services
                 }
                 if (expression.NodeType == ExpressionType.Not && ContainsProperty(expression, "Operand"))
                 {
-                    value = " = 0";
+                    value =  string.Concat(DBKeysConstants.EQUALS_WITH_SPACE, DBKeysConstants.FALSE_VALUE) ;
                     exp = ((dynamic)expression).Operand;
                     if(ContainsProperty(exp, "Expression"))
                     {
@@ -792,19 +795,11 @@ namespace DBQuery.Core.Services
                 }
                 else
                 {
-                    value = " = 1";
+                    value = string.Concat(DBKeysConstants.EQUALS_WITH_SPACE, DBKeysConstants.TRUE_VALUE);
                 }
-
-                var propertyInfo1 = (PropertyInfo)exp.Member;
-
-                var name1 = GetCollumnName(propertyInfo1);
-
-                var val = GetTableName(propertyInfo1.DeclaringType, exp) + "." + name1;
-
-                return val + value;
+                return string.Concat(GetPropretyFullName(exp.Member.DeclaringType, exp, exp.Member), value);
             }
             return value;
-
         }
 
         /// <summary>
@@ -841,65 +836,6 @@ namespace DBQuery.Core.Services
             string valueA = string.Empty;
             string valueB = string.Empty;
             string comparador = string.Empty;
-            if (method is UnaryExpression)
-            { 
-                var exp = method as dynamic;
-                if (ContainsProperty(method, "Operand") && ContainsProperty(exp.Operand, "Left") && ContainsProperty(exp.Operand, "Right"))
-                {
-                    var left = exp.Operand.Left;
-                    var right = exp.Operand.Right;
-
-                    if (IsValue(left))
-                    {
-                        if (left.NodeType == ExpressionType.MemberAccess)
-                        {
-                            var value = GetValue(left);
-                        }
-                        else if (left.GetType().Name.Equals("PropertyExpression"))
-                        {
-                            var val = string.Concat(GetTableName(left.Member.DeclaringType, left), DBKeysConstants.SINGLE_POINT, GetCollumnName(left.Member));
-                        }
-                        else if (left.GetType().Name.Equals("ConstantExpression"))
-                        {
-                            var value = left.Value;
-                        }
-                        else if (ContainsProperty(left, "NodeType") && left.NodeType == ExpressionType.Call)
-                        {
-                            var value = GetValue(left);
-                        }
-                    }
-                    else
-                    {
-                        var value = string.Concat(GetTableName(left.Expression.Type, left), DBKeysConstants.SINGLE_POINT, GetCollumnName(left.Member));
-                    }
-
-                    if (IsValue(right))
-                    {
-                        if (right.NodeType == ExpressionType.MemberAccess)
-                        {
-                            var value = GetValue(right);
-                        }
-                        else if (right.GetType().Name.Equals("PropertyExpression"))
-                        {
-                            var val = string.Concat(GetTableName(right.Member.DeclaringType, right), DBKeysConstants.SINGLE_POINT, GetCollumnName(right.Member));
-                        }
-                        else if (right.GetType().Name.Equals("ConstantExpression"))
-                        {
-                            var value = right.Value;
-                        }
-                        else if (ContainsProperty(right, "NodeType") && right.NodeType == ExpressionType.Call)
-                        {
-                            var value = GetValue(right);
-                        }
-                    }
-                    else
-                    {
-                        var value = string.Concat(GetTableName(right.Expression.Type, right), DBKeysConstants.SINGLE_POINT, GetCollumnName(right.Member));
-                    }
-
-                    var equal = GetComparador(exp.Operand);
-                }
-            }
             if (method is MethodCallExpression)
             {
                 var mtd = (MethodCallExpression)method;

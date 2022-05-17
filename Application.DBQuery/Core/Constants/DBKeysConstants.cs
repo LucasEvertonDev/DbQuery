@@ -111,5 +111,9 @@ namespace DBQuery.Core.Constants
         public const string DISTINCT_WITH_SPACE = " DISTINCT ";
 
         public const string OFFSET = " OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";
+
+        public const string TRUE_VALUE = "1";
+
+        public const string FALSE_VALUE = "0";
     }
 }
