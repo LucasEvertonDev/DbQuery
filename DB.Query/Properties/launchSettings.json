@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DB.Query": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

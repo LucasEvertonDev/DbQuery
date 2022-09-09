@@ -1,0 +1,76 @@
+﻿using DB.Query.Models.Entities;
+using DB.Query.Core.Examples;
+using DB.Query.Core.Services;
+using DB.Query.Core.Steps.Base;
+using DB.Query.Core.Steps.CustomSelect;
+using System;
+using System.Linq.Expressions;
+
+namespace DB.Query.Core.Steps.Select
+{
+    public class SelectBaseStep<TEntity> : SelectOrderByStep<TEntity>, IPersistenceStep where TEntity : EntityBase
+    {
+        /// <summary>
+        ///     Responsável pela etapa de filtros da query
+        ///     <para>
+        ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade a mesma possuir dois passos, mesmo em casos redundantes 
+        ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
+        ///     </para>
+        ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.Select" > Clique aqui.</see></para>
+        ///     <para>Como usar funções comparativas(LIKE, IN, NOT IN)?<see cref = "DBQueryExamples.ConditionFunctions" > Clique aqui.</see></para>    
+        ///     <para><see cref="InterpretService{TEntity}.AddWhere(Expression)">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <param name="expression">Parametro usado para indicar as condições da query.</param>
+        /// <returns>
+        ///     Retorno do tipo SelectAfterWhereStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public SelectAfterWhereStep<TEntity> Where(Expression<Func<TEntity, bool>> expression = null)
+        {
+            return InstanceNextLevel<SelectAfterWhereStep<TEntity>>(_levelFactory.PrepareWhereStep(expression));
+        }
+
+        /// <summary>
+        ///     Responsável pela etapa de join da query
+        ///     <para>
+        ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade a mesma possuir dois passos, mesmo em casos redundantes 
+        ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
+        ///     </para>
+        ///     <para>ATENÇÃO!! O primeiro tipo Entity1, é a propiedade que já está associada. O segundo tipo Entity2 é a entidade com que será feito o join.</para>
+        ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.SelectManyTables(Expression{Func{EntityBase, EntityBase, dynamic[]}})" > Clique aqui.</see></para>
+        ///     <para>Como usar funções comparativas(LIKE, IN, NOT IN)?<see cref = "DBQueryExamples.ConditionFunctions" > Clique aqui.</see></para>    
+        ///     <para><see cref="InterpretService{TEntity}.AddJoin(Expression, string)">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as condições de contrato do join("ON").</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectAfterJoinStep.
+        /// </returns>
+        public CustomSelectAfterJoinStep<TEntity> Join<Entity1, Entity2>(Expression<Func<Entity1, Entity2, bool>> expression)
+        {
+            return InstanceNextLevel<CustomSelectAfterJoinStep<TEntity>>(_levelFactory.PrepareJoinStep(expression));
+        }
+
+        /// <summary>
+        ///     Responsável pela etapa de join da query
+        ///     <para>
+        ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade a mesma possuir dois passos, mesmo em casos redundantes 
+        ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
+        ///     </para>
+        ///     <para>ATENÇÃO!! O primeiro tipo Entity1, é a propiedade que já está associada. O segundo tipo Entity2, é a entidade com que será feito o join.</para>     
+        ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.SelectManyTables(Expression{Func{EntityBase, EntityBase, dynamic[]}})" > Clique aqui.</see></para>
+        ///     <para>Como usar funções comparativas(LIKE, IN, NOT IN)?<see cref = "DBQueryExamples.ConditionFunctions" > Clique aqui.</see></para>    
+        ///     <para><see cref="InterpretService{TEntity}.AddJoin(Expression, string)">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as condições de contrato do join("ON").</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectAfterJoinStep.
+        /// </returns>
+        public CustomSelectAfterJoinStep<TEntity> LeftJoin<Entity1, Entity2>(Expression<Func<Entity1, Entity2, bool>> expression)
+        {
+            return InstanceNextLevel<CustomSelectAfterJoinStep<TEntity>>(_levelFactory.PrepareLeftJoinStep(expression));
+        }
+    }
+}

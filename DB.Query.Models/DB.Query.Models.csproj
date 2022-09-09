@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>DB.Query.Models</AssemblyName>
+    <RootNamespace>DB.Query.Models</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Entities\Kaizen\Membros_Kaizen.cs" />
+    <Compile Remove="Entities\Kaizen\Pontuacao.cs" />
+  </ItemGroup>
+
+</Project>
