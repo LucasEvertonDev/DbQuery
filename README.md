@@ -1,37 +1,37 @@
 
 #Sumário
- - [Introdução](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=introdu%C3%A7%C3%A3o)
- - [Trabalhando com Transações](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=trabalhando-com-transa%C3%A7%C3%B5es)
- - [Insert](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=insert)
- - [InsertIfNotExists](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=insertifnotexists)
- - [InsertOrUpdate](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=insertorupdate)
- - [DeleteAndInsert](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=deleteandinsert)
- - [Delete](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=delete)
- - [Select](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=select)
- - [Update](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=update)
- - [Custom Select](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=custom-select)
- - [Funções Prédefinidas Select](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)
- - [Where](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)
- - [Join](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=join)
- - [LeftJoin](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=left-join)
- - [OrderBY](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=orderby)
- - [GroupBy](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=groupby)
+ - [Introdução](https://github.com/LucasEvertonDev/DbQuery#introdu%C3%A7%C3%A3o)
+ - [Trabalhando com Transações](https://github.com/LucasEvertonDev/DbQuery#trabalhando-com-transa%C3%A7%C3%B5es)
+ - [Insert](https://github.com/LucasEvertonDev/DbQuery#insert)
+ - [InsertIfNotExists](https://github.com/LucasEvertonDev/DbQuery#insertifnotexists)
+ - [InsertOrUpdate](https://github.com/LucasEvertonDev/DbQuery#insertorupdate)
+ - [DeleteAndInsert](https://github.com/LucasEvertonDev/DbQuery#deleteandinsert)
+ - [Delete](https://github.com/LucasEvertonDev/DbQuery#delete)
+ - [Select](https://github.com/LucasEvertonDev/DbQuery#select)
+ - [Update](https://github.com/LucasEvertonDev/DbQuery#update)
+ - [Custom Select](https://github.com/LucasEvertonDev/DbQuery#custom-select)
+ - [Funções Prédefinidas Select](https://github.com/LucasEvertonDev/DbQuery#fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)
+ - [Where](https://github.com/LucasEvertonDev/DbQuery#where)
+ - [Join](https://github.com/LucasEvertonDev/DbQuery#join)
+ - [LeftJoin](https://github.com/LucasEvertonDev/DbQuery#left-join)
+ - [OrderBY](https://github.com/LucasEvertonDev/DbQuery#orderby)
+ - [GroupBy](https://github.com/LucasEvertonDev/DbQuery#groupby)
 # Introdução 
-Para utilizar o SIGN.Query devem ser baixadas as bibliotecas SIGN.Query e SIGN.Query.Models.
+Para utilizar o DB.Query devem ser baixadas as bibliotecas DB.Query e DB.Query.Models.
 
-Crie uma classe herdando a classe SignTransaction, conforme o exemplo abaixo.
+Crie uma classe herdando a classe DBTransaction, conforme o exemplo abaixo.
 
 ```
-using SIGN.Query.Models.PersistenceContext.Constants;
-using SIGN.Query.Models.PersistenceContext.DataAnnotations;
-using SIGN.Query.Models.PersistenceContext.Procedures;
-using SIGN.Query.Services;
+using DB.Query.Models.PersistenceContext.Constants;
+using DB.Query.Models.PersistenceContext.DataAnnotations;
+using DB.Query.Models.PersistenceContext.Procedures;
+using DB.Query.Services;
 using System.Linq;
 using System.Reflection;
 
 namespace SICPontos.Utilitarios.Services
 {
-    public class DBTransaction : SignTransaction
+    public class DBTransaction : DBTransaction
     {
         /// <summary>
         /// 
@@ -70,10 +70,10 @@ Conforme o exemplo abaixo:
 ```
 using SICPontos.Utilitarios.Extensions;
 using SICPontos.Utilitarios.Utils;
-using SIGN.Query.Core.Extensions;
-using SIGN.Query.Models.PersistenceContext.Dominios;
-using SIGN.Query.Models.PersistenceContext.Procedures;
-using SIGN.Query.Services;
+using DB.Query.Core.Extensions;
+using DB.Query.Models.PersistenceContext.Dominios;
+using DB.Query.Models.PersistenceContext.Procedures;
+using DB.Query.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -82,7 +82,7 @@ using System.Reflection;
 
 namespace SICPontos.Utilitarios.Services
 {
-    public class DatabaseService : SignQueryService
+    public class DatabaseService : DBQueryService
     {
         /// <summary>
         /// Não usar na declaração do on transaction 
@@ -114,7 +114,7 @@ namespace SICPontos.Utilitarios.Services
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(SignException) && ((SignException)e).GetTypeException() == DTypeException.Validation)
+                if (e.GetType() == typeof(DBException) && ((DBException)e).GetTypeException() == DTypeException.Validation)
                 {
                     LogService.LogInfo<DatabaseService>($"Validação no OnTransaction. Chamada -> {this.GetType().FullName} -> {func.Method.Name}");
                 }
@@ -166,7 +166,7 @@ namespace SICPontos.Utilitarios.Services
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(SignException) && ((SignException)e).GetTypeException() == DTypeException.Validation)
+                if (e.GetType() == typeof(DBException) && ((DBException)e).GetTypeException() == DTypeException.Validation)
                 {
                     LogService.LogInfo<DatabaseService>($"Validação no OnTransaction. Chamada -> {this.GetType().FullName} -> {func.Method.Name}");
                 }
@@ -230,7 +230,7 @@ namespace SICPontos.Utilitarios.Services
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(SignException) && ((SignException)e).GetTypeException() == DTypeException.Validation)
+                if (e.GetType() == typeof(DBException) && ((DBException)e).GetTypeException() == DTypeException.Validation)
                 {
                     LogService.LogInfo<DatabaseService>($"Validação no OnTransaction. Chamada -> {this.GetType().FullName} -> {func.Method.Name}");
                 }
@@ -406,7 +406,7 @@ OnTransaction((transaction) =>
 # InsertOrUpdate
 Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo. Caso já exista é realizado o UPDATE.
 
-ATENÇÃO!! A etapa [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where) é de suma importância para essa ação.  Pois a mesma irá verificar a existência e também controlar a atualização se necessário.
+ATENÇÃO!! A etapa [WHERE](https://github.com/LucasEvertonDev/DbQuery#where) é de suma importância para essa ação.  Pois a mesma irá verificar a existência e também controlar a atualização se necessário.
 
 ```
 OnTransaction((transaction) =>
@@ -420,7 +420,7 @@ OnTransaction((transaction) =>
 
 Indica que a ação a ser realizada será um INSERT, após uma etapa de DELETE
 
-ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)!
+ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
 ```
 OnTransaction((transaction) =>
@@ -433,7 +433,7 @@ OnTransaction((transaction) =>
 #Delete
 Indica que a ação a ser realizada será um DELETE simples.
 
-ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)!
+ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
 ```
 OnTransaction((transaction) =>
@@ -448,7 +448,7 @@ Indica que a ação a ser realizada será um SELECT simples!
 
 Um SELECT SIMPLES, nada mais é que um espelho da tabela representada pela entidade (SELECT * FROM TEntity)
 
-ATENÇÃO!! O controle de quais entidades serão selecionadas deve ser realizado na condição [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)!
+ATENÇÃO!! O controle de quais entidades serão selecionadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
 ```
 OnTransaction((transaction) =>
@@ -505,7 +505,7 @@ OnTransaction((transaction) =>
 # UPDATE
 Indica que a ação a ser realizada será um UPDATE simples, sem verificações.
 
-ATENÇÃO!! O controle de quais entidades serão atualizadas deve ser realizado na condição [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)!
+ATENÇÃO!! O controle de quais entidades serão atualizadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
 ```
 OnTransaction((transaction) =>
@@ -554,7 +554,7 @@ OnTransaction((transaction) =>
 # Custom Select
 Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
 
-Funções pré definidas e tratadas para a instrução select: [Funções Prédefinidas Select](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)!
+Funções pré definidas e tratadas para a instrução select: [Funções Prédefinidas Select](https://github.com/LucasEvertonDev/DbQuery#fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)!
 
 ```
 OnTransaction((transaction) =>
@@ -802,7 +802,7 @@ OnTransaction((transaction) =>
 });
 ```
 
-#GroupBy
+# GroupBy
 Lista as colunas que agruparão a query
 ```
 OnTransaction((transaction) =>
