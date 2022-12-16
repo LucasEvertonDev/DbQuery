@@ -430,7 +430,7 @@ OnTransaction((transaction) =>
 });
 
 ```
-#Delete
+# Delete
 Indica que a ação a ser realizada será um DELETE simples.
 
 ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://dev.azure.com/DevTeamFivenBR/IT%20Fiven%20BR/_git/SIGN%20QUERY?version=GBmain&anchor=where)!
