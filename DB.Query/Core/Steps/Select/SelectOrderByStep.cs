@@ -7,12 +7,19 @@ using System.Linq.Expressions;
 
 namespace DB.Query.Core.Steps.Select
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class SelectOrderByStep<TEntity> : SelectPersistenceStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
+
         /// <summary>
-        ///     Indica que a ação a ser realizada será um Order By! 
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
+        ///     Responsável pela etapa Order by By da query
+        ///     <para>
+        ///       A expressão deve listar as colunas que ordenarão a query
+        ///     </para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>    
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
@@ -24,10 +31,13 @@ namespace DB.Query.Core.Steps.Select
             return InstanceNextLevel<SelectAfterOrderByStep<TEntity>>(_levelFactory.PrepareOrderByAscStep(expression));
         }
 
+
         /// <summary>
-        ///     Indica que a ação a ser realizada será um Order By Desc! 
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
+        ///     Responsável pela etapa Order by By da query
+        ///     <para>
+        ///       A expressão deve listar as colunas que ordenarão a query
+        ///     </para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>    
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
@@ -40,9 +50,11 @@ namespace DB.Query.Core.Steps.Select
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um Order By! 
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
+        ///     Responsável pela etapa Order by By da query
+        ///     <para>
+        ///       A expressão deve listar as colunas que ordenarão a query
+        ///     </para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>    
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>
@@ -55,9 +67,11 @@ namespace DB.Query.Core.Steps.Select
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um Order By Desc! 
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
+        ///     Responsável pela etapa Order by By da query
+        ///     <para>
+        ///       A expressão deve listar as colunas que ordenarão a query
+        ///     </para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>    
         ///     <para><see cref="InterpretService{TEntity}.AddOrderBy(string, Expression, string)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas a serem ordenadas.</param>

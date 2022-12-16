@@ -13,13 +13,13 @@
 using DB.Query.Modelos.Procedures;
 using DB.Query.Models.Constants;
 using DB.Query.Models.DataAnnotations;
-using DB.Query.Models.Procedures.SignCi.Result;
+using DB.Query.Models.Procedures.DBCi.Result;
 
-namespace DB.Query.Models.Procedures.SignCi.Parameters
+namespace DB.Query.Models.Procedures.DBCi.Parameters
 {
     
     [Procedure("PS_ItemDominio")]
-    [Database(Databases.SignCi)]
+    [Database(Databases.DBCi)]
     public class PSItemDominioParameters : PSStoredProcedure<PSItemDominioResult>
     {
         /// <summary>

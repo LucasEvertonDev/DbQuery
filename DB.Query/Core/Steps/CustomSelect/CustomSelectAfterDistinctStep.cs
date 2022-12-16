@@ -5,12 +5,16 @@ using DB.Query.Core.Steps.Base;
 
 namespace DB.Query.Core.Steps.CustomSelect
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class CustomSelectAfterDistinctStep<TEntity> : CustomSelectBaseStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
         /// <summary>
-        ///     Responsável por atribuir a chave top na query
-        ///     <para>Dúvidas de como implementar? <see cref = "DBQueryExamples.SelectTop" > Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="top">Indica o número de registros a ser retornado.</param>
         /// <returns>

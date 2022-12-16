@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DB.Query.Core.Examples;
 using DB.Query.Core.Extensions;
-using DB.Query.Models.Entities.SignCi;
+using DB.Query.Models.Entities.DBCi;
 using DB.Query.Repositorys;
 
 namespace DB.Query.Tests.Versions.v2
@@ -23,14 +23,14 @@ namespace DB.Query.Tests.Versions.v2
         public void Insert()
         {
             var query = _dominioRepository.Insert(dominio).GetQuery();
-            Assert.AreEqual(query, "INSERT INTO SignCi..CiDominio (CiDominio.Nome, CiDominio.Descricao) OUTPUT Inserted.Codigo VALUES ('Teste Nome', 'TESTE_LIKE')");
+            Assert.AreEqual(query, "INSERT INTO DBCi..CiDominio (CiDominio.Nome, CiDominio.Descricao) OUTPUT Inserted.Codigo VALUES ('Teste Nome', 'TESTE_LIKE')");
         }
 
         [TestMethod]
         public void InsertIfNotExists()
         {
             var query = _dominioRepository.InsertIfNotExists(dominio).GetQuery();
-            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM SignCi..CiDominio WHERE Nome = 'Teste Nome' AND Descricao = 'TESTE_LIKE') BEGIN INSERT INTO SignCi..CiDominio (CiDominio.Nome, CiDominio.Descricao) OUTPUT Inserted.Codigo VALUES ('Teste Nome', 'TESTE_LIKE') END ");
+            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM DBCi..CiDominio WHERE Nome = 'Teste Nome' AND Descricao = 'TESTE_LIKE') BEGIN INSERT INTO DBCi..CiDominio (CiDominio.Nome, CiDominio.Descricao) OUTPUT Inserted.Codigo VALUES ('Teste Nome', 'TESTE_LIKE') END ");
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace DB.Query.Tests.Versions.v2
                             .Update(dominio)
                             .Where(a => a.Codigo > 1 && a.Descricao.LIKE("TESTE_LIKE"))
                             .GetQuery();
-            Assert.AreEqual(query, "UPDATE SignCi..CiDominio SET Nome = 'Teste Nome', Descricao = 'TESTE_LIKE' WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%')");
+            Assert.AreEqual(query, "UPDATE DBCi..CiDominio SET Nome = 'Teste Nome', Descricao = 'TESTE_LIKE' WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%')");
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace DB.Query.Tests.Versions.v2
                     a => a.Descricao
                 )
                 .GetQuery();
-            Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') ORDER BY CiDominio.Descricao ASC");
+            Assert.AreEqual(query, "SELECT TOP(1) * FROM DBCi..CiDominio WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') ORDER BY CiDominio.Descricao ASC");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace DB.Query.Tests.Versions.v2
                             .Delete()
                             .Where(a => a.Codigo > 1 && a.Descricao.LIKE("TESTE_LIKE"))
                             .GetQuery();
-            Assert.AreEqual(query, "DELETE FROM SignCi..CiDominio WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%')");
+            Assert.AreEqual(query, "DELETE FROM DBCi..CiDominio WHERE (CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%')");
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio INNER JOIN SignCi..CiItemDominio ON CiDominio.Codigo = CiItemDominio.Codigo_Dominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND (CiDominio.Nome = 'Teste Nome' AND CiDominio.Descricao IS NOT NULL)) ORDER BY CiDominio.Codigo ASC, CiItemDominio.Nome ASC");
+            Assert.AreEqual(query, "SELECT TOP(1) * FROM DBCi..CiDominio INNER JOIN DBCi..CiItemDominio ON CiDominio.Codigo = CiItemDominio.Codigo_Dominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND (CiDominio.Nome = 'Teste Nome' AND CiDominio.Descricao IS NOT NULL)) ORDER BY CiDominio.Codigo ASC, CiItemDominio.Nome ASC");
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio LEFT JOIN SignCi..CiItemDominio ON CiDominio.Codigo = CiItemDominio.Codigo_Dominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC, CiItemDominio.Nome ASC");
+            Assert.AreEqual(query, "SELECT TOP(1) * FROM DBCi..CiDominio LEFT JOIN DBCi..CiItemDominio ON CiDominio.Codigo = CiItemDominio.Codigo_Dominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC, CiItemDominio.Nome ASC");
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT COUNT(*) AS Count FROM SignCi..CiDominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL)");
+            Assert.AreEqual(query, "SELECT DISTINCT COUNT(*) AS Count FROM DBCi..CiDominio WHERE ((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL)");
         }
 
         [TestMethod]
@@ -148,7 +148,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiDominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM DBCi..CiDominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC");
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiDominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM DBCi..CiDominio WHERE (((CiDominio.Codigo > 1 AND CiDominio.Descricao LIKE '%TESTE_LIKE%') AND CiDominio.Nome IS NOT NULL) AND CiDominio.Nome = 'Teste Nome') ORDER BY CiDominio.Codigo ASC");
         }
 
         [TestMethod]
@@ -192,7 +192,7 @@ namespace DB.Query.Tests.Versions.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT TOP(1) * FROM SignCi..CiDominio AS d1 INNER JOIN SignCi..CiItemDominio AS i1 ON d1.Codigo = i1.Codigo_Dominio WHERE ((d1.Codigo > 1 AND i1.Descricao LIKE '%TESTE_LIKE%') AND (d1.Nome = 'Teste Nome' AND d1.Descricao IS NOT NULL)) ORDER BY d1.Codigo ASC, i1.Nome ASC");
+            Assert.AreEqual(query, "SELECT TOP(1) * FROM DBCi..CiDominio AS d1 INNER JOIN DBCi..CiItemDominio AS i1 ON d1.Codigo = i1.Codigo_Dominio WHERE ((d1.Codigo > 1 AND i1.Descricao LIKE '%TESTE_LIKE%') AND (d1.Nome = 'Teste Nome' AND d1.Descricao IS NOT NULL)) ORDER BY d1.Codigo ASC, i1.Nome ASC");
         }
 
         public int TesteFunction()

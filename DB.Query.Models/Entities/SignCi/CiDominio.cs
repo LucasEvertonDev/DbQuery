@@ -1,9 +1,9 @@
 ﻿using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {
     [Table("CiDominio")]
-    public class CiDominio : SignCi
+    public class CiDominio : DBCi
     {
         [PrimaryKey(Identity = true)]
         public int Codigo { get; set; }

@@ -7,16 +7,18 @@ using System.Linq.Expressions;
 
 namespace DB.Query.Core.Steps.Delete
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class DeleteStep<TEntity> : DeletePersistenceStep<TEntity> where TEntity : EntityBase
     {
         /// <summary>
         ///     Responsável pela etapa de filtros da query
         ///     <para>
-        ///         A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade a mesma possuir dois passos, mesmo em casos redundantes 
-        ///         que são os de propriedades booleanas. Ou seja utilize Entidade.Propriedade == true
+        ///       A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas. Tendo como exceção os paramêtros passados para a consulta.
         ///     </para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Delete">Clique aqui.</see></para>
-        ///     <para>Como usar funções comparativas(LIKE, IN, NOT IN)?<see cref = "DBQueryExamples.ConditionFunctions" > Clique aqui.</see></para>    
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>    
         ///     <para><see cref="InterpretService{TEntity}.AddWhere(Expression)">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as condições da query.</param>

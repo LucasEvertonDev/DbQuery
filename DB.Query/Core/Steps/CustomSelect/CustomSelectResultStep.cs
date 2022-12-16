@@ -8,6 +8,10 @@ using System;
 
 namespace DB.Query.Core.Steps.CustomSelect
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class CustomSelectResultStep<TEntity> : ResultStep<TEntity> where TEntity : EntityBase
     {
         /// <summary>

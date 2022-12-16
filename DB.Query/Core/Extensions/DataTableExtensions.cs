@@ -1,4 +1,5 @@
 ﻿using DB.Query.Core.Extensions;
+using DB.Query.Models.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,14 +33,22 @@ namespace DB.Query.Core.Extensions
                 return dt.AsEnumerable().Select(row =>
                 {
                     var objT = Activator.CreateInstance<T>();
-                    foreach (var pro in properties)
+                    for (var i = 0; i < properties.Count(); i++)
                     {
-                        if (columnNames.Contains(pro.Name))
+                        var pro = properties[i];
+                        ColumnAttribute columnAttribute = (ColumnAttribute)pro.GetCustomAttributes(typeof(ColumnAttribute), false).FirstOrDefault();
+                        if (columnAttribute != null && columnNames.Contains(columnAttribute.DisplayName))
+                        {
+                            PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
+                            pro.SetValue(objT, ChangeType(row[columnAttribute.DisplayName], pI.PropertyType));
+                        }
+                        else if (columnNames.Contains(pro.Name))
                         {
                             PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
                             pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));
                         }
                     }
+
                     return objT;
                 }).ToList();
             }
@@ -60,9 +69,16 @@ namespace DB.Query.Core.Extensions
             return dt.AsEnumerable().Select(row =>
             {
                 var objT = Activator.CreateInstance(obj);
-                foreach (var pro in properties)
+                for (var i = 0; i < properties.Count(); i++)
                 {
-                    if (columnNames.Contains(pro.Name))
+                    var pro = properties[i];
+                    ColumnAttribute columnAttribute = (ColumnAttribute)pro.GetCustomAttributes(typeof(ColumnAttribute), false).FirstOrDefault();
+                    if (columnAttribute != null && columnNames.Contains(columnAttribute.DisplayName))
+                    {
+                        PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
+                        pro.SetValue(objT, ChangeType(row[columnAttribute.DisplayName], pI.PropertyType));
+                    }
+                    else if (columnNames.Contains(pro.Name))
                     {
                         PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
                         pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));
@@ -87,9 +103,16 @@ namespace DB.Query.Core.Extensions
             return dt.AsEnumerable().Select(row =>
             {
                 var objT = Activator.CreateInstance<T>();
-                foreach (var pro in properties)
+                for (var i = 0; i < properties.Count(); i++)
                 {
-                    if (columnNames.Contains(pro.Name))
+                    var pro = properties[i];
+                    ColumnAttribute columnAttribute = (ColumnAttribute)pro.GetCustomAttributes(typeof(ColumnAttribute), false).FirstOrDefault();
+                    if (columnAttribute != null && columnNames.Contains(columnAttribute.DisplayName))
+                    {
+                        PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
+                        pro.SetValue(objT, ChangeType(row[columnAttribute.DisplayName], pI.PropertyType));
+                    }
+                    else if (columnNames.Contains(pro.Name))
                     {
                         PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
                         pro.SetValue(objT, ChangeType(row[pro.Name], pI.PropertyType));

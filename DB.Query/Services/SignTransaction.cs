@@ -1,5 +1,6 @@
 ﻿using DB.Query.Models.DataAnnotations;
 using DB.Query.Models.Entities;
+using DB.Query.Models.Procedures;
 using DB.Query.Core.Extensions;
 using DB.Query.Repositorys;
 using System;
@@ -10,17 +11,20 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DB.Query.Core.Services;
+using DB.Query.Models.Constants;
 using DB.Query.Modelos.Procedures;
+using DB.Query.Core.Models;
 
 namespace DB.Query.Services
 {
-    public class SignTransaction
+    public class DBTransaction
     {
         protected bool hasCommit { get; set; }
         protected bool hasRoolback { get; set; }
         protected SqlConnection _sqlConnection { get; set; }
         protected SqlTransaction _sqlTransaction { get; set; }
-        public bool OnDebug { get; set; }
+        protected bool _onDebug { get; set; }
+        protected ConfigurationInputsModel _configuration { get; set; }
 
         /// <summary>
         /// 
@@ -165,6 +169,17 @@ namespace DB.Query.Services
         /// 
         /// </summary>
         /// <param name="storedProcedureBase"></param>
+        private void VerifyDatabaseStoredProcedure(StoredProcedureBase storedProcedureBase)
+        {
+            var type = storedProcedureBase.GetType();
+            var database = type.GetCustomAttributes(typeof(DatabaseAttribute), true).FirstOrDefault() as DatabaseAttribute;
+            ChangeDatabase(database.DatabaseName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storedProcedureBase"></param>
         /// <returns></returns>
         public virtual int ExecuteNonQuery(StoredProcedureBase storedProcedureBase)
         {
@@ -176,7 +191,7 @@ namespace DB.Query.Services
             }
             catch (Exception e)
             {
-                throw new Exception($"Erro ao executat a query -> {command.CommandAsSql()}", e);
+                throw new Exception($"Erro ao executat a query -> {command.PrintSql()}", e);
             }
         }
 
@@ -195,20 +210,10 @@ namespace DB.Query.Services
             }
             catch (Exception e)
             {
-                throw new Exception($"Erro ao executat a query -> {command.CommandAsSql()}", e);
+                throw new Exception($"Erro ao executat a query -> {command.PrintSql()}", e);
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="storedProcedureBase"></param>
-        private void VerifyDatabaseStoredProcedure(StoredProcedureBase storedProcedureBase)
-        {
-            var type = storedProcedureBase.GetType();
-            var database = type.GetCustomAttributes(typeof(DatabaseAttribute), true).FirstOrDefault() as DatabaseAttribute;
-            ChangeDatabase(database.DatabaseName);
-        }
 
         /// <summary>
         /// 
@@ -225,7 +230,7 @@ namespace DB.Query.Services
             }
             catch (Exception e)
             {
-                throw new Exception($"Erro ao executat a query -> {command.CommandAsSql()}", e);
+                throw new Exception($"Erro ao executat a query -> {command.PrintSql()}", e);
             }
         }
 
@@ -244,7 +249,7 @@ namespace DB.Query.Services
             }
             catch (Exception e)
             {
-                throw new Exception($"Erro ao executat a query -> {command.CommandAsSql()}", e);
+                throw new Exception($"Erro ao executat a query -> {command.PrintSql()}", e);
             }
         }
 
@@ -279,9 +284,9 @@ namespace DB.Query.Services
                 sqlCommad.CommandTimeout = timeout.TimeOut;
             }
 
-            if (OnDebug)
+            if (_onDebug)
             {
-                LogService.PrintQuery(sqlCommad.CommandAsSql());
+                LogService.PrintQuery(sqlCommad.PrintSql());
             }
 
             return sqlCommad;
@@ -295,7 +300,36 @@ namespace DB.Query.Services
         protected virtual object GetInputValue(PropertyInfo inf, StoredProcedureBase storedProcedure)
         {
             var attr = inf.GetCustomAttributes(typeof(ConfigurationAttribute), false).FirstOrDefault() as ConfigurationAttribute;
+            if (attr != null && _configuration != null )
+            {
+                //if (attr.Configuration == ConfigurationInputs.CodigoEmpresa)
+                //{
+                //    return _configuration.CodigoEmpresa;
+                //}
+                //if (attr.Configuration == ConfigurationInputs.CodigoFilial)
+                //{
+                //    return _configuration.CodigoFilial;
+                //}
+            }
             return inf.GetValue(storedProcedure);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        protected virtual void ApplyConfigurations(ConfigurationInputsModel configuration)
+        {
+            this._configuration = configuration;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool ExecutedInDebug()
+        {
+            return _onDebug;
         }
     }
 }

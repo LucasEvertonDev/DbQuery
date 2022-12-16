@@ -1,5 +1,6 @@
 ﻿using DB.Query.Core.Models;
 using DB.Query.Services;
+using DB.Query.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,14 +12,16 @@ namespace DB.Query.Core.Examples
 {
     public class DBQueryPersistenceExample
     {
+        public DBTransaction _transaction { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected static void OnTransaction(string connection, Action<SignTransaction> func)
+        protected static void OnTransaction(string connection, Action<DBTransaction> func)
         {
-            var _dataBaseService = Activator.CreateInstance<SignTransaction>();
+            var _dataBaseService = Activator.CreateInstance<DBTransaction>();
             try
             {
                 _dataBaseService.OpenTransaction(connection);
@@ -49,9 +52,9 @@ namespace DB.Query.Core.Examples
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected async static Task OnTransactionAsync(string connection, Action<SignTransaction> func)
+        protected async static Task OnTransactionAsync(string connection, Action<DBTransaction> func)
         {
-            var _dataBaseService = Activator.CreateInstance<SignTransaction>();
+            var _dataBaseService = Activator.CreateInstance<DBTransaction>();
             try
             {
                 await _dataBaseService.OpenTransactionAsync(connection);
@@ -75,9 +78,9 @@ namespace DB.Query.Core.Examples
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected async static Task OnTransactionAsync(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<SignTransaction> func)
+        protected async static Task OnTransactionAsync(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<DBTransaction> func)
         {
-            var _dataBaseService = Activator.CreateInstance<SignTransaction>();
+            var _dataBaseService = Activator.CreateInstance<DBTransaction>();
             try
             {
                 await _dataBaseService.OpenTransactionAsync(connection);
@@ -104,9 +107,9 @@ namespace DB.Query.Core.Examples
         /// <param name="dataBase_Persistence"></param>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        protected static void OnTransaction(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<SignTransaction> func)
+        protected static void OnTransaction(DBQueryPersistenceExample dataBase_Persistence, string connection, Action<DBTransaction> func)
         {
-            var _dataBaseService = Activator.CreateInstance<SignTransaction>();
+            var _dataBaseService = Activator.CreateInstance<DBTransaction>();
             try
             {
                 _dataBaseService.OpenTransaction(connection);
@@ -137,7 +140,7 @@ namespace DB.Query.Core.Examples
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="func"></param>
-        public void OnTransaction_DB(string connection, Action<SignTransaction> func)
+        public void OnTransaction_DB(string connection, Action<DBTransaction> func)
         {
             OnTransaction(connection, func);
         }
@@ -146,7 +149,7 @@ namespace DB.Query.Core.Examples
         /// <summary>
         /// 
         /// </summary>
-        private static void getProprerties(Action<SignTransaction> func, SignTransaction transaction)
+        private static void getProprerties(Action<DBTransaction> func, DBTransaction transaction)
         {
             foreach (var p in func.Target.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).Where(a => a.PropertyType.Name.Contains("Repository")))
             {
@@ -161,7 +164,7 @@ namespace DB.Query.Core.Examples
         /// </summary>
         /// <param name="func"></param>
         /// <param name="transaction"></param>
-        private static void getProprerties(DBQueryPersistenceExample dataBase_Persistence, SignTransaction transaction)
+        private static void getProprerties(DBQueryPersistenceExample dataBase_Persistence, DBTransaction transaction)
         {
             var properties = ((Type)(dataBase_Persistence.GetType())).GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToList();
             foreach (var p in properties.Where(prop => prop.PropertyType.Name.Contains("Repository")))
@@ -170,7 +173,7 @@ namespace DB.Query.Core.Examples
                 List<PropertyInfo> properties2 = ((Type)(obj.GetType())).GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToList();
                 foreach (var o in properties2.Where(o => "_transaction".Equals(o.Name)))
                 {
-                    SignTransaction val = (SignTransaction)o.GetValue(obj, null);
+                    DBTransaction val = (DBTransaction)o.GetValue(obj, null);
                     if (val == null || val.GetConnection() == null || val.GetConnection().State == ConnectionState.Closed)
                     {
                         MethodInfo m = obj.GetType().GetMethod("BindTransaction");

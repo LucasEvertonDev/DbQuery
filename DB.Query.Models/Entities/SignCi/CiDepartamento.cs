@@ -9,10 +9,10 @@
 //------------------------------------------------------------------------------
 using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {    
     [Table("CiDepartamento")]
-    public class CiDepartamento : SignCi
+    public class CiDepartamento : DBCi
     {
         /// <summary>
         /// Propiedade mapeada para a definição de Codigo_Empresa

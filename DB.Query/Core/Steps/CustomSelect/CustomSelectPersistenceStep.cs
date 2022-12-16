@@ -1,12 +1,18 @@
 ﻿
+using DB.Query.Core.Services;
 using DB.Query.Core.Steps.CustomSelect;
 using DB.Query.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 namespace DB.Query.Core.Steps.Base
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class CustomSelectPersistenceStep<TEntity> : PersistenceStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
         /// <summary>
@@ -72,8 +78,8 @@ namespace DB.Query.Core.Steps.Base
         public dynamic FirstOrDefault()
         {
             var res = ExecuteSql();
-            ClearOldConfigurations();
             var type = _steps.Where(st => st.StepType == Enuns.StepType.CUSTOM_SELECT).First().ReturnType;
+            ClearOldConfigurations();
             return new CustomSelectResultStep<TEntity>(res).FirstOrDefault(type);
         }
 
@@ -119,6 +125,15 @@ namespace DB.Query.Core.Steps.Base
             var res = ExecuteSql();
             ClearOldConfigurations();
             return new CustomSelectResultStep<TEntity>(res).ToDataTable();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string StartTranslateQuery()
+        {
+            return Activator.CreateInstance<InterpretSelectService<TEntity>>().StartToInterpret(this._steps);
         }
     }
 }

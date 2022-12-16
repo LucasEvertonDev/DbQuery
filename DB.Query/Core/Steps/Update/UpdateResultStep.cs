@@ -3,6 +3,10 @@ using DB.Query.Core.Steps.Base;
 
 namespace DB.Query.Core.Steps.Update
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class UpdateResultStep<TEntity> : ResultStep<TEntity> where TEntity : EntityBase
     {
 

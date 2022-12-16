@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,21 +7,66 @@ using DB.Query.Models.DataAnnotations;
 using DB.Query.Core.Constants;
 using DB.Query.Core.Enuns;
 using DB.Query.Core.Models;
+using DB.Query.Models.Entities;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace DB.Query.Core.Services
 {
-    public class InterpretService<TEntity>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public class InterpretService<TEntity> where TEntity : EntityBase
     {
-        private Dictionary<string, string> _expressions { get; set; }
-        private Expression _currentExpression { get; set; }
-        private List<DBQueryStepModel> _levelModels { get; set; }
-        private bool _useAlias => _levelModels.Exists(a => a.StepType == StepType.USE_ALIAS);
-        private string _alias => _levelModels.Where(a => a.StepType == StepType.USE_ALIAS).FirstOrDefault()?.StepValue;
-        private bool ContainsProperty(object obj, string name) => obj.GetType().GetProperty(name) != null;
-        private string GetFullName(Type type) => string.Concat(GetDatabaseName(type), DBKeysConstants.T_A, GetTableName(type));
-        private List<string> _defaultFunctions { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        protected TEntity _domain { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected EntityAttributesModel<TEntity> _entityContext { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Dictionary<string, string> _expressions { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Expression _currentExpression { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected List<DBQueryStepModel> _levelModels { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected bool _useAlias => _levelModels.Exists(a => a.StepType == StepType.USE_ALIAS);
+        /// <summary>
+        /// 
+        /// </summary>
+        protected string _alias => _levelModels.Where(a => a.StepType == StepType.USE_ALIAS).FirstOrDefault()?.StepValue;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected bool ContainsProperty(object obj, string name) => obj.GetType().GetProperty(name) != null;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected string GetFullName(Type type) => string.Concat(GetDatabaseName(type), DBKeysConstants.T_A, GetTableName(type));
+        /// <summary>
+        /// 
+        /// </summary>
+        protected List<string> _defaultFunctions { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public InterpretService()
         {
             _defaultFunctions = new List<string>()
@@ -40,6 +84,11 @@ namespace DB.Query.Core.Services
             _expressions = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="levelModels"></param>
+        /// <returns></returns>
         public string StartToInterpret(List<DBQueryStepModel> levelModels)
         {
             _levelModels = levelModels;
@@ -50,216 +99,19 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        private string RunInterpret()
+        protected virtual string RunInterpret()
         {
-            if (_levelModels.Exists(a => a.StepType == StepType.SELECT))
-            {
-                return GenerateSelectScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.CUSTOM_SELECT))
-            {
-                return GenerateSelectScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.DELETE))
-            {
-                return GenerateDeleteScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT))
-            {
-                return GenerateInsertScript(); ;
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT_NOT_EXISTS))
-            {
-                return GenerateInsertIfNotExistsScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.UPDATE))
-            {
-                return GenerateUpdateScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.INSERT_OR_UPDATE))
-            {
-                return GenerateInsertOrUpdateScript();
-            }
-            else if (_levelModels.Exists(a => a.StepType == StepType.DELETE_AND_INSERT))
-            {
-                return GenerateDeleteAndInsertScript();
-            }
-            else
-            {
-                return "";
-            }
+            return "";
         }
 
-        #region Generate Scripts
+        #region Interpret Expressions
 
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="expressions"></param>
+        /// <param name="_query"></param>
         /// <returns></returns>
-        private string GenerateInsertScript()
-        {
-            return string.Format(
-                DBKeysConstants.INSERT,
-                GetFullName(typeof(TEntity)),
-                string.Join(", ", GetProperties()),
-                GetPrimaryKeyName(typeof(TEntity)),
-                string.Join(", ", GetValuesToInsert()));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateInsertIfNotExistsScript()
-        {
-            return string.Format(
-                DBKeysConstants.INSERT_NOT_EXISTS,
-                GetFullName(typeof(TEntity)),
-                DBKeysConstants.WHERE_WITH_SPACE + string.Join(DBKeysConstants.AND_WITH_SPACE, GetObjectClausules()),
-                GenerateInsertScript());
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateDeleteScript()
-        {
-            var query = string.Format(
-                DBKeysConstants.DELETE,
-                GetFullName(typeof(TEntity)),
-                string.Empty);
-
-            var where = _levelModels.Where(step => step.StepType == StepType.WHERE).FirstOrDefault();
-            if (where != null)
-            {
-                query += AddWhere(where.StepExpression);
-            }
-            return query;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateSelectScript()
-        {
-            var query = string.Empty;
-            foreach (var step in _levelModels)
-            {
-                if (step.StepType == StepType.SELECT || step.StepType == StepType.CUSTOM_SELECT)
-                {
-                    query += string.Format(
-                        DBKeysConstants.SELECT,
-                        DBKeysConstants.ALL_COLUMNS,
-                        GetFullName(typeof(TEntity)),
-                        string.IsNullOrEmpty(_alias) ? string.Empty : DBKeysConstants.AS_WITH_SPACE + _alias + " ");
-
-                    if (step.StepType == StepType.CUSTOM_SELECT)
-                    {
-                        var props = GetPropertiesExpression(step.StepExpression, useAlias: true, fromSelect: true);
-                        query = query.Replace(DBKeysConstants.SELECT_ALL, DBKeysConstants.SELECT_KEY + " " + string.Join(", ", props));
-                    }
-                }
-                else if (step.StepType == StepType.DISTINCT)
-                {
-                    query = query.Replace(DBKeysConstants.SELECT_KEY, DBKeysConstants.SELECT_DISTINCT);
-                }
-                else if (step.StepType == StepType.TOP)
-                {
-                    if (query.Contains(DBKeysConstants.SELECT_DISTINCT))
-                    {
-                        query = query.Replace(DBKeysConstants.SELECT_DISTINCT, string.Format(DBKeysConstants.SELECT_DISTINCT_TOP, step.StepValue));
-                    }
-                    else
-                    {
-                        query = query.Replace(DBKeysConstants.SELECT_KEY, string.Format(DBKeysConstants.SELECT_TOP, step.StepValue));
-                    }
-                }
-                else if (step.StepType == StepType.WHERE)
-                {
-                    query += AddWhere(step.StepExpression);
-                }
-                else if (step.StepType == StepType.JOIN)
-                {
-                    query += AddJoin(step.StepExpression, DBKeysConstants.INNER_JOIN);
-                }
-                else if (step.StepType == StepType.LEFT_JOIN)
-                {
-                    query += AddJoin(step.StepExpression, DBKeysConstants.LEFT_JOIN);
-                }
-                else if (step.StepType == StepType.ORDER_BY_ASC)
-                {
-                    query = AddOrderBy(DBKeysConstants.ASC, step.StepExpression, query);
-                }
-                else if (step.StepType == StepType.ORDER_BY_DESC)
-                {
-                    query = AddOrderBy(DBKeysConstants.DESC, step.StepExpression, query);
-                }
-                else if (step.StepType == StepType.GROUP_BY)
-                {
-                    query = AddGroupBy(step.StepExpression, query);
-                }
-                else if (step.StepType == StepType.PAGINATION)
-                {
-                    query += string.Format(DBKeysConstants.OFFSET, step.PageSize * (step.PageNumber - 1), step.PageSize);
-                }
-            }
-            return query;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateUpdateScript()
-        {
-            var query = string.Format(
-                DBKeysConstants.UPDATE,
-                GetFullName(typeof(TEntity)),
-                string.Join(", ", GetObjectClausules()),
-                string.Empty);
-
-            var where = _levelModels.Where(step => step.StepType == StepType.WHERE).FirstOrDefault();
-            if (where != null)
-            {
-                query += AddWhere(where.StepExpression);
-            }
-
-            return query;
-        }
-
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateInsertOrUpdateScript()
-        {
-            var query = string.Format(
-                DBKeysConstants.INSERT_NOT_EXISTS_ELSE_ACTION,
-                GetFullName(typeof(TEntity)),
-                AddWhere(_levelModels.Where(step => step.StepType == StepType.WHERE).First().StepExpression),
-                GenerateInsertScript(),
-                GenerateUpdateScript());
-            return query;
-        }
-
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string GenerateDeleteAndInsertScript()
-        {
-            var query = GenerateDeleteScript() + " " + GenerateInsertScript();
-            return query;
-        }
-        #endregion
-
-        #region Iterpret Expressions
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="tipo"></param>
         protected string AddGroupBy(Expression expressions, string _query)
         {
             bool contains = _query.Contains(DBKeysConstants.GROUP_BY);
@@ -286,8 +138,10 @@ namespace DB.Query.Core.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="expression"></param>
         /// <param name="tipo"></param>
+        /// <param name="expressions"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         protected string AddOrderBy(string tipo, Expression expressions, string query)
         {
             bool contains = query.Contains(DBKeysConstants.ORDER_BY);
@@ -314,7 +168,8 @@ namespace DB.Query.Core.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Conditions"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         protected string AddWhere(Expression expression)
         {
             string condition = string.Empty;
@@ -328,17 +183,20 @@ namespace DB.Query.Core.Services
 
                 DememberExpression(((dynamic)expression).Body);
 
-                if (_expressions.Keys.ToList().Exists(a => exp.Contains(a)))
+                var keys = _expressions.Keys.ToList();
+
+                if (keys.Exists(a => exp.Contains(a)))
                 {
-                    _expressions.Keys.ToList().ForEach(key =>
+                    for (var i = 0; i < keys.Count(); i++)
                     {
+                        var key = keys[i];
                         // A etapa de condição é de suma importância. Caso ele não consiga tratar uma expression deve parar todo o processo
                         if (!string.IsNullOrEmpty(key) && string.IsNullOrEmpty(_expressions[key]?.Trim()))
                         {
                             throw new Exception($"Erro ao montar condições da query {key} -> {expressionText}");
                         }
                         exp = exp.Replace(key, _expressions[key]);
-                    });
+                    }
 
                     exp = exp.Replace(DBQueryConstants.AND_ALSO, DBKeysConstants.AND)
                             .Replace(DBQueryConstants.OR_ELSE, DBKeysConstants.OR)
@@ -358,8 +216,6 @@ namespace DB.Query.Core.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="J"></typeparam>
-        /// <typeparam name="P"></typeparam>
         /// <param name="expression"></param>
         /// <param name="strJoin"></param>
         /// <returns></returns>
@@ -380,7 +236,7 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        protected string GetTableName(Type type, dynamic exp = null)
+        protected virtual string GetTableName(Type type, dynamic exp = null)
         {
             if (_useAlias && exp != null && ContainsProperty(exp, "Expression"))
             {
@@ -403,24 +259,6 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        protected string GetPrimaryKeyName(Type type)
-        {
-            string key = string.Empty;
-            List<PropertyInfo> infs = type.GetProperties().ToList();
-            infs.ForEach(prop =>
-            {
-                if (IsIdentity(prop))
-                {
-                    key = string.Concat(DBKeysConstants.OUTPUT_INSERTED, prop.Name);
-                }
-            });
-            return key;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         public string GetDatabaseName(Type type)
         {
             var displayName = type.GetCustomAttributes(typeof(DatabaseAttribute), true).FirstOrDefault() as DatabaseAttribute;
@@ -432,66 +270,6 @@ namespace DB.Query.Core.Services
             {
                 throw new Exception("Informe o nome da database");
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        public bool IsIdentity (PropertyInfo prop)
-        {
-            try
-            {
-                return prop.GetCustomAttributes(typeof(PrimaryKeyAttribute), false).ToList().OfType<PrimaryKeyAttribute>().Where(a => a.Identity).First().Identity;
-            }
-            catch 
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected List<string> GetObjectClausules()
-        {
-            TEntity domain = _levelModels.Where(a => a.StepType == StepType.INSERT || a.StepType == StepType.INSERT_NOT_EXISTS
-                || a.StepType == StepType.UPDATE || a.StepType == StepType.INSERT_OR_UPDATE || a.StepType == StepType.DELETE_AND_INSERT).First().StepValue;
-            var list = new List<string>();
-            domain.GetType().GetProperties().ToList().ForEach(prop =>
-            {
-                if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0 && !IsIdentity(prop))
-                {
-                    var val = TreatValue((dynamic)prop.GetValue(domain), true);
-                    list.Add(string.Concat(prop.Name, DBKeysConstants.EQUALS_WITH_SPACE, val?.ToString()));
-                }
-            });
-            return list;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected List<string> GetValuesToInsert()
-        {
-            TEntity domain = _levelModels.Where(a => a.StepType == StepType.INSERT || a.StepType == StepType.INSERT_NOT_EXISTS
-                || a.StepType == StepType.UPDATE || a.StepType == StepType.INSERT_OR_UPDATE || a.StepType == StepType.DELETE_AND_INSERT).First().StepValue;
-            var values = new List<string>();
-            domain.GetType().GetProperties().ToList().ForEach(prop =>
-            {
-                if (!IsIdentity(prop))
-                {
-                    if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
-                    {
-                        var val = TreatValue((dynamic)prop.GetValue(domain), true);
-                        values.Add(val?.ToString());
-                    }
-                }
-            });
-            return values;
         }
 
         /// <summary>
@@ -519,14 +297,16 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <param name="expression"></param>
+        /// <param name="useAlias"></param>
+        /// <param name="fromSelect"></param>
         /// <returns></returns>
         protected List<string> GetPropertiesExpression(Expression expression, bool useAlias = false, bool fromSelect = false)
         {
             var properties = new List<string>();
             _currentExpression = expression;
             dynamic exp = expression;
-       
-            if (expression.Type == typeof(Func<TEntity, dynamic>) && (!ContainsProperty(exp, "Body") || exp.Body.Type != typeof(object[])) 
+
+            if (expression.Type == typeof(Func<TEntity, dynamic>) && (!ContainsProperty(exp, "Body") || exp.Body.Type != typeof(object[]))
                 && (!ContainsProperty(exp, "Body") || (exp.Body.NodeType != ExpressionType.New && exp.Body.NodeType != ExpressionType.MemberInit)))
             {
                 properties.Add(GetPropertyOfSingleExpression(expression, false, useAlias));
@@ -540,7 +320,7 @@ namespace DB.Query.Core.Services
                         _levelModels.Where(A => A.StepType == StepType.CUSTOM_SELECT).FirstOrDefault().ReturnType = exp.Body.Type;
                     }
 
-                    for(var i = 0; i < exp.Body.Arguments.Count; i++)
+                    for (var i = 0; i < exp.Body.Arguments.Count; i++)
                     {
                         properties.Add(GetPropertyOfSingleExpression(exp.Body.Arguments[i], false, useAlias, fromSelect ? exp.Body.Members[i].Name : null));
                     }
@@ -557,7 +337,7 @@ namespace DB.Query.Core.Services
                         properties.Add(GetPropertyOfSingleExpression(a.Expression, false, useAlias, fromSelect ? a.Member.Name : null));
                     }
                 }
-                else if (ContainsProperty(exp.Body, "Arguments"))
+                else if (ContainsProperty(exp.Body, "Arguments") && exp.Body.Arguments.Count > 0)
                 {
                     foreach (var a in exp.Body.Arguments[0].Expressions)
                     {
@@ -578,6 +358,8 @@ namespace DB.Query.Core.Services
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="hasParamter"></param>
+        /// <param name="useAlias"></param>
+        /// <param name="aliasName"></param>
         /// <returns></returns>
         protected string GetPropertyOfSingleExpression(dynamic expression, bool hasParamter, bool useAlias, string aliasName = "")
         {
@@ -587,13 +369,13 @@ namespace DB.Query.Core.Services
                 var exp = ContainsProperty(expression, "Body") ? expression?.Body : expression;
                 if (exp.NodeType == ExpressionType.MemberAccess)
                 {
-                    retorno = GetPropretyFullName(exp.Expression.Type, exp);
+                    retorno = GetMemberExpression(exp);
                 }
                 else if (exp.NodeType == ExpressionType.Constant)
                 {
                     retorno = TreatValue(exp.Value, true)?.ToString();
                 }
-                else if (exp.NodeType == ExpressionType.Convert)
+                else if (exp.NodeType == ExpressionType.Convert || exp.NodeType == ExpressionType.ConvertChecked)
                 {
                     if (ContainsProperty(exp.Operand, "Expression"))
                     {
@@ -602,6 +384,14 @@ namespace DB.Query.Core.Services
                     else if (ContainsProperty(exp.Operand, "Left"))
                     {
                         retorno = DememberExpression(exp.Operand);
+                    }
+                    else if (ContainsProperty(exp.Operand, "Operand"))
+                    {
+                        retorno = DememberExpression(exp.Operand.Operand);
+                    }
+                    else if (ContainsProperty(exp.Operand, "Arguments"))
+                    {
+                        retorno = GetPropertyOfSingleExpression(exp.Operand.Arguments[0], hasParamter, false);
                     }
                     else
                     {
@@ -635,8 +425,8 @@ namespace DB.Query.Core.Services
                                 retorno = string.Format(DBKeysConstants.COUNT_ELEMEMT, ret);
                             }
                             else
-                            { 
-                                 retorno = DBKeysConstants.COUNT;
+                            {
+                                retorno = DBKeysConstants.COUNT;
                             }
                         }
                         else if (DBQueryConstants.CONCAT_FUNCTION.Equals(exp.Method.Name))
@@ -671,6 +461,36 @@ namespace DB.Query.Core.Services
                             }
                         }
                     }
+                    else
+                    {
+                        if (DBQueryConstants.TO_STRING.Equals(exp.Method.Name)
+                            || DBQueryConstants.TO_STRING_SAFE.Equals(exp.Method.Name))
+                        {
+                            if (exp.Object.Type == typeof(string))
+                            {
+                                retorno = GetPropertyOfSingleExpression(exp.Object, hasParamter, false);
+                            }
+                            else
+                            {
+                                retorno = string.Format(DBKeysConstants.CONVERT_VARCHAR, GetPropertyOfSingleExpression(exp.Object, hasParamter, false));
+                            }
+                        }
+                        else if (DBQueryConstants.GET_VALUE_OR_DEFAULT.Equals(exp.Method.Name))
+                        {
+                            retorno = GetPropertyOfSingleExpression(exp.Object, hasParamter, false);
+                        }
+                        else if (DBQueryConstants.PARSE.Equals(exp.Method.Name))
+                        {
+                            if (ContainsProperty(exp, "Arguments"))
+                            {
+                                retorno = GetPropertyOfSingleExpression(exp.Arguments[0], hasParamter, false);
+                            }
+                        }
+                    }
+                }
+                else if (ContainsProperty(exp, "Left"))
+                {
+                    retorno = DememberExpression(exp);
                 }
             }
 
@@ -689,35 +509,30 @@ namespace DB.Query.Core.Services
         protected List<string> GetProperties(dynamic exp = null, Type type = null)
         {
             var list = new List<string>();
-            bool insert = _levelModels.Exists(s => s.StepType == StepType.INSERT || s.StepType == StepType.INSERT_NOT_EXISTS
-                || s.StepType == StepType.INSERT_OR_UPDATE || s.StepType == StepType.DELETE_AND_INSERT);
-
             Type currentType = type != null ? type : typeof(TEntity);
             List<PropertyInfo> infs = currentType.GetProperties().ToList();
-
-            infs.ForEach(prop =>
+            var tableName = GetTableName(currentType, exp);
+            
+            for (var i = 0; i < infs.Count; i++)
             {
+                var prop = infs[i];
                 if (prop.GetCustomAttributes(typeof(IgnoreAttribute), false).Count() == 0)
                 {
-                    if (insert && !IsIdentity(prop) || !insert)
+                    var propName = prop.GetCustomAttributes(typeof(ColumnAttribute), false).FirstOrDefault() as ColumnAttribute;
+                    if (propName != null)
                     {
-                        var propName = prop.GetCustomAttributes(typeof(ColumnAttribute), false).FirstOrDefault() as ColumnAttribute;
-                        if (propName != null)
-                        {
-                            list.Add(string.IsNullOrEmpty(GetTableName(currentType, exp))
-                                ? propName.DisplayName
-                                : GetTableName(currentType, exp) + DBKeysConstants.SINGLE_POINT + propName.DisplayName);
-                        }
-                        else
-                        {
-                            list.Add(string.IsNullOrEmpty(GetTableName(currentType, exp))
-                                ? prop.Name
-                                : GetTableName(currentType, exp) + DBKeysConstants.SINGLE_POINT + prop.Name);
-                        }
+                        list.Add(string.IsNullOrEmpty(tableName)
+                            ? propName.DisplayName
+                            : tableName + DBKeysConstants.SINGLE_POINT + propName.DisplayName);
+                    }
+                    else
+                    {
+                        list.Add(string.IsNullOrEmpty(tableName)
+                            ? prop.Name
+                            : tableName + DBKeysConstants.SINGLE_POINT + prop.Name);
                     }
                 }
-            });
-
+            }
             return list;
         }
 
@@ -752,16 +567,16 @@ namespace DB.Query.Core.Services
                 equalty = GetComparador(expression);
             }
 
-            if (left != null)
+            if (left != null && !ContainsProperty(left, "Left"))
             {
                 var result = ReadExpression(expression, left, ref ignore);
-                if (!string.IsNullOrEmpty(result))
+                if (!string.IsNullOrEmpty(result) && !string.IsNullOrWhiteSpace(result))
                 {
                     oldExpression = expression.ToString();
                     value = string.Format("{0} {1} {2}", result, "{0}", "{1}");
                 }
             }
-            
+
             if (left == null)
             {
                 oldExpression = expression.ToString();
@@ -786,12 +601,12 @@ namespace DB.Query.Core.Services
             else
             {
                 dynamic r = right;
-                if (right != null && ContainsProperty(right, "NodeType") 
+                if (right != null && ContainsProperty(right, "NodeType")
                     && right.NodeType == ExpressionType.Not && ContainsProperty(right, "Operand"))
                 {
                     right = r.Operand;
                 }
-           
+
                 if (right is MemberExpression)
                 {
                     var rightMen1 = right as MemberExpression;
@@ -833,7 +648,9 @@ namespace DB.Query.Core.Services
         /// <summary>
         /// Carrega o valor da member expression passada
         /// </summary>
+        /// <param name="expressionComplete"></param>
         /// <param name="partExpression"></param>
+        /// <param name="ignore"></param>
         /// <returns></returns>
         public string ReadExpression(Expression expressionComplete, Expression partExpression, ref bool ignore)
         {
@@ -874,9 +691,36 @@ namespace DB.Query.Core.Services
             {
                 return ExtractMethod(partExpression);
             }
+            else
+            {
+                return GetPropertyOfSingleExpression(partExpression, false, false);
+            }
             return "";
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partExpression"></param>
+        /// <returns></returns>
+        private string GetMemberExpression(Expression partExpression)
+        {
+            dynamic l = partExpression;
+            if (partExpression.NodeType == ExpressionType.Not && ContainsProperty(partExpression, "Operand"))
+            {
+                partExpression = l.Operand;
+            }
+
+            var leftMem = partExpression as MemberExpression;
+            if (leftMem.Member.Name == "Value")
+            {
+                leftMem = leftMem.Expression as MemberExpression;
+            }
+            var propertyInfo = (PropertyInfo)leftMem.Member;
+            var name = GetCollumnName(propertyInfo);
+
+            return GetTableName(propertyInfo.DeclaringType, partExpression) + "." + name;
+        }
 
         /// <summary>
         /// /
@@ -1026,7 +870,7 @@ namespace DB.Query.Core.Services
                         }
                         else
                         {
-                           // valueB = ValidateValueByMethod(values[1], mtd.Method.Name, false);
+                            // valueB = ValidateValueByMethod(values[1], mtd.Method.Name, false);
                         }
                     }
                 }
@@ -1039,7 +883,9 @@ namespace DB.Query.Core.Services
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="mtd"></param>
         /// <param name="arg"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public string InterpretIn(MethodCallExpression mtd, dynamic arg, string value)
         {
@@ -1082,7 +928,7 @@ namespace DB.Query.Core.Services
                     value = "(" + string.Join(", ", aux) + ")";
                 }
                 else
-                { 
+                {
                     value = GetValue(arg);
                 }
             }
@@ -1107,8 +953,9 @@ namespace DB.Query.Core.Services
             var d = exp.Arguments[0];
             var list = new List<string>();
 
-            foreach (var xp1 in d.Expressions)
+            for(var i = 0; i < d.Expressions.Count; i++)
             {
+                var xp1 = d.Expressions[i];
                 var xp = xp1;
                 if (xp != null && xp.NodeType == ExpressionType.Convert && ContainsProperty(xp, "Operand"))
                 {
@@ -1152,6 +999,8 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="methodName"></param>
+        /// <param name="isConcatValue"></param>
         /// <returns></returns>
         protected string ValidateValueByMethod(dynamic obj, string methodName, bool isConcatValue)
         {
@@ -1194,13 +1043,17 @@ namespace DB.Query.Core.Services
             {
                 return DBKeysConstants.NOT_IN;
             }
-            else if(DBQueryConstants.EQUALS_FUNCTION.Equals(methodName))
+            else if (DBQueryConstants.EQUALS_FUNCTION.Equals(methodName))
             {
                 return DBKeysConstants.EQUALS;
             }
-            else
+            else if (DBQueryConstants.CONTAINS.Equals(methodName))
             {
                 return DBKeysConstants.LIKE_VALUE;
+            }
+            else
+            {
+                return "";
             }
         }
 
@@ -1287,7 +1140,7 @@ namespace DB.Query.Core.Services
         /// <returns></returns>
         protected bool IsValue(dynamic expression)
         {
-            if(expression == null) { return true; }
+            if (expression == null) { return true; }
             var right = expression;
             dynamic r = right;
             dynamic exp = _currentExpression;
@@ -1349,7 +1202,7 @@ namespace DB.Query.Core.Services
                     valueA = TreatValue(GetValue(mtd.Object), true)?.ToString();
                 }
                 else
-                { 
+                {
                     valueA = string.Concat(GetTableName(mtd.Object.Member.DeclaringType, mtd), DBKeysConstants.SINGLE_POINT, mtd.Object.Member.Name);
                 }
 
@@ -1370,7 +1223,7 @@ namespace DB.Query.Core.Services
                 }
                 value = string.Format("{0} {1} {2}", valueA, comparador, valueB);
                 return true;
-            } 
+            }
             else if (method.Method.Name.Equals(DBQueryConstants.CONTAINS))
             {
                 if (IsValue(mtd.Object))
@@ -1472,7 +1325,12 @@ namespace DB.Query.Core.Services
             var left = exp.Left;
             if (left != null && (left.NodeType == ExpressionType.Convert || left.NodeType == ExpressionType.ConvertChecked) && ContainsProperty(left, "Operand"))
             {
-                return left.Operand;          
+                left = left.Operand;
+                if ((left.NodeType == ExpressionType.Convert || left.NodeType == ExpressionType.ConvertChecked) && ContainsProperty(left, "Operand"))
+                {
+                    return left.Operand;
+                }
+                return left;
             }
             return (Expression)exp.Left;
         }
@@ -1488,7 +1346,12 @@ namespace DB.Query.Core.Services
             var right = exp.Right;
             if (right != null && (right.NodeType == ExpressionType.Convert || right.NodeType == ExpressionType.ConvertChecked) && ContainsProperty(right, "Operand"))
             {
-                return right.Operand;
+                right = right.Operand;
+                if ((right.NodeType == ExpressionType.Convert || right.NodeType == ExpressionType.ConvertChecked) && ContainsProperty(right, "Operand"))
+                {
+                    return right.Operand;
+                }
+                return right;
             }
             return (Expression)exp.Right;
         }
@@ -1497,6 +1360,8 @@ namespace DB.Query.Core.Services
         /// 
         /// </summary>
         /// <param name="val"></param>
+        /// <param name="useQuotes"></param>
+        /// <param name="expression"></param>
         /// <returns></returns>
         protected object TreatValue(dynamic val, bool useQuotes = false, dynamic expression = null)
         {
@@ -1538,8 +1403,59 @@ namespace DB.Query.Core.Services
             }
             else
             {
+                val = val.ToString().Replace("'", "''");
                 return useQuotes ? $"'{val}'" : val;
             }
+        }
+        #endregion
+
+        #region Validate Domain 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns></returns>
+        protected bool IsValid(EntityBase domain)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            ValidationContext _context = new ValidationContext(domain);
+
+            IList<ValidationResult> validationResults = new List<ValidationResult>();
+            if (domain != null)
+            {
+                if (!Validator.TryValidateObject(domain, _context, validationResults, true))
+                {
+                    if (validationResults.Count == 1)
+                    {
+                        stringBuilder.AppendLine("Por favor revise o formulário. Foi encontrado o seguinte erro:");
+                    }
+                    else
+                    {
+                        stringBuilder.AppendLine("Por favor revise o formulário. Foram encontrados os seguintes erros:");
+                    }
+                    stringBuilder.AppendLine("");
+
+                    for (var i = 1; i <= validationResults.Count(); i++)
+                    {
+                        ValidationResult result = validationResults[i - 1];
+                        if (result == validationResults.Last())
+                        {
+                            stringBuilder.Append("- " + result.ErrorMessage);
+                        }
+                        else
+                        {
+                            stringBuilder.AppendLine("- " + result.ErrorMessage);
+                        }
+                    }
+
+                    if (validationResults.Any())
+                    {
+                        throw new System.Exception(stringBuilder.ToString());
+
+                    }
+                }
+            }
+            return true;
         }
         #endregion
     }

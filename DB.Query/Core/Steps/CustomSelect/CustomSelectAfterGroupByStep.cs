@@ -3,6 +3,10 @@ using DB.Query.Core.Steps.Base;
 
 namespace DB.Query.Core.Steps.CustomSelect
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class CustomSelectAfterGroupByStep<TEntity> : CustomSelectOrderByStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
     }

@@ -8,12 +8,12 @@ namespace DB.Query.Models.Constants
 {
     public static class Databases
     {
-        public const string SignEst = "SignEst";
-        public const string SignCom = "SignCom";
-        public const string SignPpcp = "SignPpcp";
-        public const string SignCtb = "SignCtb";
-        public const string SignFin = "SignFin";
-        public const string SignCq = "SignCq";
-        public const string SignCi = "SignCi";
+        public const string DBEst = "DBEst";
+        public const string DBCom = "DBCom";
+        public const string DBPpcp = "DBPpcp";
+        public const string DBCtb = "DBCtb";
+        public const string DBFin = "DBFin";
+        public const string DBCq = "DBCq";
+        public const string DBCi = "DBCi";
     }
 }

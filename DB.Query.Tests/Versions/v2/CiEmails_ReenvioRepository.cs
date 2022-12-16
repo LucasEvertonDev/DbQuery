@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DB.Query.Core.Examples;
 using DB.Query.Core.Extensions;
-using DB.Query.Models.Entities.SignCi;
+using DB.Query.Models.Entities.DBCi;
 using DB.Query.Repositorys;
 using DB.Query.Services;
 using System;
 
-namespace DB.Query.Tests.SignQuery.v2
+namespace DB.Query.Tests.DBQuery.v2
 {
     [TestClass]
     public class CiEmails_ReenvioRepository : DBQueryPersistenceExample
@@ -21,7 +21,7 @@ namespace DB.Query.Tests.SignQuery.v2
                             .Where(a => a.EmailTo != null
                                 && a.ID.IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN (1, 2))");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM DBCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID IN (1, 2))");
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace DB.Query.Tests.SignQuery.v2
                             .Where(a => a.EmailTo != null
                                 && a.ID.NOT_IN(new System.Collections.Generic.List<int> { 1, 2 }.GenerateScriptIN()))
                             .GetQuery();
-            Assert.AreEqual(query, "SELECT DISTINCT * FROM SignCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID NOT IN (1, 2))");
+            Assert.AreEqual(query, "SELECT DISTINCT * FROM DBCi..CiEmails_Reenvio WHERE (CiEmails_Reenvio.EmailTo IS NOT NULL AND CiEmails_Reenvio.ID NOT IN (1, 2))");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace DB.Query.Tests.SignQuery.v2
                 )
                 .GetQuery();
 
-            Assert.AreEqual(query, "SELECT TOP(1) ci.EmailFrom, ci.EmailTo, ci.EmailCC, ci.EmailBCC, ci.Subject, ciA.CHAVE, ciA.ID FROM SignCi..CiEmails_Reenvio AS ci INNER JOIN SignCi..CiEmails_Anexos AS ciA ON ci.ID = ciA.CiEmails_Reenvio_Id WHERE (ci.EmailFrom IS NOT NULL AND ciA.CHAVE IS NOT NULL) ORDER BY ci.EmailTo ASC, ci.Subject ASC");
+            Assert.AreEqual(query, "SELECT TOP(1) ci.EmailFrom, ci.EmailTo, ci.EmailCC, ci.EmailBCC, ci.Subject, ciA.CHAVE, ciA.ID FROM DBCi..CiEmails_Reenvio AS ci INNER JOIN DBCi..CiEmails_Anexos AS ciA ON ci.ID = ciA.CiEmails_Reenvio_Id WHERE (ci.EmailFrom IS NOT NULL AND ciA.CHAVE IS NOT NULL) ORDER BY ci.EmailTo ASC, ci.Subject ASC");
 
         }
 
@@ -102,7 +102,7 @@ namespace DB.Query.Tests.SignQuery.v2
                 )
                 .GetQuery();
 
-            Assert.AreEqual(query, "SELECT COUNT(CiEmails_Anexos.CiEmails_Reenvio_Id) AS Count, Sum(CiEmails_Anexos.Tipo) AS Sum_Tipo, CiEmails_Anexos.CiEmails_Reenvio_Id FROM SignCi..CiEmails_Reenvio INNER JOIN SignCi..CiEmails_Anexos ON CiEmails_Reenvio.ID = CiEmails_Anexos.CiEmails_Reenvio_Id WHERE CiEmails_Reenvio.ID <> '0' GROUP BY CiEmails_Anexos.CiEmails_Reenvio_Id ORDER BY Sum(CiEmails_Anexos.Tipo) ASC");
+            Assert.AreEqual(query, "SELECT COUNT(CiEmails_Anexos.CiEmails_Reenvio_Id) AS Count, Sum(CiEmails_Anexos.Tipo) AS Sum_Tipo, CiEmails_Anexos.CiEmails_Reenvio_Id FROM DBCi..CiEmails_Reenvio INNER JOIN DBCi..CiEmails_Anexos ON CiEmails_Reenvio.ID = CiEmails_Anexos.CiEmails_Reenvio_Id WHERE CiEmails_Reenvio.ID <> '0' GROUP BY CiEmails_Anexos.CiEmails_Reenvio_Id ORDER BY Sum(CiEmails_Anexos.Tipo) ASC");
         }
 
         [TestMethod]
@@ -131,7 +131,7 @@ namespace DB.Query.Tests.SignQuery.v2
                 )
                 .GetQuery();
 
-            Assert.AreEqual(query, "SELECT em.EmailTo, em.EmailFrom, anx.CiEmails_Reenvio_Id FROM SignCi..CiEmails_Reenvio AS em INNER JOIN SignCi..CiEmails_Anexos AS anx ON em.ID = anx.CiEmails_Reenvio_Id WHERE em.ID <> '0' ORDER BY anx.CiEmails_Reenvio_Id ASC");
+            Assert.AreEqual(query, "SELECT em.EmailTo, em.EmailFrom, anx.CiEmails_Reenvio_Id FROM DBCi..CiEmails_Reenvio AS em INNER JOIN DBCi..CiEmails_Anexos AS anx ON em.ID = anx.CiEmails_Reenvio_Id WHERE em.ID <> '0' ORDER BY anx.CiEmails_Reenvio_Id ASC");
         }
 
 
@@ -170,7 +170,7 @@ namespace DB.Query.Tests.SignQuery.v2
                 )
                 .GetQuery();
 
-            Assert.AreEqual(query, "SELECT Min(CiEmails_Anexos.ID) AS Min_ID, CiEmails_Anexos.CiEmails_Reenvio_Id FROM SignCi..CiEmails_Reenvio LEFT JOIN SignCi..CiEmails_Anexos ON CiEmails_Reenvio.ID = CiEmails_Anexos.CiEmails_Reenvio_Id WHERE CiEmails_Reenvio.ID <> '0' GROUP BY CiEmails_Anexos.CiEmails_Reenvio_Id ORDER BY Min(CiEmails_Anexos.Tipo) ASC");
+            Assert.AreEqual(query, "SELECT Min(CiEmails_Anexos.ID) AS Min_ID, CiEmails_Anexos.CiEmails_Reenvio_Id FROM DBCi..CiEmails_Reenvio LEFT JOIN DBCi..CiEmails_Anexos ON CiEmails_Reenvio.ID = CiEmails_Anexos.CiEmails_Reenvio_Id WHERE CiEmails_Reenvio.ID <> '0' GROUP BY CiEmails_Anexos.CiEmails_Reenvio_Id ORDER BY Min(CiEmails_Anexos.Tipo) ASC");
         }
 
         [TestMethod]
@@ -196,7 +196,7 @@ namespace DB.Query.Tests.SignQuery.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailFrom, CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AS ConcatEmails FROM SignCi..CiEmails_Reenvio WHERE ((CiEmails_Reenvio.EmailTo = CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) ,'%')) AND CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) = CiEmails_Reenvio.EmailFrom) ORDER BY CiEmails_Reenvio.EmailTo ASC");
+            Assert.AreEqual(query, "SELECT DISTINCT CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailFrom, CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AS ConcatEmails FROM DBCi..CiEmails_Reenvio WHERE ((CiEmails_Reenvio.EmailTo = CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) ,'%')) AND CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) = CiEmails_Reenvio.EmailFrom) ORDER BY CiEmails_Reenvio.EmailTo ASC");
         }
 
 
@@ -224,7 +224,7 @@ namespace DB.Query.Tests.SignQuery.v2
                             )
                             .GetQuery();
 
-            Assert.AreEqual(query, "SELECT DISTINCT CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailFrom, CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AS ConcatEmails FROM SignCi..CiEmails_Reenvio WHERE (((CiEmails_Reenvio.EmailTo = CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) ,'%')) AND CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) = CiEmails_Reenvio.EmailFrom) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CiEmails_Reenvio.EmailTo ,'%')) ORDER BY CiEmails_Reenvio.EmailTo ASC");
+            Assert.AreEqual(query, "SELECT DISTINCT CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailFrom, CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AS ConcatEmails FROM DBCi..CiEmails_Reenvio WHERE (((CiEmails_Reenvio.EmailTo = CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) ,'%')) AND CONCAT(CONVERT(varchar(Max), CiEmails_Reenvio.EmailTo),CONVERT(varchar(Max), '_'),CONVERT(varchar(Max), CiEmails_Reenvio.EmailFrom)) = CiEmails_Reenvio.EmailFrom) AND CiEmails_Reenvio.EmailFrom LIKE CONCAT('%', CiEmails_Reenvio.EmailTo ,'%')) ORDER BY CiEmails_Reenvio.EmailTo ASC");
         }
 
         [TestMethod]
@@ -255,7 +255,7 @@ namespace DB.Query.Tests.SignQuery.v2
                 )
                 .GetQuery();
 
-            Assert.AreEqual(query, "SELECT em.ID, em.EmailFrom, em.EmailTo, em.EmailCC, em.EmailBCC, em.Subject, em.Source, em.Status, em.Update_At, em.Created_At, em.EmailTo, em.EmailFrom, anx.CiEmails_Reenvio_Id, anx.ID, anx.CiEmails_Reenvio_Id, anx.CHAVE, anx.VALOR, anx.PATH, anx.Tipo FROM SignCi..CiEmails_Reenvio AS em INNER JOIN SignCi..CiEmails_Anexos AS anx ON em.ID = anx.CiEmails_Reenvio_Id WHERE em.ID <> '0' ORDER BY anx.CiEmails_Reenvio_Id ASC");
+            Assert.AreEqual(query, "SELECT em.ID, em.EmailFrom, em.EmailTo, em.EmailCC, em.EmailBCC, em.Subject, em.Source, em.Status, em.Update_At, em.Created_At, em.EmailTo, em.EmailFrom, anx.CiEmails_Reenvio_Id, anx.ID, anx.CiEmails_Reenvio_Id, anx.CHAVE, anx.VALOR, anx.PATH, anx.Tipo FROM DBCi..CiEmails_Reenvio AS em INNER JOIN DBCi..CiEmails_Anexos AS anx ON em.ID = anx.CiEmails_Reenvio_Id WHERE em.ID <> '0' ORDER BY anx.CiEmails_Reenvio_Id ASC");
         }
 
         [TestMethod]
@@ -277,7 +277,7 @@ namespace DB.Query.Tests.SignQuery.v2
 
             var query = _ciEmails_ReenvioRepository.InsertOrUpdate(ciemails).Where(a => a.ID == "1").GetQuery();
 
-            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM SignCi..CiEmails_Reenvio WHERE CiEmails_Reenvio.ID = '1') BEGIN INSERT INTO SignCi..CiEmails_Reenvio (CiEmails_Reenvio.ID, CiEmails_Reenvio.EmailFrom, CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailCC, CiEmails_Reenvio.EmailBCC, CiEmails_Reenvio.Subject, CiEmails_Reenvio.Source, CiEmails_Reenvio.Status, CiEmails_Reenvio.Update_At, CiEmails_Reenvio.Created_At) VALUES ('1', 'Email from', 'Email to', 'Email cc', 'Email bcc', 'subkect', 'source', 4, '2022-10-01 00:00:00', '2022-10-01 00:00:00') END ELSE BEGIN UPDATE SignCi..CiEmails_Reenvio SET ID = '1', EmailFrom = 'Email from', EmailTo = 'Email to', EmailCC = 'Email cc', EmailBCC = 'Email bcc', Subject = 'subkect', Source = 'source', Status = 4, Update_At = '2022-10-01 00:00:00', Created_At = '2022-10-01 00:00:00' WHERE CiEmails_Reenvio.ID = '1' END");
+            Assert.AreEqual(query, "IF NOT EXISTS(SELECT * FROM DBCi..CiEmails_Reenvio WHERE CiEmails_Reenvio.ID = '1') BEGIN INSERT INTO DBCi..CiEmails_Reenvio (CiEmails_Reenvio.ID, CiEmails_Reenvio.EmailFrom, CiEmails_Reenvio.EmailTo, CiEmails_Reenvio.EmailCC, CiEmails_Reenvio.EmailBCC, CiEmails_Reenvio.Subject, CiEmails_Reenvio.Source, CiEmails_Reenvio.Status, CiEmails_Reenvio.Update_At, CiEmails_Reenvio.Created_At) VALUES ('1', 'Email from', 'Email to', 'Email cc', 'Email bcc', 'subkect', 'source', 4, '2022-10-01 00:00:00', '2022-10-01 00:00:00') END ELSE BEGIN UPDATE DBCi..CiEmails_Reenvio SET ID = '1', EmailFrom = 'Email from', EmailTo = 'Email to', EmailCC = 'Email cc', EmailBCC = 'Email bcc', Subject = 'subkect', Source = 'source', Status = 4, Update_At = '2022-10-01 00:00:00', Created_At = '2022-10-01 00:00:00' WHERE CiEmails_Reenvio.ID = '1' END");
         }
     }
 }

@@ -1,9 +1,15 @@
 ﻿using DB.Query.Models.Entities;
 using DB.Query.Core.Steps.Base;
 using System.Data;
+using DB.Query.Core.Services;
+using System;
 
 namespace DB.Query.Core.Steps.Update
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class UpdatePersistenceStep<TEntity> : PersistenceStep<TEntity> where TEntity : EntityBase
     {
         /// <summary>
@@ -17,6 +23,15 @@ namespace DB.Query.Core.Steps.Update
             var res = ExecuteSql();
             ClearOldConfigurations();
             return new UpdateResultStep<TEntity>(res).GetNumeroRegistrosAfetados();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string StartTranslateQuery()
+        {
+            return Activator.CreateInstance<InterpretUpdateService<TEntity>>().StartToInterpret(this._steps);
         }
     }
 }

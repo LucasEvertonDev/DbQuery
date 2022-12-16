@@ -3,10 +3,16 @@ using DB.Query.Core.Repositorys;
 
 namespace DB.Query.Repositorys
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class Repository<TEntity> : RepositoryBase<TEntity>, IRepository, IRepository<TEntity> where TEntity : EntityBase
     {
         /// <summary>
         /// Indica se deve ser considerado os apelidos dos parâmetros das expressions montadas como chave 'AS' para acesso as tabelas.
+        /// <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>
         /// </summary>
         /// <param name="alias">O parâmetro deve conter o nome o qual será associado a classe instanciada na query</param>
         /// <example>_repositorty.UseAlias("ci").Select().Execute(). Tal expressão dará origem a seguinte query: SELECT * FROM table as ci</example>

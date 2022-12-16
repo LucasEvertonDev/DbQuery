@@ -2,6 +2,10 @@
 
 namespace DB.Query.Core.Steps.Base
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class ResultStep<TEntity> : DBQuery<TEntity> where TEntity : EntityBase
     {
         /// <summary>

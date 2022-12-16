@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using DB.Query.Core.Examples;
 using DB.Query.Services;
 using DB.Query.Models.Entities;
 using DB.Query.Core.Services;
@@ -13,12 +12,16 @@ using DB.Query.Core.Steps.Update;
 
 namespace DB.Query.Core.Repositorys
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class RepositoryBase<TEntity> : DBQuery<TEntity>, IRepositoryBase<TEntity> where TEntity : EntityBase
     {
         /// <summary>
         ///     Indica que a ação a ser realizada será um INSERT simples, sem verificações.
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Insert">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateInsertScript()">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para>
+        ///     <para><see cref="InterpretInsertService{TEntity}.GenerateInsertScript()">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="domain">Parametro do tipo TEntity, passado como tipo na instância da classe Repository.</param>
         /// <returns>
@@ -32,8 +35,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         ///     Indica que a ação a ser realizada será um DELETE simples.
         ///     <para>ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição WHERE!</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Delete">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateDeleteScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretDeleteService{TEntity}.GenerateDeleteScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <returns>
         ///     Retorno do tipo DeleteStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
@@ -46,8 +49,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         ///     Indica que a ação a ser realizada será um SELECT simples!
         ///     <para>Um SELECT SIMPLES, nada mais é que um espelho da tabela representada pela entidade (SELECT * FROM TEntity)</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <returns>
         ///     Retorno do tipo SelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
@@ -60,8 +63,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         ///     Indica que a ação a ser realizada será um UPDATE simples, sem verificações.
         ///     <para>ATENÇÃO!! O controle de quais entidades serão atualizadas deve ser realizado na condição WHERE!</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Update">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateUpdateScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretUpdateService{TEntity}.GenerateUpdateScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="domain">Parametro do tipo TEntity, passado como tipo na instância da classe Repository.</param>
         /// <returns>
@@ -75,8 +78,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         ///     Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo. 
         ///     <para>ATENÇÃO!! A verificação da existência é feita atravez de todas as propriedades mapeadas, QUE NÃO ESTÂO MAPEADAS COMO IDENTITY(AUTO-INCREMENT)</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.InsertIfNotExists">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateInsertIfNotExistsScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretInsertService{TEntity}.GenerateInsertIfNotExistsScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="domain">Parametro do tipo TEntity, passado como tipo na instância da classe Repository.</param>
         /// <returns>
@@ -91,8 +94,8 @@ namespace DB.Query.Core.Repositorys
         ///     Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo.
         ///     Caso já exista é realizado o UPDATE.
         ///     <para>ATENÇÃO!! A etapa WHERE é de suma importância para essa ação.  Pois a mesma irá verificar a existência e também controlar a atualização se necessário.</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.InsertOrUpdate">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateInsertOrUpdateScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretUpdateService{TEntity}.GenerateInsertOrUpdateScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="domain">Parametro do tipo TEntity, passado como tipo na instância da classe Repository.</param>
         /// <returns>
@@ -106,8 +109,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         ///     Indica que a ação a ser realizada será um INSERT, após uma etapa de DELETE
         ///     <para>ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição WHERE!</para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.DeleteAndInsert">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateDeleteAndInsertScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretDeleteService{TEntity}.GenerateDeleteAndInsertScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="domain">Parametro do tipo TEntity, passado como tipo na instância da classe Repository.</param>
         /// <returns>
@@ -120,12 +123,8 @@ namespace DB.Query.Core.Repositorys
 
         /// <summary>
         ///     Indica que a ação a ser realizada será um SELECT! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples.SelectOneColumn">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
         /// <returns>
@@ -138,11 +137,7 @@ namespace DB.Query.Core.Repositorys
 
         /// <summary>
         ///     Indica que a ação a ser realizada será um SELECT! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
         ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
@@ -156,12 +151,8 @@ namespace DB.Query.Core.Repositorys
 
         /// <summary>
         ///     Indica que a ação a ser realizada será um SELECT! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples.SelectOneColumn">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
@@ -174,13 +165,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
@@ -193,13 +180,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -213,13 +196,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -233,13 +212,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -255,13 +230,9 @@ namespace DB.Query.Core.Repositorys
 
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -276,13 +247,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -298,13 +265,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -320,13 +283,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -343,13 +302,9 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
-        ///     Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
-        ///     <para>Para retornar valores únicos, basta instanciar a expression e selecionar a propriedade, ou função: <see cref="DBQueryExamples">Exemplo.</see></para>
-        ///     <para>Para mapeamento de colunas é recomendado o uso do metodo <see cref="DBQueryPersistenceExample.Columns(dynamic[])">DbQueryPersistenceExample.Columns.</see></para>
-        ///     <para>Para obter todas as propriedades de uma entidade: <see cref="EntityBase.AllColumns">SignQueryBase.AllColumns.</see></para>
-        ///     <para>Funções pré definidas: <see cref="DBQueryExamples.SelectWithFunctions">Funções tratadas.</see></para>
-        ///     <para>Dúvidas de como implementar? <see cref="DBQueryExamples.Select(Expression{Func{EntityBase, dynamic[]}})">Clique aqui.</see></para>
-        ///     <para><see cref="InterpretService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
         /// </summary>
         /// <typeparam name="Entity1"></typeparam>
         /// <typeparam name="Entity2"></typeparam>
@@ -366,11 +321,331 @@ namespace DB.Query.Core.Repositorys
         }
 
         /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        ///  <typeparam name="Entity10"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        /// <typeparam name="Entity10"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        ///<typeparam name="Entity10"></typeparam>
+        ///<typeparam name="Entity11"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        /// <typeparam name="Entity10"></typeparam>
+        /// <typeparam name="Entity11"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11,dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity6"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        ///<typeparam name="Entity10"></typeparam>
+        ///<typeparam name="Entity11"></typeparam>
+        ///<typeparam name="Entity12"></typeparam>
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11, Entity12>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11, Entity12,dynamic[]>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+
+        /// <summary>
+        ///     Indica que a ação a ser realizada será um SELECT! 
+        ///     <para><see href="https://github.com/LucasEvertonDev/DbQuery#readme">Consulte a documentação.</see></para> 
+        ///     <para><see cref="InterpretSelectService{TEntity}.GenerateSelectScript">Navegue para o método de geração script.</see></para>
+        /// </summary>
+        /// <typeparam name="Entity1"></typeparam>
+        /// <typeparam name="Entity2"></typeparam>
+        /// <typeparam name="Entity3"></typeparam>
+        /// <typeparam name="Entity4"></typeparam>
+        /// <typeparam name="Entity5"></typeparam>
+        /// <typeparam name="Entity7"></typeparam>
+        /// <typeparam name="Entity8"></typeparam>
+        /// <typeparam name="Entity9"></typeparam>
+        /// <typeparam name="Entity10"></typeparam>
+        /// <typeparam name="Entity11"></typeparam>
+        /// <typeparam name="Entity12"></typeparam>
+
+        /// <param name="expression">Parametro usado para indicar as colunas de retorno.</param>
+        /// <returns>
+        ///     Retorno do tipo CustomSelectStep, responsável por garantir o controle da próxima etapa. Impedindo que esse método seja novamente chamado na mesma operação.
+        /// </returns>
+        public CustomSelectStep<TEntity> Select<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11, Entity12>(Expression<Func<Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8, Entity9, Entity10, Entity11, Entity12, dynamic>> expression)
+        {
+            return InstanceNextLevel<CustomSelectStep<TEntity>>(_levelFactory.PrepareSelectStep(expression));
+        }
+
+        /// <summary>
         /// Responsavável por colocar o repository em questão na transação corrente.
         /// </summary>
         /// <param name="dataBaseService"></param>
         /// <returns></returns>
-        public void BindTransaction(SignTransaction dataBaseService)
+        public void BindTransaction(DBTransaction dataBaseService)
         {
             _transaction = dataBaseService;
         }
@@ -378,8 +653,8 @@ namespace DB.Query.Core.Repositorys
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="dataBaseService"></param>
-        public SignTransaction GetTransaction()
+        /// <returns></returns>
+        public DBTransaction GetTransaction()
         {
             return _transaction;
         }

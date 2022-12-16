@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 using DB.Query.Models.Entities;
 using DB.Query.Core.Enuns;
 using DB.Query.Core.Models;
@@ -10,11 +6,14 @@ using DB.Query.Core.Services;
 
 namespace DB.Query.Core.Factorys
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DBQueryLevelModelFactory
     {
         /// <summary>
         /// Prepara a criação de uma etapa de UseAlias. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a USE_ALIAS</returns>
         public DBQueryStepModel PrepareAliasStep(string alias)
@@ -29,12 +28,11 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de Insert. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateInsertScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretInsertService{TEntity}.GenerateInsertScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a INSERT</returns>
         public DBQueryStepModel PrepareInsertStep(EntityBase domain)
         {
-            IsValid(domain);
             return new DBQueryStepModel()
             {
                 StepType = StepType.INSERT,
@@ -45,7 +43,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de DELETE. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateDeleteScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretDeleteService{TEntity}.GenerateDeleteScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a DELETE</returns>
         public DBQueryStepModel PrepareDeleteStep()
@@ -59,7 +57,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de SELECT. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a SELECT</returns>
         public DBQueryStepModel PrepareSimpleSelectStep()
@@ -73,12 +71,11 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de UPDATE. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateUpdateScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretUpdateService{TEntity}.GenerateUpdateScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a SELECT</returns>
         public DBQueryStepModel PrepareUpdateStep(EntityBase domain)
         {
-            IsValid(domain);
             return new DBQueryStepModel
             {
                 StepType = StepType.UPDATE,
@@ -89,12 +86,11 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de INSERT_OR_UPDATE. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateInsertOrUpdateScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretUpdateService{TEntity}.GenerateInsertOrUpdateScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a INSERT_OR_UPDATE</returns>
         public DBQueryStepModel PrepareInsertOrUpdateStep(EntityBase domain)
         {
-            IsValid(domain);
             return new DBQueryStepModel
             {
                 StepType = StepType.INSERT_OR_UPDATE,
@@ -106,12 +102,11 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de DELETE_AND_INSERT. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateDeleteAndInsertScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretDeleteService{TEntity}.GenerateDeleteAndInsertScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a DELETE_AND_INSERT</returns>
         public DBQueryStepModel PrepareDeleteAndInsertStep(EntityBase domain)
         {
-            IsValid(domain);
             return new DBQueryStepModel
             {
                 StepType = StepType.DELETE_AND_INSERT,
@@ -123,12 +118,11 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de INSERT_NOT_EXISTS. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateInsertIfNotExistsScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretInsertService{TEntity}.GenerateInsertIfNotExistsScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a INSERT_NOT_EXISTS</returns>
         public DBQueryStepModel PrepareInsertIfNotExistsStep(EntityBase domain)
         {
-            IsValid(domain);
             return new DBQueryStepModel
             {
                 StepType = StepType.INSERT_NOT_EXISTS,
@@ -152,7 +146,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de CUSTOM_SELECT. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a CUSTOM_SELECT</returns>
         public DBQueryStepModel PrepareSelectStep(Expression expression)
@@ -167,7 +161,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de WHERE. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a WHERE</returns>
         public DBQueryStepModel PrepareWhereStep(Expression expression)
@@ -183,8 +177,23 @@ namespace DB.Query.Core.Factorys
         }
 
         /// <summary>
+        /// Prepara a criação de uma etapa de Update Set. 
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretUpdateService{TEntity}.GenerateUpdateScript">aqui.</see>
+        /// </summary>
+        /// <returns>Retorna uma etapa corresponte a Update Set</returns>
+        public DBQueryStepModel PrepareUpdateSetStep(Expression expression)
+        {
+            return new DBQueryStepModel
+            {
+                StepType = StepType.UPDATE_SET,
+                StepExpression = expression,
+                Documentation = "Indica quais são as colunas que serão atualziadas no update"
+            };
+        }
+
+        /// <summary>
         /// Prepara a criação de uma etapa de DISTINCT. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a DISTINCT</returns>
         public DBQueryStepModel PrepareDistinctStep()
@@ -198,7 +207,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de TOP. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a TOP</returns>
         public DBQueryStepModel PrepareTopStep(int top)
@@ -214,7 +223,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de INNER JOIN. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.AddJoin(Expression, string)">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}.AddJoin(Expression, string)">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a JOIN</returns>
         public DBQueryStepModel PrepareJoinStep(Expression expression)
@@ -229,7 +238,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de LEFT JOIN. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.AddJoin(Expression, string)">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}.AddJoin(Expression, string)">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a LEFT_JOIN</returns>
         public DBQueryStepModel PrepareLeftJoinStep(Expression expression)
@@ -244,7 +253,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de ORDER BY. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.AddOrderBy(string, Expression, string)">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}.AddOrderBy(string, Expression, string)">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a ORDER_BY_ASC</returns>
         public DBQueryStepModel PrepareOrderByAscStep(Expression expression)
@@ -259,7 +268,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de PAGINATION. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.GenerateSelectScript()">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretSelectService{TEntity}.GenerateSelectScript()">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a PAGINATION</returns>
         public DBQueryStepModel PreparePaginationStep(int pageSize, int pageNumber)
@@ -275,7 +284,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de ORDER BY DESC. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.AddOrderBy(string, Expression, string)">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}.AddOrderBy(string, Expression, string)">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a ORDER_BY_DESC</returns>
         public DBQueryStepModel PrepareOrderByDescStep(Expression expression)
@@ -290,7 +299,7 @@ namespace DB.Query.Core.Factorys
 
         /// <summary>
         /// Prepara a criação de uma etapa de GROUP_BY. 
-        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{SignQueryBase}.AddGroupBy(Expression, string)">aqui.</see>
+        /// Que posteriormente será traduzida para SQL <see cref="InterpretService{DBQueryBase}.AddGroupBy(Expression, string)">aqui.</see>
         /// </summary>
         /// <returns>Retorna uma etapa corresponte a GROUP_BY</returns>
         public DBQueryStepModel PrepareGroupByStep(Expression expression)
@@ -301,54 +310,6 @@ namespace DB.Query.Core.Factorys
                 StepExpression = expression,
                 Documentation = "Responsável por adicionar a instrução de GROUP BY a consulta."
             };
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="domain"></param>
-        /// <returns></returns>
-        private bool IsValid(EntityBase domain)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            ValidationContext _context = new ValidationContext(domain);
-
-            IList<ValidationResult> validationResults = new List<ValidationResult>();
-            if (domain != null)
-            {
-                if (!Validator.TryValidateObject(domain, _context, validationResults, true))
-                {
-                    if (validationResults.Count == 1)
-                    {
-                        stringBuilder.AppendLine("Por favor revise o formulário. Foi encontrado o seguinte erro:");
-                    }
-                    else
-                    {
-                        stringBuilder.AppendLine("Por favor revise o formulário. Foram encontrados os seguintes erros:");
-                    }
-                    stringBuilder.AppendLine("");
-
-                    for (var i = 1; i <= validationResults.Count(); i++)
-                    {
-                        ValidationResult result = validationResults[i - 1];
-                        if (result == validationResults.Last())
-                        {
-                            stringBuilder.Append("- " + result.ErrorMessage);
-                        }
-                        else
-                        {
-                            stringBuilder.AppendLine("- " + result.ErrorMessage);
-                        }
-                    }
-
-                    if (validationResults.Any())
-                    {
-                        throw new System.Exception(stringBuilder.ToString());
-
-                    }
-                }
-            }
-            return true;
         }
     }
 }

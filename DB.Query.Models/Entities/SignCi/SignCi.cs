@@ -1,9 +1,9 @@
 ﻿using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {
-    [Database("SignCi")]
-    public class SignCi : EntityBase
+    [Database("DBCi")]
+    public class DBCi : EntityBase
     {
     }
 }

@@ -42,6 +42,14 @@
         public const string CONTAINS = "Contains";
 
         public const string GENERATE_SCRIPT_IN = "GenerateScriptIN";
+
+        public const string TO_STRING = "ToString";
+
+        public const string TO_STRING_SAFE = "ToStringSafe";
+
+        public const string GET_VALUE_OR_DEFAULT = "GetValueOrDefault";
+
+        public const string PARSE = "Parse";
     }
 
 }

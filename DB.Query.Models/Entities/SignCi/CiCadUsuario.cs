@@ -1,9 +1,9 @@
 ﻿using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {
     [Table("CICadUsuario")]
-    public class CICadUsuario : SignCi
+    public class CICadUsuario : DBCi
     {
         public int? Codigo { get; set; }
         public string CPF { get; set; }

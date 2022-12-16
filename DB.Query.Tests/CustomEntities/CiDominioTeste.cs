@@ -1,10 +1,10 @@
 ﻿using DB.Query.Models.DataAnnotations;
-using DB.Query.Models.Entities.SignCi;
+using DB.Query.Models.Entities.DBCi;
 
 namespace DB.Query.Tests.CustomEntities
 {
     [Table("CiDominio")]
-    public class CiDominioTeste : SignCi
+    public class CiDominioTeste : DBCi
     {
         [PrimaryKey(Identity = true)]
         public int? Codigo { get; set; }

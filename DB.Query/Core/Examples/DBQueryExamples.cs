@@ -1,5 +1,5 @@
 ﻿using DB.Query.Models.Entities;
-using DB.Query.Models.Entities.SignCi;
+using DB.Query.Models.Entities.DBCi;
 using DB.Query.Core.Extensions;
 using DB.Query.Repositorys;
 using System;

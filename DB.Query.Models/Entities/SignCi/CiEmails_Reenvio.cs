@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {
     [Table("CiEmails_Reenvio")]
-    public class CiEmails_Reenvio : SignCi
+    public class CiEmails_Reenvio : DBCi
     {
         public string ID { get; set; }
 

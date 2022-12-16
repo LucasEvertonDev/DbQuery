@@ -21,5 +21,6 @@
         ORDER_BY_DESC,
         GROUP_BY,
         PAGINATION,
+        UPDATE_SET,
     }
 }

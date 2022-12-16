@@ -12,10 +12,10 @@ namespace DB.Query.Core.Repositorys
 {
     public interface IRepositoryBase<TEntity> where TEntity : EntityBase
     {
-        void BindTransaction(SignTransaction dataBaseService);
+        void BindTransaction(DBTransaction dataBaseService);
         DeleteStep<TEntity> Delete();
         DeleteStep<TEntity> DeleteAndInsert(TEntity domain);
-        SignTransaction GetTransaction();
+        DBTransaction GetTransaction();
         InsertStep<TEntity> Insert(TEntity domain);
         InsertStep<TEntity> InsertIfNotExists(TEntity domain);
         UpdateStep<TEntity> InsertOrUpdate(TEntity domain);

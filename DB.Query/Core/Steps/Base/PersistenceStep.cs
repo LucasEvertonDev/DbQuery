@@ -18,7 +18,7 @@ namespace DB.Query.Core.Steps.Base
         /// </returns>
         public string GetQuery()
         {
-            var query = Activator.CreateInstance<InterpretService<TEntity>>().StartToInterpret(_steps);
+            var query = StartTranslateQuery();
             while (query.Contains("  "))
             {
                 query = query.Replace("  ", " ");
@@ -30,11 +30,19 @@ namespace DB.Query.Core.Steps.Base
         /// <summary>
         /// 
         /// </summary>
+        public virtual string StartTranslateQuery()
+        {
+            return Activator.CreateInstance<InterpretService<TEntity>>().StartToInterpret(this._steps);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
         protected dynamic ExecuteSql()
         {
-            var query = Activator.CreateInstance<InterpretService<TEntity>>().StartToInterpret(this._steps);
+            var query = StartTranslateQuery();
             try
             {
                 if (this._transaction == null)
@@ -44,7 +52,7 @@ namespace DB.Query.Core.Steps.Base
 
                 VerifyChangeDataBase();
 
-                if (_transaction.OnDebug)
+                if(_transaction.ExecutedInDebug())
                 {
                     LogService.PrintQuery(query);
                 }

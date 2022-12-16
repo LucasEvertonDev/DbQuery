@@ -1,9 +1,9 @@
 ﻿using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Entities.SignCi
+namespace DB.Query.Models.Entities.DBCi
 {
     [Table("CiSequencias")]
-    public class CiSequencias : SignCi
+    public class CiSequencias : DBCi
     {
         public int CodigoSistema { get; set; }
 

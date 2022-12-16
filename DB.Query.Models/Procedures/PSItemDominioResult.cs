@@ -11,7 +11,7 @@
 
 using DB.Query.Models.DataAnnotations;
 
-namespace DB.Query.Models.Procedures.SignCi.Result
+namespace DB.Query.Models.Procedures.DBCi.Result
 {
     
     [Procedure("PS_ItemDominio")]

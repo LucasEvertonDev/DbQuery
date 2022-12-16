@@ -3,6 +3,10 @@ using DB.Query.Core.Steps.Base;
 
 namespace DB.Query.Core.Steps.Delete
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class DeleteResultStep<TEntity> : ResultStep<TEntity> where TEntity : EntityBase
     {
         /// <summary>

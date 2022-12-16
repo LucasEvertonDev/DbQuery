@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32413.511
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB.Query", "DB.Query\DB.Query.csproj", "{0D4DEFDC-222C-4A9A-A90A-0CCC1E1FC9BF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB.Query.Models", "DB.Query.Models\DB.Query.Models.csproj", "{D698ED16-AB56-4CDF-B4EA-1B4E2FE32ED3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB.Query.Tests", "DB.Query.Tests\DB.Query.Tests.csproj", "{7C342DC8-0652-4AAA-9DAE-768E24F30D3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{D698ED16-AB56-4CDF-B4EA-1B4E2FE32ED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D698ED16-AB56-4CDF-B4EA-1B4E2FE32ED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D698ED16-AB56-4CDF-B4EA-1B4E2FE32ED3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C342DC8-0652-4AAA-9DAE-768E24F30D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C342DC8-0652-4AAA-9DAE-768E24F30D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C342DC8-0652-4AAA-9DAE-768E24F30D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C342DC8-0652-4AAA-9DAE-768E24F30D3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

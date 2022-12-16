@@ -1,9 +1,16 @@
 ﻿using DB.Query.Models.Entities;
 using DB.Query.Core.Steps.Base;
+using System.Collections.Generic;
 using System.Data;
+using DB.Query.Core.Services;
+using System;
 
 namespace DB.Query.Core.Steps.Select
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     public class SelectPersistenceStep<TEntity> : PersistenceStep<TEntity>, IPersistenceStep where TEntity : EntityBase
     {
         /// <summary>
@@ -44,7 +51,7 @@ namespace DB.Query.Core.Steps.Select
         /// 
         /// </summary>
         /// <returns></returns>
-        public dynamic First()
+        public TEntity First()
         {
             var res = ExecuteSql();
             ClearOldConfigurations();
@@ -55,7 +62,7 @@ namespace DB.Query.Core.Steps.Select
         /// 
         /// </summary>
         /// <returns></returns>
-        public dynamic FirstOrDefault()
+        public TEntity FirstOrDefault()
         {
             var res = ExecuteSql();
             ClearOldConfigurations();
@@ -66,7 +73,7 @@ namespace DB.Query.Core.Steps.Select
         /// 
         /// </summary>
         /// <returns></returns>
-        public dynamic ToList()
+        public List<TEntity> ToList()
         {
             var res = ExecuteSql();
             ClearOldConfigurations();
@@ -77,11 +84,31 @@ namespace DB.Query.Core.Steps.Select
         /// 
         /// </summary>
         /// <returns></returns>
-        public dynamic ToDataTable()
+        public List<TRet> ToList<TRet>()
+        {
+            var res = ExecuteSql();
+            ClearOldConfigurations();
+            return new SelectResultStep<TEntity>(res).ToList<TRet>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ToDataTable()
         {
             var res = ExecuteSql();
             ClearOldConfigurations();
             return new SelectResultStep<TEntity>(res).ToDataTable();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string StartTranslateQuery()
+        {
+            return Activator.CreateInstance<InterpretSelectService<TEntity>>().StartToInterpret(this._steps);
         }
     }
 }

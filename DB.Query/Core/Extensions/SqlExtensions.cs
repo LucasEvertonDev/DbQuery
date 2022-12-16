@@ -47,7 +47,7 @@ namespace DB.Query.Core.Extensions
         /// </summary>
         /// <param name="sc"></param>
         /// <returns></returns>
-        public static String CommandAsSql(this SqlCommand sc)
+        public static String PrintSql(this SqlCommand sc)
         {
             StringBuilder sql = new StringBuilder();
             Boolean FirstParam = true;
