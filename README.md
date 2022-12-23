@@ -1,26 +1,29 @@
 # Sumário
- - [Introdução](https://github.com/LucasEvertonDev/DbQuery#introdu%C3%A7%C3%A3o)
- - [Trabalhando com Transações](https://github.com/LucasEvertonDev/DbQuery#trabalhando-com-transa%C3%A7%C3%B5es)
- - [Insert](https://github.com/LucasEvertonDev/DbQuery#insert)
- - [InsertIfNotExists](https://github.com/LucasEvertonDev/DbQuery#insertifnotexists)
- - [InsertOrUpdate](https://github.com/LucasEvertonDev/DbQuery#insertorupdate)
- - [DeleteAndInsert](https://github.com/LucasEvertonDev/DbQuery#deleteandinsert)
- - [Delete](https://github.com/LucasEvertonDev/DbQuery#delete)
- - [Select](https://github.com/LucasEvertonDev/DbQuery#select)
- - [Update](https://github.com/LucasEvertonDev/DbQuery#update)
- - [Custom Select](https://github.com/LucasEvertonDev/DbQuery#custom-select)
- - [Funções Prédefinidas Select](https://github.com/LucasEvertonDev/DbQuery#fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)
- - [Where](https://github.com/LucasEvertonDev/DbQuery#where)
- - [Join](https://github.com/LucasEvertonDev/DbQuery#join)
- - [LeftJoin](https://github.com/LucasEvertonDev/DbQuery#left-join)
- - [OrderBY](https://github.com/LucasEvertonDev/DbQuery#orderby)
- - [GroupBy](https://github.com/LucasEvertonDev/DbQuery#groupby)
-# Introdução 
+
+- [Introdução](https://github.com/LucasEvertonDev/DbQuery#introdu%C3%A7%C3%A3o)
+- [Trabalhando com Transações](https://github.com/LucasEvertonDev/DbQuery#trabalhando-com-transa%C3%A7%C3%B5es)
+- [Insert](https://github.com/LucasEvertonDev/DbQuery#insert)
+- [InsertIfNotExists](https://github.com/LucasEvertonDev/DbQuery#insertifnotexists)
+- [InsertOrUpdate](https://github.com/LucasEvertonDev/DbQuery#insertorupdate)
+- [DeleteAndInsert](https://github.com/LucasEvertonDev/DbQuery#deleteandinsert)
+- [Delete](https://github.com/LucasEvertonDev/DbQuery#delete)
+- [Select](https://github.com/LucasEvertonDev/DbQuery#select)
+- [Update](https://github.com/LucasEvertonDev/DbQuery#update)
+- [Custom Select](https://github.com/LucasEvertonDev/DbQuery#custom-select)
+- [Funções Prédefinidas Select](https://github.com/LucasEvertonDev/DbQuery#fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)
+- [Where](https://github.com/LucasEvertonDev/DbQuery#where)
+- [Join](https://github.com/LucasEvertonDev/DbQuery#join)
+- [LeftJoin](https://github.com/LucasEvertonDev/DbQuery#left-join)
+- [OrderBY](https://github.com/LucasEvertonDev/DbQuery#orderby)
+- [GroupBy](https://github.com/LucasEvertonDev/DbQuery#groupby)
+
+# Introdução
+
 Para utilizar o DB.Query devem ser baixadas as bibliotecas DB.Query e DB.Query.Models.
 
 Crie uma classe herdando a classe DBTransaction, conforme o exemplo abaixo.
 
-```
+```C#
 using DB.Query.Models.PersistenceContext.Constants;
 using DB.Query.Models.PersistenceContext.DataAnnotations;
 using DB.Query.Models.PersistenceContext.Procedures;
@@ -63,10 +66,11 @@ namespace SICPontos.Utilitarios.Services
 ```
 
 # Trabalhando com transações
+
 É recomendado criar uma classe "DatabaseService". Para controlar todas as suas transações a mesma deverá ser herdada por toda classe que desempenha a função de buscar dados.
 Conforme o exemplo abaixo:
 
-```
+```C#
 using SICPontos.Utilitarios.Extensions;
 using SICPontos.Utilitarios.Utils;
 using DB.Query.Core.Extensions;
@@ -377,10 +381,12 @@ namespace SICPontos.Utilitarios.Services
 }
 
 ```
+
 # Insert
+
 Indica que a ação a ser realizada será um INSERT simples, sem verificações.
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     var yourInstance = new CiDominio();
@@ -388,12 +394,14 @@ OnTransaction((transaction) =>
 });
 
 ```
+
 # InsertIfNotExists
-Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo. 
+
+Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo.
 
 ATENÇÃO!! A verificação da existência é feita atravez de todas as propriedades mapeadas, QUE NÃO ESTÂO MAPEADAS COMO IDENTITY(AUTO-INCREMENT)
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     var yourInstance = new CiDominio();
@@ -403,11 +411,12 @@ OnTransaction((transaction) =>
 ```
 
 # InsertOrUpdate
+
 Indica que a ação a ser realizada será um INSERT, com uma validação de existência para efetuação do mesmo. Caso já exista é realizado o UPDATE.
 
 ATENÇÃO!! A etapa [WHERE](https://github.com/LucasEvertonDev/DbQuery#where) é de suma importância para essa ação.  Pois a mesma irá verificar a existência e também controlar a atualização se necessário.
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     var yourInstance = new CiDominio();
@@ -415,13 +424,14 @@ OnTransaction((transaction) =>
 });
 
 ```
+
 # DeleteAndInsert
 
 Indica que a ação a ser realizada será um INSERT, após uma etapa de DELETE
 
 ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     var yourInstance = new CiDominio();
@@ -429,12 +439,13 @@ OnTransaction((transaction) =>
 });
 
 ```
-#Delete
+
+# Delete
 Indica que a ação a ser realizada será um DELETE simples.
 
 ATENÇÃO!! O controle de quais entidades serão apagadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<CiDominio>().Delete().Where(CiDominio => CiDominio.Codigo == 1).Execute();
@@ -443,13 +454,14 @@ OnTransaction((transaction) =>
 ```
 
 # Select
+
 Indica que a ação a ser realizada será um SELECT simples!
 
 Um SELECT SIMPLES, nada mais é que um espelho da tabela representada pela entidade (SELECT * FROM TEntity)
 
 ATENÇÃO!! O controle de quais entidades serão selecionadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     // Seleciona todas as entidades que se adequarem a condição bem como todas as colunas
@@ -500,13 +512,13 @@ OnTransaction((transaction) =>
 
 ```
 
-
 # UPDATE
+
 Indica que a ação a ser realizada será um UPDATE simples, sem verificações.
 
 ATENÇÃO!! O controle de quais entidades serão atualizadas deve ser realizado na condição [WHERE](https://github.com/LucasEvertonDev/DbQuery#where)!
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     //Consultando os items e atualizando todas as colunas
@@ -549,13 +561,13 @@ OnTransaction((transaction) =>
 
 ```
 
-
 # Custom Select
-Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas! 
+
+Indica que a ação a ser realizada será um SELECT tipado. Onde os tipos passados no metodo serão usados para a listagem das colunas!
 
 Funções pré definidas e tratadas para a instrução select: [Funções Prédefinidas Select](https://github.com/LucasEvertonDev/DbQuery#fun%C3%A7%C3%B5es-pr%C3%A9definidas-select)!
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<CiDominio>()
@@ -580,61 +592,62 @@ OnTransaction((transaction) =>
             CiDominio => CiDominio.Codigo
         )
         .ToList<Retorno>();
-		
-	transaction.GetRepository<FinSolicitacaoNumerario>()
-		.Select<FinSolicitacaoNumerario, EstItens, ComCadFor, EstItensPC, CiItemDominio, CICadUsuario>(
-			(FinSolicitacaoNumerario, EstItens, ComCadFor, EstItensPC, CiItemDominio, CICadUsuario) => new
-			{
-				Id = FinSolicitacaoNumerario.Id,
-				PedidoCompra = FinSolicitacaoNumerario.NumPed,
-				RCM = FinSolicitacaoNumerario.RCM,
-				Fornecedor = ComCadFor.CNPJ_CPF + " - " + ComCadFor.Razao,
-				Item = EstItens.Descricao1 + " " + EstItens.Descricao3,
-				Valor = FinSolicitacaoNumerario.Valor,
-				DataNumerario = FinSolicitacaoNumerario.DataNumerario,
-				Situacao = CiItemDominio.Descricao,
-				Usuario = CICadUsuario.Descricao
-			}
-		)
-		.Join<FinSolicitacaoNumerario, EstItensRCM>((FinSolicitacaoNumerario, EstItensRCM) =>
-		  FinSolicitacaoNumerario.RCM == EstItensRCM.RCM
-		)
-		.Join<EstItensRCM, EstItens>((EstItensRCM, EstItens) =>
-		  EstItensRCM.Cod_Full == EstItens.Cod_Full
-		)
-		.Join<EstItensRCM, EstItensPC>((EstItensRCM, EstItensPC) =>
-		  EstItensPC.RCM == EstItensRCM.RCM
-		)
-		.Join<FinSolicitacaoNumerario, EstPedCompra>((FinSolicitacaoNumerario, EstPedCompra) =>
-		  FinSolicitacaoNumerario.NumPed == EstPedCompra.NumPed
-		)
-		.Join<EstPedCompra, ComCadFor>((EstPedCompra, ComCadFor) =>
-		  EstPedCompra.CodFor == ComCadFor.CNPJ_CPF
-		)
-		.Join<FinSolicitacaoNumerario, CICadUsuario>((FinSolicitacaoNumerario, CICadUsuario) =>
-		  FinSolicitacaoNumerario.UsuarioSolicitante == CICadUsuario.Codigo
-		)
-		.Join<FinSolicitacaoNumerario, CiItemDominio>((FinSolicitacaoNumerario, CiItemDominio) =>
-		  CiItemDominio.Codigo == FinSolicitacaoNumerario.Situacao
-		)
-		.Join<CiItemDominio, CiDominio>((CiItemDominio, CiDominio) =>
-		  CiDominio.Codigo == CiItemDominio.Codigo_Dominio
-		  && CiDominio.Nome == DSituacaoSolicitacaoNumerario.CHAVE_DOMINIO
-		)
-		.Where<FinSolicitacaoNumerario, EstPedCompra>((FinSolicitacaoNumerario, EstPedCompra) =>
-		  (RCM == null || FinSolicitacaoNumerario.RCM == RCM.GetValueOrDefault())
-		  && (pedidoCompra == null || FinSolicitacaoNumerario.NumPed == pedidoCompra)
-		  && (fornecedor == null || EstPedCompra.CodFor == fornecedor)
-		)
-		.ToList();
+  
+ transaction.GetRepository<FinSolicitacaoNumerario>()
+  .Select<FinSolicitacaoNumerario, EstItens, ComCadFor, EstItensPC, CiItemDominio, CICadUsuario>(
+   (FinSolicitacaoNumerario, EstItens, ComCadFor, EstItensPC, CiItemDominio, CICadUsuario) => new
+   {
+    Id = FinSolicitacaoNumerario.Id,
+    PedidoCompra = FinSolicitacaoNumerario.NumPed,
+    RCM = FinSolicitacaoNumerario.RCM,
+    Fornecedor = ComCadFor.CNPJ_CPF + " - " + ComCadFor.Razao,
+    Item = EstItens.Descricao1 + " " + EstItens.Descricao3,
+    Valor = FinSolicitacaoNumerario.Valor,
+    DataNumerario = FinSolicitacaoNumerario.DataNumerario,
+    Situacao = CiItemDominio.Descricao,
+    Usuario = CICadUsuario.Descricao
+   }
+  )
+  .Join<FinSolicitacaoNumerario, EstItensRCM>((FinSolicitacaoNumerario, EstItensRCM) =>
+    FinSolicitacaoNumerario.RCM == EstItensRCM.RCM
+  )
+  .Join<EstItensRCM, EstItens>((EstItensRCM, EstItens) =>
+    EstItensRCM.Cod_Full == EstItens.Cod_Full
+  )
+  .Join<EstItensRCM, EstItensPC>((EstItensRCM, EstItensPC) =>
+    EstItensPC.RCM == EstItensRCM.RCM
+  )
+  .Join<FinSolicitacaoNumerario, EstPedCompra>((FinSolicitacaoNumerario, EstPedCompra) =>
+    FinSolicitacaoNumerario.NumPed == EstPedCompra.NumPed
+  )
+  .Join<EstPedCompra, ComCadFor>((EstPedCompra, ComCadFor) =>
+    EstPedCompra.CodFor == ComCadFor.CNPJ_CPF
+  )
+  .Join<FinSolicitacaoNumerario, CICadUsuario>((FinSolicitacaoNumerario, CICadUsuario) =>
+    FinSolicitacaoNumerario.UsuarioSolicitante == CICadUsuario.Codigo
+  )
+  .Join<FinSolicitacaoNumerario, CiItemDominio>((FinSolicitacaoNumerario, CiItemDominio) =>
+    CiItemDominio.Codigo == FinSolicitacaoNumerario.Situacao
+  )
+  .Join<CiItemDominio, CiDominio>((CiItemDominio, CiDominio) =>
+    CiDominio.Codigo == CiItemDominio.Codigo_Dominio
+    && CiDominio.Nome == DSituacaoSolicitacaoNumerario.CHAVE_DOMINIO
+  )
+  .Where<FinSolicitacaoNumerario, EstPedCompra>((FinSolicitacaoNumerario, EstPedCompra) =>
+    (RCM == null || FinSolicitacaoNumerario.RCM == RCM.GetValueOrDefault())
+    && (pedidoCompra == null || FinSolicitacaoNumerario.NumPed == pedidoCompra)
+    && (fornecedor == null || EstPedCompra.CodFor == fornecedor)
+  )
+  .ToList();
 });
 
 ```
 
 # Funções Prédefinidas Select
+
 Exemplo de funções e converções válidas:
 
-```
+```C#
 // Function Count 
 transaction.GetRepository<CiDominio>()
     .Select<CiDominio, CiItemDominio>(
@@ -691,18 +704,18 @@ transaction.GetRepository<EstItensPC>()
     .ToList();
 ```
 
-
 # Where
-A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas. 
+
+A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas.
 Tendo como exceção os paramêtros passados para a consulta.
 
-Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas. 
+Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas.
 
 As condições devem ter implementação simples e diretas. De nível quase semelhante ao sql.
 
 Exemplo de comparações válidas:
 
-```
+```C#
 OnTransaction((transaction) =>
 {
      transaction.GetRepository<EstPedCompra>()
@@ -728,10 +741,11 @@ OnTransaction((transaction) =>
 ```
 
 # Join
-A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas. 
+
+A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas.
 Tendo como exceção os paramêtros passados para a consulta.
 
-Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas. 
+Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas.
 
 As condições devem ter implementação simples e diretas. De nível quase semelhante ao sql.
 
@@ -739,7 +753,7 @@ O primeiro TypeParam deve ser um classe já presente na consulta. Ou seja => Joi
 
 Exemplo de comparações válidas:
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<EstPedCompra>()
@@ -759,10 +773,11 @@ OnTransaction((transaction) =>
 ```
 
 # Left Join
-A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas. 
+
+A expressão deve ter um resultado booleano, porém é de suma importância na comparação de propriedade evitar: associações, parses e funções que não foram tratadas.
 Tendo como exceção os paramêtros passados para a consulta.
 
-Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas. 
+Metodos ou extenções como Parse, Convert e tratações extras. Ainda não possuem suporte em propriedades instanciadas pela consulta. O motivo disso é que as expressões são traduzidadas, não executadas.
 
 As condições devem ter implementação simples e diretas. De nível quase semelhante ao sql.
 
@@ -770,7 +785,7 @@ O primeiro TypeParam deve ser um classe já presente na consulta. Ou seja => Joi
 
 Exemplo de comparações válidas:
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<EstPedCompra>()
@@ -790,9 +805,10 @@ OnTransaction((transaction) =>
 ```
 
 # OrderBY
+
 Lista as colunas que ordenarão a query
 
-```
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<CiDominio>().Select().OrderBy(ci => new { ci.Descricao, ci.Codigo }).ToList();
@@ -802,8 +818,10 @@ OnTransaction((transaction) =>
 ```
 
 # GroupBy
+
 Lista as colunas que agruparão a query
-```
+
+```C#
 OnTransaction((transaction) =>
 {
     transaction.GetRepository<CiDominio>()
@@ -830,4 +848,3 @@ OnTransaction((transaction) =>
         .Execute();
 });
 ```
-
